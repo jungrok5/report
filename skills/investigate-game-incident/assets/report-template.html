@@ -1,0 +1,136 @@
+<div id="eir-report">
+<style>
+#eir-report{color-scheme:light dark;--paper:light-dark(#fff,#181e27);--canvas:light-dark(#f5f7fa,#10151d);--ink:light-dark(#202d3d,#e8eef6);--muted:light-dark(#576678,#a8b7c9);--border:light-dark(#dbe2eb,#374352);--accent:light-dark(#2658a6,#9bbdff);--wash:light-dark(#ecf3ff,#24334c);--green:light-dark(#216247,#9ddbbc);--warm:light-dark(#855215,#eac28b);font:14px/1.65 system-ui,-apple-system,'Noto Sans KR',sans-serif;background:var(--canvas);color:var(--ink);border:1px solid var(--border);border-radius:10px;max-width:1120px;margin:auto;overflow:hidden}
+#eir-report *{box-sizing:border-box}#eir-report [hidden]{display:none!important}#eir-report button,#eir-report a{font:inherit;color:inherit}#eir-report button{min-height:44px}#eir-report h1{font-size:23px;line-height:1.45;margin:8px 0 12px;font-weight:650}#eir-report h2{font-size:16px;margin:0 0 10px;font-weight:650}#eir-report h3{font-size:14px;margin:14px 0 6px;font-weight:600}#eir-report p{margin:6px 0 10px}#eir-report .eir-chrome{padding:12px 22px;border-bottom:1px solid var(--border);background:var(--paper);display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}#eir-report .eir-chrome strong{font-weight:650}#eir-report .eir-body{padding:22px}#eir-report .eir-meta,#eir-report .eir-small{font-size:12px;color:var(--muted)}#eir-report .eir-headerline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}#eir-report .eir-section{background:var(--paper);border:1px solid var(--border);padding:16px;border-radius:7px;margin:18px 0}#eir-report .eir-badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:4px;background:var(--wash);color:var(--accent);font-weight:500}#eir-report .eir-badge.verified{color:var(--green);background:var(--canvas)}#eir-report .eir-badge.unknown,#eir-report .eir-badge.supported{color:var(--warm);background:var(--canvas)}#eir-report .eir-badge.excluded{color:var(--muted);background:var(--canvas)}#eir-report .eir-timeline{width:100%;display:block}#eir-report .eir-timeline text{font:11px system-ui,-apple-system,sans-serif;fill:var(--muted)}#eir-report .eir-timeline .label{font-size:12px;fill:var(--ink);font-weight:600}#eir-report .eir-events{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}#eir-report .eir-events button{font-size:12px;text-align:left;padding:6px 9px;background:var(--paper);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;gap:8px}#eir-report .eir-events .eir-num{font-size:11px;color:var(--accent)}#eir-report [aria-pressed="true"]{background:var(--wash)!important;border-color:var(--accent)!important}#eir-report .eir-selected{background:var(--canvas);padding:12px;border-radius:5px;font-size:13px}#eir-report .eir-selected .eir-values{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--muted);font-size:12px;margin-top:8px}#eir-report .eir-summary{border-left:4px solid var(--accent)}#eir-report .eir-summary #eir-conclusion{font-size:17px;font-weight:600;line-height:1.65}#eir-report .eir-summaryfooter{border-top:1px solid var(--border);padding-top:10px;color:var(--muted);font-size:12px;display:flex;gap:8px 24px;flex-wrap:wrap}#eir-report .eir-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:16px}#eir-report .eir-tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:9px 12px}#eir-report .eir-tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}#eir-report .eir-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;align-items:start}#eir-report .eir-graph{position:relative;background:var(--paper);border:1px solid var(--border);padding:14px;border-radius:6px}#eir-report .eir-graphsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;color:var(--muted)}#eir-report .eir-level{display:grid;gap:12px;position:relative;z-index:1;margin:0 0 44px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}#eir-report .eir-level:last-child{margin-bottom:0}#eir-report .eir-node{background:var(--paper);border:1px solid var(--border);border-radius:5px;min-width:0;padding:10px 12px;text-align:left;overflow-wrap:anywhere;word-break:keep-all}#eir-report .eir-node strong{display:block;font-size:13px;font-weight:600;margin:4px 0}#eir-report .eir-links{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}#eir-report .eir-links button{border:1px solid var(--border);background:var(--paper);border-radius:4px;padding:5px 8px;font-size:12px}#eir-report .eir-detail{background:var(--paper);padding:16px;border:1px solid var(--border);border-radius:6px;min-width:0}#eir-report .eir-reason{padding:10px 12px;background:var(--canvas);border-radius:4px;font-size:13px;margin:12px 0}#eir-report .eir-evidencepicker{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}#eir-report .eir-evidencepicker button{border:1px solid var(--border);border-radius:4px;background:var(--paper);padding:5px 8px;font-size:12px}#eir-report pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--canvas);border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--ink)}#eir-report details{border-top:1px solid var(--border);padding-top:10px;margin-top:12px;font-size:12px}#eir-report summary{color:var(--accent);min-height:36px}#eir-report .eir-source{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:12px}#eir-report .eir-source a{color:var(--accent)}#eir-report .eir-step{display:block;width:100%;padding:12px;margin-bottom:9px;background:var(--paper);border:1px solid var(--border);border-radius:5px;text-align:left}#eir-report .eir-step strong{display:block;font-size:14px;font-weight:600;margin:5px 0}#eir-report .eir-action{border-top:1px solid var(--border);padding:12px 0}#eir-report .eir-footer{font-size:12px;color:var(--muted);padding-top:16px}#eir-report .eir-print-evidence{display:none}#eir-report .eir-normal{stroke:var(--border);stroke-width:1}#eir-report .eir-crosshair{stroke:var(--accent);stroke-width:1.4}#eir-report .eir-eventline{stroke:var(--border);stroke-width:1;stroke-dasharray:2 3}
+@media(max-width:760px){#eir-report .eir-layout{grid-template-columns:1fr}#eir-report .eir-body{padding:14px}#eir-report .eir-section{padding:12px}#eir-report .eir-level{grid-template-columns:1fr}#eir-report .eir-level{margin-bottom:34px}}
+@media(max-width:400px){#eir-report h1{font-size:20px}#eir-report .eir-body{padding:10px}#eir-report .eir-summary #eir-conclusion{font-size:15px}#eir-report .eir-tabs button{padding:8px}}
+@media(pointer:coarse){#eir-report summary{min-height:44px}}
+@media print{#eir-report{color-scheme:light;max-width:none;border:0}#eir-report .eir-tabs,#eir-report .eir-events,#eir-report .eir-links,#eir-report .eir-evidencepicker{display:none}#eir-report [role="tabpanel"][hidden]{display:block!important}#eir-report .eir-layout{display:block}#eir-report .eir-detail{margin:12px 0}#eir-report .eir-print-evidence{display:block}#eir-report .eir-section{break-inside:avoid}#eir-report .eir-step{break-inside:avoid}#eir-report a:after{content:" (" attr(href) ")";overflow-wrap:anywhere}}
+</style>
+<header class="eir-chrome"><strong>Incident Evidence Review</strong><span class="eir-small" id="eir-mode"></span></header>
+<main class="eir-body">
+  <div class="eir-meta" id="eir-meta"></div><h1 id="eir-title"></h1>
+  <section class="eir-section" id="eir-observations" aria-label="장애 전후 현상">
+    <div class="eir-headerline"><h2>장애 전후에 무엇이 일어났나</h2><span class="eir-small" id="eir-window"></span></div>
+    <div class="eir-small" id="eir-phases"></div>
+    <svg class="eir-timeline" id="eir-timeline" role="img" aria-label="같은 시간축으로 정렬한 동접·DB 부하·지연과 사건 시점"></svg>
+    <div class="eir-events" id="eir-events" aria-label="사건 선택"></div>
+    <div class="eir-selected" id="eir-eventdetail" aria-live="polite"></div>
+    <div class="eir-small" style="margin-top:10px">시간 정렬은 인과관계의 증명이 아닙니다. 아래에서 연결 근거를 확인합니다. 빈 구간은 관측 누락입니다.</div>
+  </section>
+  <section class="eir-section eir-summary" aria-label="핵심 결론"><span id="eir-summary-status" class="eir-badge"></span><p id="eir-conclusion"></p><div class="eir-summaryfooter"><span id="eir-impact"></span><span id="eir-recovery"></span></div><p class="eir-small" id="eir-summary-limit"></p></section>
+  <nav class="eir-tabs" role="tablist" aria-label="분석 보기"><button id="eir-tab-cause" role="tab" aria-controls="eir-cause" aria-selected="true" data-view="cause" type="button">인과관계</button><button id="eir-tab-investigation" role="tab" aria-controls="eir-investigation" aria-selected="false" data-view="investigation" type="button">조사 과정</button><button id="eir-tab-actions" role="tab" aria-controls="eir-actions" aria-selected="false" data-view="actions" type="button">조치 · 남은 질문</button></nav>
+  <section id="eir-cause" role="tabpanel" aria-labelledby="eir-tab-cause"><div class="eir-layout"><div><h2>원인과 영향의 연결</h2><div id="eir-graph" class="eir-graph"><svg class="eir-graphsvg" aria-hidden="true"></svg><div id="eir-levels"></div></div><div class="eir-links" id="eir-edges"></div><p class="eir-small">실선: 검증 · 점선: 유력·미확인. 연결도 선택해 검증 근거를 확인하세요.</p></div><aside class="eir-detail" id="eir-cause-detail" aria-live="polite"></aside></div></section>
+  <section id="eir-investigation" role="tabpanel" aria-labelledby="eir-tab-investigation" hidden><div class="eir-layout"><div><h2>가설을 어떻게 좁혔나</h2><p class="eir-small">아래 시각은 조사 시각입니다. 사건 발생 시각과 구분합니다.</p><div id="eir-steps"></div></div><aside class="eir-detail" id="eir-step-detail" aria-live="polite"></aside></div></section>
+  <section id="eir-actions" role="tabpanel" aria-labelledby="eir-tab-actions" hidden><div class="eir-section"><h2>복구와 재발 방지</h2><div id="eir-actionlist"></div><h2 style="margin-top:20px">아직 확인하지 못한 것</h2><div id="eir-unknownlist"></div></div></section>
+  <section id="eir-print-evidence" class="eir-print-evidence"><h2>증거 부록</h2></section>
+  <footer class="eir-footer">발생 시각 → 관측 → 원인·후보 → 검증 근거 · 이 보고서는 자동으로 원본 시스템을 조회하지 않습니다.</footer>
+</main>
+<script type="application/json" id="eir-data">__REPORT_DATA__</script>
+<script>
+(()=>{
+const root=document.getElementById('eir-report');
+const data=JSON.parse(root.querySelector('#eir-data').textContent);
+const $=s=>root.querySelector(s),$$=s=>Array.from(root.querySelectorAll(s));
+const statusLabels={observed:'관측됨',verified:'검증됨',supported:'유력',unknown:'미확인',excluded:'해당 범위 배제'};
+const kindLabels={observation:'관측',alert:'알림',intervention:'조치',recovery:'회복',change:'변경'};
+const evidence=new Map(data.evidence.map(e=>[e.id,e]));
+const nodes=new Map(data.nodes.map(n=>[n.id,n]));
+const fmt=new Intl.DateTimeFormat('ko-KR',{timeZone:data.meta.timezone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+const time=x=>fmt.format(new Date(x));
+const text=(selector,value)=>{$(selector).textContent=value};
+const el=(tag,className,textValue)=>{const n=document.createElement(tag);if(className)n.className=className;if(['button','summary'].includes(tag))n.classList.add('cursor-interaction');if(textValue!==undefined)n.textContent=textValue;return n};
+function badge(status){return el('span','eir-badge '+status,statusLabels[status]||status)}
+text('#eir-title',data.meta.title);text('#eir-mode',data.meta.synthetic?'가상 예시 · 모든 사건·수치는 합성 데이터':'근거 기반 보고서 · v'+data.meta.version);
+const reportDate=new Intl.DateTimeFormat('ko-KR',{timeZone:data.meta.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(data.window.start));
+text('#eir-meta',`${data.meta.id} · ${reportDate} · ${data.meta.scope} · ${data.meta.timezone} · v${data.meta.version}`);
+text('#eir-window',`${time(data.window.start)}–${time(data.window.end)} · ${data.meta.timezone}`);
+text('#eir-conclusion',data.summary.text);text('#eir-impact','영향: '+data.summary.impact);text('#eir-recovery','복구: '+data.summary.recovery);text('#eir-summary-limit','근거: '+data.summary.evidence_ids.join(', ')+' · 한계: '+data.summary.limitations);
+text('#eir-phases',(data.phases||[]).map(p=>time(p.start).slice(0,5)+'–'+time(p.end).slice(0,5)+' '+p.label).join(' · '));
+$('#eir-summary-status').replaceWith(badge(data.summary.status));
+function safeLink(value){try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password?u.href:null}catch{return null}}
+function evidenceView(id){
+ const e=evidence.get(id),box=el('div','eir-evidence');if(!e)return box;
+ box.append(el('h3','',`${e.id} · ${e.title}`),el('div','eir-small',`${e.source} · 관측 ${e.observed_start}–${e.observed_end} · 조회 ${e.retrieved_at}`));
+ box.append(el('pre','',typeof e.sample==='string'?e.sample:JSON.stringify(e.sample,null,2)));
+ const detail=el('details'),summary=el('summary','', '쿼리 · 변수 · 원본 조회');detail.append(summary);
+ detail.append(el('pre','',e.query||'쿼리 미제공'),el('pre','',JSON.stringify(e.parameters||{},null,2)));
+ const links=el('div','eir-source');[['원본에서 재조회',e.source_url],['당시 보존본',e.archive_url]].forEach(([label,url])=>{const href=safeLink(url);if(href){const a=el('a','',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}else links.append(el('span','eir-small',label+': 연결 없음'))});detail.append(links);
+ detail.append(el('p','eir-small','SHA-256: '+(e.sha256||'미기록')));box.append(detail,el('p','eir-small','해석 한계: '+e.limitations));return box;
+}
+function attachEvidence(target,ids){
+ target.append(el('h3','','근거를 직접 확인'));
+ const picker=el('div','eir-evidencepicker'),content=el('div');
+ if(!ids.length){target.append(el('p','eir-small','연결된 근거가 없습니다. 추가 검증이 필요합니다.'));return}
+ ids.forEach((id,i)=>{const b=el('button','',id+' · '+evidence.get(id).title);b.type='button';b.setAttribute('aria-pressed',String(i===0));b.addEventListener('click',()=>{Array.from(picker.children).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));content.replaceChildren(evidenceView(id))});picker.append(b)});
+ content.append(evidenceView(ids[0]));target.append(picker,content);
+}
+let selectedEvent=data.events[0]||null;
+const parsedMetrics=data.metrics.map(m=>({...m,values:m.points.map(([t,v])=>({t:Date.parse(t),v}))}));
+function nearest(metric,at){let best=null;for(const p of metric.values){if(best===null||Math.abs(p.t-at)<Math.abs(best.t-at))best=p}return best&&Math.abs(best.t-at)<=metric.interval_seconds*1000?best:null}
+function selectEvent(event){
+ selectedEvent=event;$$('[data-event]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.event===event.id)));
+ const box=$('#eir-eventdetail');box.replaceChildren();box.append(el('strong','',`${time(event.at)} · ${kindLabels[event.kind]} · ${event.label}`),el('p','',event.detail));
+ const values=el('div','eir-values'),at=Date.parse(event.at);
+ parsedMetrics.forEach(m=>{const p=nearest(m,at);values.append(el('span','',`${m.label}: ${p&&p.v!==null?p.v.toLocaleString()+' '+m.unit+' ('+time(p.t)+')':'관측 없음'}`))});box.append(values);
+ const details=el('details'),summary=el('summary','','이 사건의 근거 확인');details.append(summary);attachEvidence(details,event.evidence_ids);box.append(details);drawTimeline();
+}
+data.events.forEach((event,i)=>{const b=el('button');b.type='button';b.dataset.event=event.id;b.setAttribute('aria-pressed','false');b.append(el('span','eir-num',String(i+1)),el('span','',time(event.at).slice(0,5)+' '+event.label));b.addEventListener('click',()=>selectEvent(event));$('#eir-events').append(b)});
+const NS='http://www.w3.org/2000/svg';
+function svgEl(tag,attrs={},content){const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,String(v)));if(content!==undefined)n.textContent=content;return n}
+function drawTimeline(){
+ const svg=$('#eir-timeline'),width=svg.getBoundingClientRect().width;if(width<1)return;
+ const mobile=width<480,left=60,right=12,laneHeight=122,top=32,bottom=24,height=top+laneHeight*parsedMetrics.length+bottom;
+ const begin=Date.parse(data.window.start),end=Date.parse(data.window.end),x=t=>left+(width-left-right)*(t-begin)/(end-begin);
+ svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.style.height=height+'px';svg.replaceChildren(svgEl('title',{},'사건 선택에 따라 공통 시각선과 근거가 바뀌는 장애 전후 시간축'));
+ const defs=svgEl('defs');svg.append(defs);
+ const selected=selectedEvent?Date.parse(selectedEvent.at):null;
+ const ticks=mobile?3:6;
+ for(let i=0;i<ticks;i++){const t=begin+(end-begin)*i/(ticks-1),px=x(t);svg.append(svgEl('line',{x1:px,x2:px,y1:top,y2:height-bottom,class:'eir-normal'}));svg.append(svgEl('text',{x:px,y:height-4,'text-anchor':i===0?'start':i===ticks-1?'end':'middle'},time(t).slice(0,5)))}
+ parsedMetrics.forEach((m,index)=>{
+   const ytop=top+index*laneHeight+25,ybottom=top+(index+1)*laneHeight-14;
+   const valid=m.values.filter(p=>p.v!==null).map(p=>p.v);let low=valid.length?Math.min(...valid):0,high=valid.length?Math.max(...valid):1;
+   if(low===high){const pad=Math.max(Math.abs(low)*.1,1);low-=pad;high+=pad}else{const pad=(high-low)*.12;low-=pad;high+=pad}if(valid.length&&Math.min(...valid)>=0)low=Math.max(0,low);
+   const y=v=>ybottom-(ybottom-ytop)*(v-low)/(high-low),clipId='eir-clip-'+index,clip=svgEl('clipPath',{id:clipId});clip.append(svgEl('rect',{x:left,y:ytop,width:width-left-right,height:ybottom-ytop}));defs.append(clip);
+   svg.append(svgEl('text',{x:left,y:ytop-9,class:'label'},m.label+' · '+m.unit));
+   (data.phases||[]).forEach((p,i)=>svg.append(svgEl('rect',{x:x(Date.parse(p.start)),y:ytop,width:x(Date.parse(p.end))-x(Date.parse(p.start)),height:ybottom-ytop,fill:'var(--accent)',opacity:i%2?.055:.025})));
+   [low,(low+high)/2,high].forEach(v=>{const val=Math.abs(v)>=10000?(v/10000).toFixed(1)+'만':Math.round(v).toLocaleString();svg.append(svgEl('line',{x1:left,x2:width-right,y1:y(v),y2:y(v),class:'eir-normal'}),svgEl('text',{x:left-7,y:y(v)+4,'text-anchor':'end'},val))});
+   let path='',active=false,previous=null;
+   m.values.forEach(p=>{if(p.v===null){active=false;previous=p.t;return}if(previous!==null&&p.t-previous>m.interval_seconds*1500)active=false;path+=(active?'L':'M')+x(p.t)+','+y(p.v)+' ';active=true;previous=p.t});
+   svg.append(svgEl('path',{d:path,fill:'none',stroke:'var(--accent)','stroke-width':2,'clip-path':`url(#${clipId})`}));
+   m.values.filter(p=>p.v!==null).forEach(p=>svg.append(svgEl('circle',{cx:x(p.t),cy:y(p.v),r:1.8,fill:'var(--accent)','clip-path':`url(#${clipId})`,'data-observation':m.id})));
+   if(selected!==null){const p=nearest(m,selected);if(p&&p.v!==null)svg.append(svgEl('circle',{cx:x(p.t),cy:y(p.v),r:3,fill:'var(--accent)'}))}
+ });
+ data.events.forEach((event,i)=>{const px=x(Date.parse(event.at));svg.append(svgEl('line',{x1:px,x2:px,y1:top,y2:height-bottom,class:'eir-eventline'}));if(!mobile&&((i===0)||Date.parse(event.at)-Date.parse(data.events[i-1].at)>(end-begin)*.03))svg.append(svgEl('text',{x:px,y:16,'text-anchor':'middle'},String(i+1)))});
+ if(selected!==null)svg.append(svgEl('line',{x1:x(selected),x2:x(selected),y1:top-8,y2:height-bottom,class:'eir-crosshair','data-selected-time':selected}));
+ const base=Date.parse(data.window.baseline_end);svg.append(svgEl('text',{x:left,y:27},'정상 기준 끝 '+time(base).slice(0,5)));
+}
+function nodeDetail(node){const target=$('#eir-cause-detail');target.replaceChildren(badge(node.status),el('h2','',node.label),el('p','',node.statement),el('div','eir-reason','판단 근거: '+node.rationale));attachEvidence(target,node.evidence_ids);target.append(el('p','eir-small','한계: '+node.limitations))}
+function edgeDetail(edge){const target=$('#eir-cause-detail');target.replaceChildren(badge(edge.status),el('h2','',nodes.get(edge.source).label+' → '+nodes.get(edge.target).label),el('p','',edge.mechanism));attachEvidence(target,edge.evidence_ids);target.append(el('p','eir-small','한계: '+edge.limitations))}
+const indegree=new Map(data.nodes.map(n=>[n.id,0])),levels=new Map(data.nodes.map(n=>[n.id,0]));
+data.edges.forEach(e=>indegree.set(e.target,indegree.get(e.target)+1));
+const queue=data.nodes.filter(n=>indegree.get(n.id)===0).map(n=>n.id);
+while(queue.length){const id=queue.shift();data.edges.filter(e=>e.source===id).forEach(e=>{levels.set(e.target,Math.max(levels.get(e.target),levels.get(id)+1));indegree.set(e.target,indegree.get(e.target)-1);if(indegree.get(e.target)===0)queue.push(e.target)})}
+const grouped=new Map();data.nodes.forEach(n=>{const level=levels.get(n.id);if(!grouped.has(level))grouped.set(level,[]);grouped.get(level).push(n)});
+Array.from(grouped.keys()).sort((a,b)=>a-b).forEach(level=>{const row=el('div','eir-level');grouped.get(level).forEach(node=>{const b=el('button','eir-node');b.type='button';b.dataset.node=node.id;b.setAttribute('aria-pressed','false');b.append(el('span','eir-small',node.role+' · '+statusLabels[node.status]),el('strong','',node.label));b.addEventListener('click',()=>{$$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));nodeDetail(node)});row.append(b)});$('#eir-levels').append(row)});
+data.edges.forEach(edge=>{const b=el('button','',edge.label+' · '+statusLabels[edge.status]);b.type='button';b.dataset.edge=edge.id;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{$$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));edgeDetail(edge)});$('#eir-edges').append(b)});
+function drawGraph(){if($('#eir-cause').hidden)return;const graph=$('#eir-graph'),svg=graph.querySelector('svg'),box=graph.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);svg.replaceChildren();const defs=svgEl('defs'),marker=svgEl('marker',{id:'eir-arrow',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});marker.append(svgEl('path',{d:'M0 0 L6 3 L0 6 Z',fill:'currentColor'}));defs.append(marker);svg.append(defs);
+ const get=id=>{const b=$$('[data-node]').find(n=>n.dataset.node===id),r=b.getBoundingClientRect();return{x:r.left-box.left+r.width/2,top:r.top-box.top,bottom:r.bottom-box.top}};
+ data.edges.forEach(edge=>{const a=get(edge.source),b=get(edge.target),mid=(a.bottom+b.top)/2;svg.append(svgEl('path',{d:`M${a.x} ${a.bottom} C${a.x} ${mid} ${b.x} ${mid} ${b.x} ${b.top-3}`,fill:'none',stroke:'currentColor','stroke-width':1.2,'stroke-dasharray':edge.status==='verified'?'none':'4 4','marker-end':'url(#eir-arrow)'}))})}
+if(data.nodes.length){$$('[data-node]')[0].setAttribute('aria-pressed','true');nodeDetail(data.nodes[0])}else $('#eir-cause-detail').append(el('p','','아직 원인 후보가 없습니다. 필요한 검증을 조사 과정에 기록합니다.'));
+function stepDetail(step){const target=$('#eir-step-detail');target.replaceChildren(badge(step.status),el('h2','',step.question));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>target.append(el('h3','',label),el('p','',value)));attachEvidence(target,step.evidence_ids)}
+data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
+if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step-detail').append(el('p','','조사 기록이 없습니다.'));
+data.actions.forEach(a=>{const item=el('div','eir-action');item.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')),el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
+data.unknowns.forEach(u=>{const item=el('div','eir-action');item.append(el('strong','',u.question),el('p','eir-small',u.owner+' · 다음 확인: '+u.next_test));$('#eir-unknownlist').append(item)});
+if(!data.unknowns.length)$('#eir-unknownlist').append(el('p','eir-small','기록된 미확인 질문 없음. 검증이 완전하다는 의미는 아닙니다.'));
+data.evidence.forEach(e=>$('#eir-print-evidence').append(evidenceView(e.id)));
+$$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
+if(selectedEvent)selectEvent(selectedEvent);else $('#eir-eventdetail').append(el('p','','사건 기록이 없습니다.'));
+new ResizeObserver(()=>{drawTimeline();drawGraph()}).observe(root);drawTimeline();drawGraph();
+root.addEventListener('keydown',event=>{if(event.target.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){const tabs=$$('[data-view]'),index=tabs.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();event.preventDefault()}});
+let printDetails=[];window.addEventListener('beforeprint',()=>{printDetails=$$('details').map(d=>[d,d.open]);printDetails.forEach(([d])=>d.open=true)});window.addEventListener('afterprint',()=>{printDetails.forEach(([d,open])=>d.open=open);printDetails=[]});
+$$('button,summary').forEach(n=>n.classList.add('cursor-interaction'));
+})();
+</script>
+</div>

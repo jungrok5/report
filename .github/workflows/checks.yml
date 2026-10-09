@@ -1,0 +1,21 @@
+name: Validate reports
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Test evidence integrity and output safety
+        run: python3 -m unittest discover -s skills/investigate-game-incident/scripts -p test_report.py -v
+      - name: Validate sample and detect generated report drift
+        run: |
+          python3 skills/investigate-game-incident/scripts/validate_report.py skills/investigate-game-incident/assets/example-restart.json
+          python3 skills/investigate-game-incident/scripts/render_report.py skills/investigate-game-incident/assets/example-restart.json --out /tmp/report.html --markdown-out /tmp/report.md
+          cmp /tmp/report.html examples/restart-recovery.html
+          cmp /tmp/report.html docs/index.html
+          cmp /tmp/report.md examples/restart-recovery.md
+          cmp /tmp/report.md docs/report.md
