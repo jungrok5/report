@@ -1,6 +1,6 @@
 # 프로세스 종료와 재기동 후 회복 지연 분석
 
-INC-DEMO-RESTART · KR · 월드 07–12 · Asia/Seoul · v1.0
+INC-DEMO-RESTART · KR · 월드 07–12 · Asia/Seoul · v1.1
 
 **가상 예시: 모든 사건·수치는 합성 데이터입니다.**
 
