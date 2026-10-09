@@ -33,43 +33,57 @@ function Badge({ status }) {
 function Evidence({ report, ids }) {
   const [selected, setSelected] = useState(ids[0]),
     [result, setResult] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [fullText, setFullText] = useState("");
   const generation = useRef(0);
   useEffect(() => {
     setSelected(ids[0]);
     setResult("");
+    setFullText("");
     setBusy(false);
     generation.current++;
   }, [ids.join("|"), report.meta.id]);
   const evidence = report.evidence.find((e) => e.id === selected);
-  async function verify() {
+  async function checkBytes(data, token) {
+    if (data.byteLength > 5_000_000)
+      throw Error("보존본은 5MB 이하로 확인하세요.");
+    if (!evidence.sha256) throw Error("기록된 보존본 해시가 없습니다.");
+    const sha = Array.from(
+      new Uint8Array(await crypto.subtle.digest("SHA-256", data)),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    if (generation.current !== token) return;
+    setResult(
+      sha === evidence.sha256
+        ? "해시 일치 · 마스킹 보존본의 바이트가 같습니다. 내용의 진실성을 증명하지 않습니다."
+        : "해시 불일치 · 보존본을 확인해야 합니다.",
+    );
+    setFullText(sha === evidence.sha256 ? new TextDecoder().decode(data) : "");
+  }
+  async function verify(file) {
     const token = ++generation.current;
     setBusy(true);
     setResult("");
+    setFullText("");
     try {
-      if (!evidence.archive_url || !evidence.sha256)
-        throw Error("보존본 URL과 해시가 필요합니다.");
-      const url = safeUrl(evidence.archive_url);
-      if (!url) throw Error("URL을 확인하세요.");
-      const target = new URL(url);
-      if (target.origin !== location.origin)
-        throw Error(
-          "외부 보존본은 해당 시스템에서 파일을 내려받아 해시를 확인하세요.",
-        );
-      const response = await fetch(url);
-      if (!response.ok) throw Error("보존본 조회 실패");
-      const data = await response.arrayBuffer();
-      const sha = Array.from(
-        new Uint8Array(await crypto.subtle.digest("SHA-256", data)),
-      )
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-      if (generation.current === token)
-        setResult(
-          sha === evidence.sha256
-            ? "해시 일치 · 마스킹 보존본의 바이트가 같습니다."
-            : "해시 불일치 · 보존본을 확인해야 합니다.",
-        );
+      let data;
+      if (file) {
+        if (file.size > 5_000_000)
+          throw Error("보존본은 5MB 이하로 확인하세요.");
+        data = await file.arrayBuffer();
+      } else {
+        const url = safeUrl(evidence.archive_url);
+        if (!url) throw Error("보존본 URL을 확인하세요.");
+        if (new URL(url).origin !== location.origin)
+          throw Error(
+            "외부 보존본은 내려받은 파일을 아래에서 선택해 확인하세요.",
+          );
+        const response = await fetch(url);
+        if (!response.ok) throw Error("보존본 조회 실패");
+        data = await response.arrayBuffer();
+      }
+      await checkBytes(data, token);
     } catch (e) {
       if (generation.current === token) setResult(e.message);
     } finally {
@@ -88,6 +102,7 @@ function Evidence({ report, ids }) {
               generation.current++;
               setBusy(false);
               setResult("");
+              setFullText("");
               setSelected(id);
             }}
           >
@@ -100,9 +115,37 @@ function Evidence({ report, ids }) {
           <h3>
             {evidence.id} · {evidence.title}
           </h3>
+          <div className="sources">
+            {[
+              ["원본에서 재조회", evidence.source_url],
+              ["당시 보존본 열기", evidence.archive_url],
+            ].map(([label, url]) =>
+              safeUrl(url) ? (
+                <a
+                  key={label}
+                  href={safeUrl(url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {label}
+                </a>
+              ) : (
+                <span key={label}>{label}: 연결 없음</span>
+              ),
+            )}
+          </div>
+          {report.meta.synthetic && (
+            <p className="small">
+              합성 표본 · 실제 운영 원본을 조회한 자료가 아닙니다.
+            </p>
+          )}
           <p className="small">
             {evidence.source} · 관측 {evidence.observed_start}–
             {evidence.observed_end} · 조회 {evidence.retrieved_at}
+          </p>
+          <p className="small">
+            아래는 보고서에 기록된 표본입니다. 보존본 바이트와 주장의 의미가
+            일치하는지는 별도로 검토합니다.
           </p>
           <pre>
             {typeof evidence.sample === "string"
@@ -110,37 +153,38 @@ function Evidence({ report, ids }) {
               : JSON.stringify(evidence.sample, null, 2)}
           </pre>
           <details>
-            <summary>쿼리 · 변수 · 원본 조회</summary>
+            <summary>쿼리 · 변수 · 보존본 검증</summary>
             <pre>{evidence.query || "쿼리 미제공"}</pre>
             <pre>{JSON.stringify(evidence.parameters || {}, null, 2)}</pre>
-            <div className="sources">
-              {[
-                ["원본에서 재조회", evidence.source_url],
-                ["당시 보존본", evidence.archive_url],
-              ].map(([label, url]) =>
-                safeUrl(url) ? (
-                  <a
-                    key={label}
-                    href={safeUrl(url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {label}
-                  </a>
-                ) : (
-                  <span key={label}>{label}: 연결 없음</span>
-                ),
-              )}
-            </div>
             <p className="small hash">SHA-256: {evidence.sha256 || "미기록"}</p>
             {evidence.archive_url && evidence.sha256 && (
-              <button onClick={verify} disabled={busy}>
+              <button onClick={() => verify()} disabled={busy}>
                 보존본 해시 확인
               </button>
             )}
+            <label className="local-archive no-print">
+              보존본 파일 열어 확인
+              <input
+                type="file"
+                accept=".json"
+                data-evidence-import
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) verify(file);
+                }}
+                disabled={busy}
+              />
+            </label>
             <p role="status" className="small">
               {result}
             </p>
+            {fullText && (
+              <details>
+                <summary>해시가 일치한 보존본 전체 내용</summary>
+                <pre>{fullText}</pre>
+              </details>
+            )}
           </details>
           <p className="small">해석 한계: {evidence.limitations}</p>
         </>
@@ -253,7 +297,7 @@ function CauseGraph({ report, onSelect, selection }) {
         </ReactFlow>
       </div>
       <div className="graphlists">
-        <details>
+        <details open>
           <summary>노드 목록 · 키보드로 선택</summary>
           <div className="pickers">
             {report.nodes.map((n) => (
@@ -324,15 +368,16 @@ function Governance({ report }) {
       {g ? (
         <>
           <p>
-            <Badge status={g.delivery_status} /> 보고서 revision {g.revision} ·
-            작성자 {g.author} · {g.created_at}
+            기록된 검토 상태: <Badge status={g.delivery_status} /> 보고서
+            revision {g.revision} · 작성자 {g.author} · {g.created_at}
           </p>
           <p className="small hash">
             내용 SHA-256: {g.content_sha256} · 이 해시는 검토 메타데이터를
             붙이기 전의 고정 보고서 내용입니다.
           </p>
           <p className="small">
-            검토 완료와 원인 검증됨은 별개의 상태입니다. {g.identity_assurance}
+            검토 완료와 원인 검증됨은 별개의 상태입니다. 이 파일의 검토자
+            이름·의견은 입력 기록이며, 신원·SSO·서명을 검증한 결과가 아닙니다.
           </p>
           {g.reviews.length ? (
             g.reviews.map((r, i) => (
@@ -406,7 +451,7 @@ function Governance({ report }) {
     </section>
   );
 }
-function Report({ report }) {
+function Report({ report, toolbar }) {
   const first =
     report.nodes.find((n) =>
       ["직접 원인", "원인 후보", "direct cause"].includes(n.role),
@@ -444,19 +489,27 @@ function Report({ report }) {
   ];
   return (
     <>
+      <h1>{report.meta.title}</h1>
       <div className="meta">
-        {report.meta.id} · {report.meta.scope} · {report.meta.timezone} · v
-        {report.meta.version}
+        {report.meta.id} ·{" "}
+        {new Intl.DateTimeFormat("ko-KR", {
+          timeZone: report.meta.timezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date(report.window.start))}{" "}
+        · {report.meta.scope} · {report.meta.timezone} · v{report.meta.version}
         {report.governance && ` · revision ${report.governance.revision}`}
       </div>
-      <h1>{report.meta.title}</h1>
       {report.meta.synthetic && (
         <p className="synthetic">
           가상 사례 · 사건·수치·실험·검토는 예시이며 실제 운영 분석이 아닙니다.
         </p>
       )}
+      {toolbar}
       <Timeline report={report} onEvidence={focusEvidence} />
-      <section className="section conclusion">
+      <section className="section conclusion" aria-label="원인">
+        <h2>원인</h2>
         <Badge status={report.summary.status} />
         <p className="conclusiontext">{report.summary.text}</p>
         <div className="summaryfooter">
@@ -473,6 +526,66 @@ function Report({ report }) {
         >
           결론의 근거 확인 →
         </button>
+      </section>
+      <section
+        className="section narrative"
+        aria-label="원인에 도달한 조사 흐름"
+      >
+        <h2>원인 판단에 어떻게 도달했나</h2>
+        <p className="small">
+          질문과 판정을 순서대로 읽고, 단계별 확인 내용과 근거를 펼쳐
+          검증합니다.
+        </p>
+        {report.investigation.length ? (
+          report.investigation.map((i, index) => (
+            <article
+              key={i.id}
+              data-narrative-step={i.id}
+              className="narrative-step"
+            >
+              <h3>
+                {index + 1}. {i.question} <Badge status={i.status} />
+              </h3>
+              <p>
+                <strong>확인한 사실:</strong> {i.observed}
+              </p>
+              <p>
+                <strong>판정:</strong> {i.decision}
+              </p>
+              <button
+                className="textbutton no-print"
+                onClick={() => focusEvidence(i.evidence_ids)}
+              >
+                이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
+              </button>
+              <details>
+                <summary>가설 · 확인 내용 · 다음 확인</summary>
+                <p className="small">조사 {i.investigated_at}</p>
+                {[
+                  ["가설", i.hypothesis],
+                  ["예측", i.prediction],
+                  ["관측", i.observed],
+                  ["다음 확인", i.next_test],
+                ].map(([key, value]) => (
+                  <p key={key}>
+                    <strong>{key}:</strong> {value}
+                  </p>
+                ))}
+                <button
+                  className="textbutton no-print"
+                  onClick={() => focusEvidence(i.evidence_ids)}
+                >
+                  이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
+                </button>
+              </details>
+            </article>
+          ))
+        ) : (
+          <p>
+            조사 기록이 없습니다. 원인을 추정하지 않고 추가 자료를 확인해야
+            합니다.
+          </p>
+        )}
       </section>
       <nav className="tabs" role="tablist" aria-label="분석 보기">
         {tabs.map(([id, label]) => (
@@ -538,6 +651,56 @@ function Report({ report }) {
           </aside>
         </div>
       </section>
+      <div className="print-flow">
+        <h2>원인별 확인 내용</h2>
+        {report.nodes.map((n) => (
+          <article key={n.id} data-print-node={n.id}>
+            <h3>
+              {n.label} · {statuses[n.status]}
+            </h3>
+            <p>
+              {n.role}: {n.statement}
+            </p>
+            <p>판단 근거: {n.rationale}</p>
+            <p>한계: {n.limitations}</p>
+            <p>근거: {n.evidence_ids.join(", ")}</p>
+          </article>
+        ))}
+        <h2>모든 인과 연결의 근거</h2>
+        {report.edges.map((e) => (
+          <article key={e.id} data-print-edge={e.id}>
+            <h3>
+              {report.nodes.find((n) => n.id === e.source)?.label} →{" "}
+              {report.nodes.find((n) => n.id === e.target)?.label} ·{" "}
+              {statuses[e.status]}
+            </h3>
+            <p>{e.mechanism}</p>
+            <p>한계: {e.limitations}</p>
+            <p>근거: {e.evidence_ids.join(", ")}</p>
+          </article>
+        ))}
+        <h2>전체 조사 기록</h2>
+        {report.investigation.map((i) => (
+          <article key={i.id} data-print-step={i.id}>
+            <h3>
+              {i.question} · {statuses[i.status]}
+            </h3>
+            <p>조사: {i.investigated_at}</p>
+            {[
+              ["가설", i.hypothesis],
+              ["예측", i.prediction],
+              ["관측", i.observed],
+              ["판정", i.decision],
+              ["다음 확인", i.next_test],
+            ].map(([key, value]) => (
+              <p key={key}>
+                <strong>{key}:</strong> {value}
+              </p>
+            ))}
+            <p>근거: {i.evidence_ids.join(", ")}</p>
+          </article>
+        ))}
+      </div>
       <section
         id="panel-investigation"
         className="panel"
@@ -630,6 +793,12 @@ function Report({ report }) {
                 {a.owner} · {a.due || "기한 미정"} · {a.status}
               </p>
               <p>{a.verification}</p>
+              <button
+                className="textbutton no-print"
+                onClick={() => focusEvidence(a.evidence_ids)}
+              >
+                조치 근거 확인 · {a.evidence_ids.join(", ")}
+              </button>
             </div>
           ))}
           <h2>아직 확인하지 못한 것</h2>
@@ -664,7 +833,13 @@ function Report({ report }) {
                 ? e.sample
                 : JSON.stringify(e.sample, null, 2)}
             </pre>
+            <p>
+              출처: {e.source} · 관측: {e.observed_start}–{e.observed_end} ·
+              조회: {e.retrieved_at}
+            </p>
             <p>쿼리: {e.query || "미제공"}</p>
+            <pre>변수: {JSON.stringify(e.parameters || {}, null, 2)}</pre>
+            <p className="hash">원본 조회: {e.source_url || "미제공"}</p>
             <p className="hash">
               보존본: {e.archive_url || "미제공"} · SHA-256:{" "}
               {e.sha256 || "미기록"}
@@ -752,62 +927,69 @@ function App() {
       location.pathname + "?case=" + encodeURIComponent(s),
     );
   }
+  const toolbar = (
+    <div className="toolbar no-print">
+      <label>
+        예시 보고서
+        <select
+          aria-label="예시 보고서 선택"
+          value={slug}
+          onChange={(e) => choose(e.target.value)}
+        >
+          {catalog.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.label}
+            </option>
+          ))}
+          {slug === "imported" && (
+            <option value="imported">불러온 보고서</option>
+          )}
+        </select>
+      </label>
+      <details className="file-tools">
+        <summary>파일 · 인쇄</summary>
+        <div className="buttons">
+          <button onClick={() => input.current.click()}>
+            보고서 JSON 열기
+          </button>
+          <input
+            ref={input}
+            type="file"
+            accept=".json,application/json"
+            data-report-import
+            hidden
+            onChange={importFile}
+          />
+          <button
+            onClick={() => report && download(`${report.meta.id}.json`, report)}
+            disabled={!report}
+          >
+            JSON 다운로드
+          </button>
+          <button onClick={() => window.print()} disabled={!report}>
+            인쇄 · PDF
+          </button>
+        </div>{" "}
+      </details>
+    </div>
+  );
   return (
     <div className="report">
       <header className="chrome">
-        <strong>Incident Evidence Review</strong>
-        <span className="small">React Flow · 근거 기반 보고서</span>
+        <strong>장애 보고서</strong>
+        <span className="small">이슈 · 현상 · 원인 · 근거</span>
       </header>
       <div className="body">
-        <div className="toolbar no-print">
-          <label>
-            예시 보고서
-            <select
-              aria-label="예시 보고서 선택"
-              value={slug}
-              onChange={(e) => choose(e.target.value)}
-            >
-              {catalog.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.label}
-                </option>
-              ))}
-              {slug === "imported" && (
-                <option value="imported">불러온 보고서</option>
-              )}
-            </select>
-          </label>
-          <div className="buttons">
-            <button onClick={() => input.current.click()}>
-              보고서 JSON 열기
-            </button>
-            <input
-              ref={input}
-              type="file"
-              accept=".json,application/json"
-              hidden
-              onChange={importFile}
-            />
-            <button
-              onClick={() =>
-                report && download(`${report.meta.id}.json`, report)
-              }
-              disabled={!report}
-            >
-              JSON 다운로드
-            </button>
-            <button onClick={() => window.print()} disabled={!report}>
-              인쇄 · PDF
-            </button>
-          </div>
-        </div>
         {error && (
           <p className="error" role="alert">
             {error}
           </p>
         )}
         {loading ? (
-          <p role="status">보고서를 불러오는 중입니다.</p>
+          <>
+            {toolbar}
+            <p role="status">보고서를 불러오는 중입니다.</p>
+          </>
         ) : report ? (
           <Report
             key={
@@ -816,13 +998,17 @@ function App() {
               (report.governance?.content_sha256 || report.meta.version)
             }
             report={report}
+            toolbar={toolbar}
           />
         ) : (
-          <p>보고서 JSON을 열어주세요.</p>
+          <>
+            {toolbar}
+            <p>보고서 JSON을 열어주세요.</p>
+          </>
         )}
         <footer className="small">
-          현상 → 결론 → 원인 연결 → 조사 → 근거 · 공개 페이지는 예시를 보여주며
-          운영 시스템을 자동 조회하지 않습니다.{" "}
+          이슈 제목 → 무슨 일이 있었나 → 원인 → 조사 → 근거 · 공개 페이지는
+          예시를 보여주며 운영 시스템을 자동 조회하지 않습니다.{" "}
           <a href="https://github.com/jungrok5/report">사용 방법·소스</a>
         </footer>
       </div>

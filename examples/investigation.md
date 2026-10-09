@@ -1,10 +1,10 @@
-# 자동 조사 예시 · 다운과 재기동 후 지연 후보
+# 월드 07 프로세스 종료·재기동 후 접속 지연
 
 INC-DEMO-ENGINE · KR · 월드 07–12 · Asia/Seoul · v1.2
 
 **가상 예시: 모든 사건·수치는 합성 데이터입니다.**
 
-## 장애 전후 관측
+## 무슨 일이 있었나
 
 - 2026-10-08T21:02:00+09:00 [observation] 월드 07 프로세스 종료: 프로세스 8124가 종료 코드 1로 끝났습니다. 예외와 종료의 직접 관계 및 재현 결과는 미확인입니다. (E_timeline)
 - 2026-10-08T21:02:30+09:00 [alert] 프로세스 다운 알림: WorldProcessDown 알림이 종료 관측보다 30초 늦게 발생했습니다. (E_timeline)
@@ -16,13 +16,13 @@ INC-DEMO-ENGINE · KR · 월드 07–12 · Asia/Seoul · v1.2
 - 2026-10-08T21:14:00+09:00 [recovery] 응답 지연 정상화: 응답 p99가 92 ms로 회복했습니다. 동접은 46,200명으로 아직 사고 전보다 낮았습니다. (E_timeline)
 - 2026-10-08T21:20:00+09:00 [recovery] 동접 기준 수준 회복: 관측 동접이 50,000명으로 돌아왔습니다. 기준 수준 회복을 유저 피해가 없었다는 의미로 해석하지 않습니다. (E_timeline)
 
-## 원인 또는 현재 후보
+## 원인
 
 상태: supported
 
-종료 원인 후보는 처리되지 않은 CacheMissError입니다. 재기동 후 회복 지연은 64개 worker의 동시 초기 로딩으로 DB 부하가 커진 경로가 유력합니다. 두 후보 모두 재현·대조 실험이 필요합니다.
+종료 원인 후보는 처리되지 않은 CacheMissError입니다. 재기동 후 회복 지연은 64개 worker의 동시 초기 로딩으로 DB 부하가 커진 경로가 유력합니다. 두 후보 모두 재현·대조 실험이 필요합니다. DB 로딩 태그 비율이 72%와 약 79.5%로 불일치해 정확한 부하 기여율은 미확인입니다.
 
-영향: 동접은 50,000명에서 34,000명으로 감소한 관측 표본입니다.
+영향: 21:02 월드 07 프로세스가 종료됐고 21:05 재기동했습니다. 월드 07–12 합계 동접 50,000→34,000명, 재기동 후 게임 요청 p99 최고 2,800ms의 가상 관측입니다.
 복구: 21:14 지연 정상화, 21:20 동접 기준 수준 회복 기록이 있습니다.
 근거: E_crash, E_warming, E_timeline, E_ccu, E_db-qps, E_latency
 한계: 자동 생성 예비 보고서. 후보와 연결은 사람의 검토·재현이 필요하며 인과 검증을 뜻하지 않음. 종료 이유: planner_finished. 가상 응답과 사람이 작성한 계획을 재생한 예시이며 실제 Holmes 모델·운영 조회를 실행하지 않았음.
@@ -89,7 +89,7 @@ INC-DEMO-ENGINE · KR · 월드 07–12 · Asia/Seoul · v1.2
 한계: Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_ccu.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_ccu.json
-SHA-256: 9a3be53529184d421e6a9b4c19f87c56fc3fee3d0f8865118bb0e77907925b7d
+SHA-256: 625183a5ad139aee2eab2e677d7d41fdcc3e5e779afed3d7bcce109b605f51e1
 
 ### E_db-qps · DB 요청 부하
 
@@ -106,7 +106,7 @@ SHA-256: 9a3be53529184d421e6a9b4c19f87c56fc3fee3d0f8865118bb0e77907925b7d
 한계: Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_db-qps.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_db-qps.json
-SHA-256: f331913ec369220f882bce615173ee70145a7aa580e2d7b03e0cb6951aff83fc
+SHA-256: 649d8601dbdc7efdd3e9b82850b1025950bf5b9288ab37f29944d8031cde72e0
 
 ### E_latency · 가동 중 게임 요청 p99
 
@@ -120,10 +120,10 @@ SHA-256: f331913ec369220f882bce615173ee70145a7aa580e2d7b03e0cb6951aff83fc
 
 쿼리: histogram_quantile(0.99,sum by (le)(rate(game_request_duration_ms_bucket{region="kr"}[1m])))
 변수: {"file": "latency.json", "format": "prometheus"}
-한계: Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_latency.json
+한계: Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 부분: 26개 평가 시각 중 3개가 누락/비유한값; 전구간 부재 판단 불가 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_latency.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_latency.json
-SHA-256: abeb007e530b4bb7f16eaeb90c16040bb9d7d70ec2e9711e12b303c2e223028d
+SHA-256: 98192b86e62a438afdff7d00686adb41f413c001fdf1fd0c0396865178d91f85
 
 ### E_timeline · 프로세스·조치·알림 사건 기록
 
@@ -137,10 +137,10 @@ SHA-256: abeb007e530b4bb7f16eaeb90c16040bb9d7d70ec2e9711e12b303c2e223028d
 
 쿼리: {app="game",world="07"} | json
 변수: {"file": "events.json", "format": "loki"}
-한계: Loki 시간은 저장된 로그 timestamp; 사건 발생 시각은 JSON at 필드에서만 추출 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_timeline.json
+한계: Loki 시간은 저장된 로그 timestamp; 사건 발생 시각은 JSON at 필드에서만 추출 / 로그 조회 성공·빈 결과만으로 수집 파이프라인과 대상 범위의 완전성을 입증하지 못함; 배제 전 별도 확인 필요 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_timeline.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_timeline.json
-SHA-256: b500bdadc7d21781b9bbfd1251da2d89d88f6136867335bcb1e3e0d75a108fcf
+SHA-256: 09632f17595831c933b1079707bc0b1c230d84340272e374a9aa1b93020593dc
 
 ### E_crash · dump·종료 직전 예외 요약
 
@@ -157,7 +157,7 @@ SHA-256: b500bdadc7d21781b9bbfd1251da2d89d88f6136867335bcb1e3e0d75a108fcf
 한계: 가상 dump 요약. 예외→종료의 재현·코드 검토 결과 미제공. OOM 기록 미제공은 OOM 배제 근거가 아님. / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_crash.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_crash.json
-SHA-256: ca5de082c1f43798901890a845d8ea7508ced4856ba8621200d52b229027dd8e
+SHA-256: f41b6411a37fc8d9e28394fe1b3e19e8fad1841d2470c2e095b190199286ea5f
 
 ### E_warming · DB 쿼리 태그·클라이언트 로딩 표본
 
@@ -174,4 +174,4 @@ SHA-256: ca5de082c1f43798901890a845d8ea7508ced4856ba8621200d52b229027dd8e
 한계: 가상 DB·클라이언트 요약. DB 부하 태그와 클라이언트 로딩은 해당 표본만 대표하며 재현/대조군 결과 없음. / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_warming.json
 원본: 연결 없음
 보존본: https://jungrok5.github.io/report/evidence/E_warming.json
-SHA-256: 8875e6e0d508095979da41539e31a7a1400af829fac6f652115d640035d9f1b0
+SHA-256: 549852cb03960df905206f89e1de6c547c002033a51df0e83b255225dc407f5c

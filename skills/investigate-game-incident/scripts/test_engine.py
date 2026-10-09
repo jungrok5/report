@@ -118,6 +118,67 @@ class EngineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             engine.accept(plan)
 
+    def test_empty_log_response_needs_declared_coverage_before_exclusion(self):
+        root=Path(self.temp.name)
+        raw={"status":"success","data":{"resultType":"streams","result":[]}}
+        (root/"logs.json").write_text(json.dumps(raw))
+        config=copy.deepcopy(self.config);q=next(q for q in config["queries"] if q["id"]=="timeline")
+        q["file"]="logs.json";config["queries"]=[q]
+        engine=Engine(config,root,root/"out");engine.collect(["timeline"])
+        self.assertIn("log_coverage_not_declared",engine.evidence[0]["quality"]["reasons"])
+        with self.assertRaisesRegex(ValueError,"incomplete"):engine.accept(self.excluded_plan("E_timeline"))
+
+    def excluded_plan(self, eid):
+        plan = copy.deepcopy(self.config["replay_plans"][0])
+        plan.update(status="excluded", evidence_ids=[eid], query_ids=[], candidates=[])
+        plan["summary"]["evidence_ids"] = []
+        return plan
+
+    def test_sparse_and_all_nonfinite_metrics_cannot_exclude(self):
+        for name in ("sparse", "nonfinite"):
+            with self.subTest(name=name):
+                raw = load(DEMO / "ccu.json")
+                values = raw["data"]["result"][0]["values"]
+                raw["data"]["result"][0]["values"] = [values[0], values[-1]] if name == "sparse" else [[t,"NaN"] for t,_ in values]
+                root = Path(self.temp.name) / name; root.mkdir()
+                (root / "metric.json").write_text(json.dumps(raw))
+                config = copy.deepcopy(self.config); q = config["queries"][0]; q["file"] = "metric.json"
+                config["queries"] = [q]
+                engine = Engine(config, root, root / "out"); engine.collect(["ccu"])
+                self.assertTrue(engine.evidence[0]["incomplete"])
+                self.assertIn("missing_or_nonfinite_metric_points",engine.evidence[0]["quality"]["reasons"])
+                with self.assertRaisesRegex(ValueError, "incomplete"):
+                    engine.accept(self.excluded_plan("E_ccu"))
+
+    def test_snapshot_cannot_claim_events_outside_declared_observation(self):
+        root = Path(self.temp.name)
+        raw = dict(observed_start="2026-10-08T21:10:00+09:00",observed_end="2026-10-08T21:11:00+09:00",
+                   coverage_complete=True,events=[dict(at="2026-10-08T21:02:00+09:00",label="down",kind="observation",detail="out of scope")])
+        (root/"snapshot.json").write_text(json.dumps(raw))
+        config=copy.deepcopy(self.config); q=config["queries"][4];q["file"]="snapshot.json";config["queries"]=[q]
+        engine=Engine(config,root,root/"out");engine.collect([q["id"]])
+        self.assertEqual(engine.evidence[0]["collection_status"],"failed");self.assertEqual(engine.events,[])
+        raw["events"]=[];(root/"snapshot.json").write_text(json.dumps(raw))
+        engine=Engine(config,root,root/"partial");engine.collect([q["id"]])
+        self.assertIn("partial_observation_window",engine.evidence[0]["quality"]["reasons"])
+        with self.assertRaisesRegex(ValueError,"incomplete"):engine.accept(self.excluded_plan("E_"+q["id"]))
+
+    def test_planner_sees_late_extrema_and_records_omitted_points(self):
+        root=Path(self.temp.name);config=copy.deepcopy(self.config);q=config["queries"][0];q["file"]="long.json";q["step"]=1;config["queries"]=[q]
+        from investigate import iso
+        start=iso(config["window"]["start"]).timestamp()
+        values=[[start+i,str(200000 if i==700 else 50000)] for i in range(800)]
+        raw=dict(status="success",data=dict(resultType="matrix",result=[dict(metric={},values=values)]))
+        (root/"long.json").write_text(json.dumps(raw))
+        engine=Engine(config,root,root/"out");engine.collect(["ccu"])
+        context=engine.context();m=context["metrics"][0]
+        self.assertNotIn("200000",context["evidence"][0]["sample"])
+        self.assertEqual(m["maximum"][1],200000)
+        self.assertTrue(any(p[1]==200000 for p in m["points"]))
+        self.assertFalse(m["points_complete"]);self.assertLessEqual(len(m["points"]),256)
+        self.assertTrue(context["evidence"][0]["quality"]["excerpt_truncated"])
+        with self.assertRaisesRegex(ValueError,"incomplete"):engine.accept(self.excluded_plan("E_ccu"))
+
     def test_budget_is_checked_before_collection(self):
         self.config["budget"]["max_queries"] = 2
         engine = self.engine()

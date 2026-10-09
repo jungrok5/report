@@ -9,11 +9,11 @@
 
 ## 보고서 화면과 조사 엔진의 경계
 
-GitHub 저장소 `https://github.com/jungrok5/report`의 `web/`는 React / React Flow / Dagre를 실제로 사용하는 보고서 화면이다. 기존 순서인 현상 시간축 → 핵심 결론 → 인과관계 → 조사 과정 → 근거·후속 조치를 유지한다. SVG 시계열은 React로 작성하며 ECharts는 사용하지 않는다. Vite로 번들링하여 CDN 없이 배포한다. Python 스킬의 독립 HTML 템플릿도 유지한다.
+GitHub 저장소 `https://github.com/jungrok5/report`의 `web/`는 React / React Flow / Dagre를 실제로 사용하는 보고서 화면이다. 이슈 제목 → 무슨 일이 있었나(현상 요약과 공통 시간축) → 원인 → 연속 조사 본문 → 인과관계·근거 탐색·후속 조치 순서다. 모든 조사 단계의 관측과 판정을 기본 공개하고, 가설·예측·다음 확인은 펼쳐 읽는다. 인쇄는 전체 사건·원인·연결·조사·근거 메타를 별도 렌더링하여 화면 선택에 영향을 받지 않는다. SVG 시계열은 React로 작성하며 ECharts는 사용하지 않는다. Vite로 번들링하여 CDN 없이 배포한다. Python 스킬의 독립 HTML 템플릿도 유지한다.
 
 페이지 `https://jungrok5.github.io/report/`에서 `incident.json`을 브라우저 내부로 import할 수 있다. 업로드·공유 저장·운영 조회는 하지 않는다. 그래프 이동은 배치만 바꾸며 사실·연결을 편집하지 않는다. 화면은 노드와 연결 각각의 근거 상태를 표시하고 클릭하면 근거를 읽는다. 자료 import 전에 validate_report.py를 실행하라. 화면도 시간·참조·DAG·상태·검토 내용 해시를 검사한다.
 
-원본 조회 주소와 당시 마스킹 보존본 주소를 구분하라. 파일은 읽는 사람에게 허용된 내부 위치에 별도로 게시한다. archive_url이 같은 origin이면 브라우저가 정확한 파일 바이트를 받아 SHA-256을 비교한다. 외부 origin은 해당 시스템에서 다운로드한 파일로 검증한다. 로컬 파일 위치를 가짜 웹 주소로 바꾸지 말라.
+원본 조회 주소와 당시 마스킹 보존본 주소를 구분하라. 파일은 읽는 사람에게 허용된 내부 위치에 별도로 게시한다. archive_url이 같은 origin이면 브라우저가 정확한 파일 바이트를 받아 SHA-256을 비교한다. 웹 주소가 없거나 외부 origin이면 근거 패널에서 당시 evidence JSON 파일을 선택하여 정확한 바이트 해시를 비교하고 전체 내용을 읽는다. 파일은 브라우저 내부에서만 읽는다. 이 비교는 보존본 바이트 일치 확인이며 보고서 표본·결론의 의미적 일치나 원인 입증은 아니다. 로컬 파일 위치를 가짜 웹 주소로 바꾸지 말라.
 
 ## 버전 저장과 검토 전달
 
@@ -41,7 +41,7 @@ python scripts/report_store.py --db /internal/incidents.sqlite review INC-001 --
   --reviewer '검토자' --decision changes_requested --note '대조 실험과 관측 공백 확인 필요'
 ```
 
-검토 후 새 빈 폴더에 export하라. 같은 검토자의 마지막 의견을 사용하고, 누구든 마지막 의견이 수정 요청이면 delivery_status는 changes_requested다. 한 명 이상 검토 완료이고 수정 요청이 없으면 approved이며, 의견이 없으면 pending이다. 필수 검토자 수·조직 권한·SSO는 이 CLI에 구현하지 않았다. 이름은 입력 기록이며 인증된 신원이라고 주장하지 말라.
+검토 후 새 빈 폴더에 export하라. 같은 검토자의 마지막 의견을 사용하고, 누구든 마지막 의견이 수정 요청이면 delivery_status는 changes_requested다. 한 명 이상 검토 완료이고 수정 요청이 없으면 approved이며, 의견이 없으면 pending이다. 필수 검토자 수·조직 권한·SSO는 이 CLI에 구현하지 않았다. 이름·approved 상태는 입력 검토 기록이며 인증된 신원·승인이라고 주장하지 말라. UI는 발급처·SSO·전자서명을 확인하지 않는다. history/revision/hash/time의 형식 일치만 검사한다. 적절한 형식의 메타데이터를 가진 외부 파일도 위조할 수 있다. 실제 조직 승인에 쓰려면 인증된 저장소 API 또는 신뢰할 수 있는 서명 검증이 필요하다.
 
 같은 report ID의 수정본을 ingest하면 새 revision이 생기며 이전 검토가 승계되지 않는다. 입력 JSON의 governance는 버리고 저장소에서 새 이력을 만든다. 브라우저는 내용이 검토 버전과 다른 JSON을 거부한다. 미등록 초안을 편집할 때는 governance를 제거하고, 검토 전달 전 새 버전으로 등록하라.
 

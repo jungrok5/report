@@ -17,6 +17,20 @@ class ReportTests(unittest.TestCase):
     def test_unbacked_verified_claim_is_rejected(self):
         self.data['edges'][0]['evidence_ids']=[]
         self.assertTrue(any('requires at least one' in e for e in validate(self.data)))
+    def test_exclusion_requires_complete_successful_evidence(self):
+        step=self.data['investigation'][0]
+        step.update(status='excluded',evidence_ids=[])
+        self.assertTrue(any('requires at least one' in e for e in validate(self.data)))
+        evidence=self.data['evidence'][0]
+        step['evidence_ids']=[evidence['id']]
+        evidence['incomplete']=True
+        self.assertTrue(any('cannot exclude' in e for e in validate(self.data)))
+        evidence['incomplete']=False
+        evidence['quality']={'excerpt_truncated':True}
+        self.assertTrue(any('cannot exclude' in e for e in validate(self.data)))
+        evidence['quality']={}
+        evidence['collection_status']='failed'
+        self.assertTrue(any('failed collection' in e for e in validate(self.data)))
     def test_verified_summary_needs_direct_cause_in_either_language(self):
         self.data['nodes'][0]['role']='direct cause'
         self.assertEqual(validate(self.data),[])

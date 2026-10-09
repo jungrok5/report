@@ -1,7 +1,7 @@
 {
   "meta": {
     "id": "INC-DEMO-ENGINE",
-    "title": "자동 조사 예시 · 다운과 재기동 후 지연 후보",
+    "title": "월드 07 프로세스 종료·재기동 후 접속 지연",
     "timezone": "Asia/Seoul",
     "version": "1.2",
     "synthetic": true,
@@ -24,8 +24,8 @@
   },
   "summary": {
     "status": "supported",
-    "text": "종료 원인 후보는 처리되지 않은 CacheMissError입니다. 재기동 후 회복 지연은 64개 worker의 동시 초기 로딩으로 DB 부하가 커진 경로가 유력합니다. 두 후보 모두 재현·대조 실험이 필요합니다.",
-    "impact": "동접은 50,000명에서 34,000명으로 감소한 관측 표본입니다.",
+    "text": "종료 원인 후보는 처리되지 않은 CacheMissError입니다. 재기동 후 회복 지연은 64개 worker의 동시 초기 로딩으로 DB 부하가 커진 경로가 유력합니다. 두 후보 모두 재현·대조 실험이 필요합니다. DB 로딩 태그 비율이 72%와 약 79.5%로 불일치해 정확한 부하 기여율은 미확인입니다.",
+    "impact": "21:02 월드 07 프로세스가 종료됐고 21:05 재기동했습니다. 월드 07–12 합계 동접 50,000→34,000명, 재기동 후 게임 요청 p99 최고 2,800ms의 가상 관측입니다.",
     "recovery": "21:14 지연 정상화, 21:20 동접 기준 수준 회복 기록이 있습니다.",
     "evidence_ids": [
       "E_crash",
@@ -498,10 +498,16 @@
       "sample": "{\"status\": \"success\", \"data\": {\"resultType\": \"matrix\", \"result\": [{\"metric\": {}, \"values\": [[1791460500.0, \"50000\"], [1791460560.0, \"50000\"], [1791460620.0, \"50100\"], [1791460680.0, \"50030\"], [1791460740.0, \"50050\"], [1791460800.0, \"50000\"], [1791460860.0, \"50000\"], [1791460920.0, \"48000\"], [1791460980.0, \"37000\"], [1791461040.0, \"34000\"], [1791461100.0, \"34000\"], [1791461160.0, \"34200\"], [1791461220.0, \"34900\"], [1791461280.0, \"35900\"], [1791461340.0, \"37500\"], [1791461400.0, \"39600\"], [1791461460.0, \"41500\"], [1791461520.0, \"43500\"], [1791461580.0, \"45100\"], [1791461640.0, \"46200\"], [1791461700.0, \"47300\"], [1791461760.0, \"48000\"], [1791461820.0, \"48700\"], [1791461880.0, \"49200\"], [1791461940.0, \"49800\"], [1791462000.0, \"50000\"]]}]}}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_ccu.json",
-      "sha256": "9a3be53529184d421e6a9b4c19f87c56fc3fee3d0f8865118bb0e77907925b7d",
+      "sha256": "625183a5ad139aee2eab2e677d7d41fdcc3e5e779afed3d7bcce109b605f51e1",
       "limitations": "Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_ccu.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": false,
+      "quality": {
+        "incomplete": false,
+        "reasons": [],
+        "excerpt_truncated": false,
+        "response_characters": 2006
+      }
     },
     {
       "id": "E_db-qps",
@@ -518,10 +524,16 @@
       "sample": "{\"status\": \"success\", \"data\": {\"resultType\": \"matrix\", \"result\": [{\"metric\": {}, \"values\": [[1791460500.0, \"300\"], [1791460560.0, \"310\"], [1791460620.0, \"300\"], [1791460680.0, \"305\"], [1791460740.0, \"320\"], [1791460800.0, \"300\"], [1791460860.0, \"310\"], [1791460920.0, \"200\"], [1791460980.0, \"140\"], [1791461040.0, \"140\"], [1791461100.0, \"420\"], [1791461160.0, \"1200\"], [1791461220.0, \"1850\"], [1791461280.0, \"1780\"], [1791461340.0, \"1420\"], [1791461400.0, \"1000\"], [1791461460.0, \"750\"], [1791461520.0, \"520\"], [1791461580.0, \"380\"], [1791461640.0, \"330\"], [1791461700.0, \"315\"], [1791461760.0, \"310\"], [1791461820.0, \"300\"], [1791461880.0, \"310\"], [1791461940.0, \"305\"], [1791462000.0, \"300\"]]}]}}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_db-qps.json",
-      "sha256": "f331913ec369220f882bce615173ee70145a7aa580e2d7b03e0cb6951aff83fc",
+      "sha256": "649d8601dbdc7efdd3e9b82850b1025950bf5b9288ab37f29944d8031cde72e0",
       "limitations": "Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_db-qps.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": false,
+      "quality": {
+        "incomplete": false,
+        "reasons": [],
+        "excerpt_truncated": false,
+        "response_characters": 1959
+      }
     },
     {
       "id": "E_latency",
@@ -538,10 +550,18 @@
       "sample": "{\"status\": \"success\", \"data\": {\"resultType\": \"matrix\", \"result\": [{\"metric\": {}, \"values\": [[1791460500.0, \"85\"], [1791460560.0, \"86\"], [1791460620.0, \"87\"], [1791460680.0, \"86\"], [1791460740.0, \"85\"], [1791460800.0, \"87\"], [1791460860.0, \"85\"], [1791461100.0, \"1900\"], [1791461160.0, \"2650\"], [1791461220.0, \"2800\"], [1791461280.0, \"2540\"], [1791461340.0, \"1920\"], [1791461400.0, \"1200\"], [1791461460.0, \"740\"], [1791461520.0, \"360\"], [1791461580.0, \"150\"], [1791461640.0, \"92\"], [1791461700.0, \"86\"], [1791461760.0, \"88\"], [1791461820.0, \"87\"], [1791461880.0, \"86\"], [1791461940.0, \"85\"], [1791462000.0, \"86\"]]}]}}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_latency.json",
-      "sha256": "abeb007e530b4bb7f16eaeb90c16040bb9d7d70ec2e9711e12b303c2e223028d",
-      "limitations": "Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_latency.json",
+      "sha256": "98192b86e62a438afdff7d00686adb41f413c001fdf1fd0c0396865178d91f85",
+      "limitations": "Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음 / 부분: 26개 평가 시각 중 3개가 누락/비유한값; 전구간 부재 판단 불가 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_latency.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": true,
+      "quality": {
+        "incomplete": true,
+        "reasons": [
+          "missing_or_nonfinite_metric_points"
+        ],
+        "excerpt_truncated": false,
+        "response_characters": 1739
+      }
     },
     {
       "id": "E_timeline",
@@ -558,10 +578,18 @@
       "sample": "{\"status\": \"success\", \"data\": {\"resultType\": \"streams\", \"result\": [{\"stream\": {\"world\": \"07\", \"app\": \"game\"}, \"values\": [[\"1791460920000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:02:00+09:00\\\", \\\"label\\\": \\\"월드 07 프로세스 종료\\\", \\\"kind\\\": \\\"observation\\\", \\\"detail\\\": \\\"프로세스 8124가 종료 코드 1로 끝났습니다. 예외와 종료의 직접 관계 및 재현 결과는 미확인입니다.\\\"}\"], [\"1791460950000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:02:30+09:00\\\", \\\"label\\\": \\\"프로세스 다운 알림\\\", \\\"kind\\\": \\\"alert\\\", \\\"detail\\\": \\\"WorldProcessDown 알림이 종료 관측보다 30초 늦게 발생했습니다.\\\"}\"], [\"1791461040000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:04:00+09:00\\\", \\\"label\\\": \\\"동접 저점\\\", \\\"kind\\\": \\\"observation\\\", \\\"detail\\\": \\\"영향 월드 합계 동접이 50,000명에서 34,000명으로 감소했습니다. 종료 사유별 정확한 기여율은 미확인입니다.\\\"}\"], [\"1791461100000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:05:00+09:00\\\", \\\"label\\\": \\\"재부팅\\\", \\\"kind\\\": \\\"intervention\\\", \\\"detail\\\": \\\"운영 기록에서 월드 07 재부팅이 확인됩니다. 새 프로세스 8259는 시작됐으나 유저 접속은 즉시 회복되지 않았습니다.\\\"}\"], [\"1791461130000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:05:30+09:00\\\", \\\"label\\\": \\\"초기 데이터 로딩\\\", \\\"kind\\\": \\\"observation\\\", \\\"detail\\\": \\\"재기동 프로세스의 로딩 작업 demo-warm-21이 시작됐습니다. DB 요청 태그와 연결해 부하 기여를 확인합니다.\\\"}\"], [\"1791461220000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:07:00+09:00\\\", \\\"label\\\": \\\"DB 부하 피크\\\", \\\"kind\\\": \\\"observation\\\", \\\"detail\\\": \\\"DB QPS가 1,850에 도달했습니다. 이 중 로딩 작업 태그 요청은 1,470 QPS였습니다.\\\"}\"], [\"1791461340000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:09:00+09:00\\\", \\\"label\\\": \\\"로그인 재개\\\", \\\"kind\\\": \\\"recovery\\\", \\\"detail\\\": \\\"로그인 허용 기록이 확인됐고 동접이 증가했습니다. 응답 지연은 아직 정상 범위가 아니었습니다.\\\"}\"], [\"1791461640000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:14:00+09:00\\\", \\\"label\\\": \\\"응답 지연 정상화\\\", \\\"kind\\\": \\\"recovery\\\", \\\"detail\\\": \\\"응답 p99가 92 ms로 회복했습니다. 동접은 46,200명으로 아직 사고 전보다 낮았습니다.\\\"}\"], [\"1791462000000000000\", \"{\\\"at\\\": \\\"2026-10-08T21:20:00+09:00\\\", \\\"label\\\": \\\"동접 기준 수준 회복\\\", \\\"kind\\\": \\\"recovery\\\", \\\"detail\\\": \\\"관측 동접이 50,000명으로 돌아왔습니다. 기준 수준 회복을 유저 피해가 없었다는 의미로 해석하지 않습니다.\\\"}\"]]}]}}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_timeline.json",
-      "sha256": "b500bdadc7d21781b9bbfd1251da2d89d88f6136867335bcb1e3e0d75a108fcf",
-      "limitations": "Loki 시간은 저장된 로그 timestamp; 사건 발생 시각은 JSON at 필드에서만 추출 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_timeline.json",
+      "sha256": "09632f17595831c933b1079707bc0b1c230d84340272e374a9aa1b93020593dc",
+      "limitations": "Loki 시간은 저장된 로그 timestamp; 사건 발생 시각은 JSON at 필드에서만 추출 / 로그 조회 성공·빈 결과만으로 수집 파이프라인과 대상 범위의 완전성을 입증하지 못함; 배제 전 별도 확인 필요 / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_timeline.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": true,
+      "quality": {
+        "incomplete": true,
+        "reasons": [
+          "log_coverage_not_declared"
+        ],
+        "excerpt_truncated": false,
+        "response_characters": 2378
+      }
     },
     {
       "id": "E_crash",
@@ -578,10 +606,18 @@
       "sample": "{\"observed_start\": \"2026-10-08T20:55:00+09:00\", \"observed_end\": \"2026-10-08T21:20:00+09:00\", \"events\": [], \"observations\": {\"exception\": \"Uncaught CacheMissError at WorldLoader.lookup()\", \"process_exit\": \"2026-10-08T21:02:00+09:00\", \"build\": \"game-2026.10.08.2\", \"host_oom_record\": \"검토 범위에서 기록 미제공\", \"exit_code\": 1}, \"limitations\": \"가상 dump 요약. 예외→종료의 재현·코드 검토 결과 미제공. OOM 기록 미제공은 OOM 배제 근거가 아님.\"}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_crash.json",
-      "sha256": "ca5de082c1f43798901890a845d8ea7508ced4856ba8621200d52b229027dd8e",
+      "sha256": "f41b6411a37fc8d9e28394fe1b3e19e8fad1841d2470c2e095b190199286ea5f",
       "limitations": "가상 dump 요약. 예외→종료의 재현·코드 검토 결과 미제공. OOM 기록 미제공은 OOM 배제 근거가 아님. / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_crash.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": true,
+      "quality": {
+        "incomplete": true,
+        "reasons": [
+          "snapshot_completeness_not_declared"
+        ],
+        "excerpt_truncated": false,
+        "response_characters": 434
+      }
     },
     {
       "id": "E_warming",
@@ -598,10 +634,18 @@
       "sample": "{\"observed_start\": \"2026-10-08T20:55:00+09:00\", \"observed_end\": \"2026-10-08T21:20:00+09:00\", \"events\": [], \"observations\": {\"warming_start\": \"2026-10-08T21:05:30+09:00\", \"configured_workers\": 64, \"db_peak_qps\": 1850, \"db_top_tag\": \"WorldLoader.prefetch\", \"db_tag_share_pct\": 72, \"client_loading_p99_ms\": 4200, \"client_sample_count\": 860, \"controlled_replay\": \"미실행\"}, \"limitations\": \"가상 DB·클라이언트 요약. DB 부하 태그와 클라이언트 로딩은 해당 표본만 대표하며 재현/대조군 결과 없음.\"}",
       "source_url": null,
       "archive_url": "https://jungrok5.github.io/report/evidence/E_warming.json",
-      "sha256": "8875e6e0d508095979da41539e31a7a1400af829fac6f652115d640035d9f1b0",
+      "sha256": "549852cb03960df905206f89e1de6c547c002033a51df0e83b255225dc407f5c",
       "limitations": "가상 DB·클라이언트 요약. DB 부하 태그와 클라이언트 로딩은 해당 표본만 대표하며 재현/대조군 결과 없음. / 가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님 / 보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시 / 본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인; 로컬 보존본: evidence/E_warming.json",
       "collection_status": "ok",
-      "incomplete": false
+      "incomplete": true,
+      "quality": {
+        "incomplete": true,
+        "reasons": [
+          "snapshot_completeness_not_declared"
+        ],
+        "excerpt_truncated": false,
+        "response_characters": 495
+      }
     }
   ],
   "nodes": [

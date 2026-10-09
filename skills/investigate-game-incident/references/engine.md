@@ -82,16 +82,17 @@ Loki는 streams만 처리한다. `extract_events=true`이면 JSON 로그의 명�
   "observed_end":"2026-10-08T21:07:00+09:00",
   "observations":{"db_wait":"제공된 실제 관측","client_sample_count":860},
   "events":[],
+  "coverage_complete":true,
   "limitations":"샘플 범위·마스킹·수집 한계"
 }
 ```
 
-설정한 기간 밖의 표본·사건은 오류다. 임의의 전체 DB 접근 대신 해당 사건에서 승인된 통계 export를 import하라.
+설정한 기간 또는 snapshot이 선언한 observed_start/end 밖의 사건은 오류다. 관측 범위가 장애 창의 일부이거나 coverage_complete가 true로 선언되지 않으면 불완전 자료로 기록하여 배제에 사용할 수 없다. 이 선언은 제공자가 대상·기간의 수집 완전성을 확인했다는 기록이며 자동으로 입증하는 기능은 아니다. 임의의 전체 DB 접근 대신 해당 사건에서 승인된 통계 export를 import하라.
 
 ## 조사 반복과 중단
 
 1. bootstrap 카탈로그 항목을 조회하고 마스킹 보존본·해시를 기록한다.
-2. 이미 얻은 근거·사건·질문·판정·실패와 미조회 카탈로그 제목을 planner에 제공한다.
+2. 이미 얻은 근거·정규화 메트릭·사건·질문·판정·실패와 미조회 카탈로그 제목을 planner에 제공한다. 실제 보낸 마스킹 context를 planner-input-<round>.json과 해시·감사 기록으로 보존한다.
 3. planner가 질문/가설/예측/관측/판정/다음 확인 및 `query_ids`를 반환한다.
 4. 기존의 성공한 근거 ID만 판정·요약·후보에서 인용할 수 있다. 아직 요청하지 않은 데이터는 판정 근거가 될 수 없다.
 5. 계획을 보존하고 새 query ID를 읽는다. 다음 planner 호출에서 새 결과를 평가한다.
@@ -101,13 +102,13 @@ Loki는 streams만 처리한다. `extract_events=true`이면 JSON 로그의 명�
 
 Planner 계약은 `investigate.py`의 `PLAN_SCHEMA`다. `status`는 unknown/supported/excluded만 허용한다. 원인 후보·연결은 supported로 표시한다. 모델은 verified로 승격할 수 없다. 후보의 `target_event_ids`는 수집한 실제 사건 ID여야 한다. 통제 실험·직접 관계 검증은 사람이 검토하고 별도 보고서 규약으로 기록하라.
 
-로그 상한·API 경고·사건 추출 누락이 있는 근거로 후보를 배제할 수 없다. 조회 실패는 근거 부재나 서비스 정상의 증거가 아니다. 오류가 발생해도 마지막으로 받아들인 분석과 수집 자료로 예비 보고서를 만든다. 실패가 있으면 CLI는 종료 코드 2를 반환한다. 설정 오류는 실행을 중단한다.
+누락/null/NaN 지표, 부분 snapshot, 로그 상한·API 경고·사건 추출 누락, 잘린 본문 또는 축약된 메트릭만 본 근거로 후보를 배제할 수 없다. Loki 조회 성공 또는 빈 결과는 수집 파이프라인의 완전성을 입증하지 않는다. 카탈로그의 coverage_complete=true는 운영자가 대상·기간·수집 정상 상태를 별도로 확인한 경우에만 선언하며, 미선언은 불완전으로 취급한다. evidence.quality에 incomplete/reasons/excerpt_truncated/response_characters를 구조화한다. 조회 실패는 근거 부재나 서비스 정상의 증거가 아니다. 오류가 발생해도 마지막으로 받아들인 분석과 수집 자료로 예비 보고서를 만든다. 실패가 있으면 CLI는 종료 코드 2를 반환한다. 설정 오류는 실행을 중단한다.
 
 ### Holmes 서버 설정
 
 `holmes.base_url`, 선택적 `model`, 환경변수 헤더를 설정한다. `model`은 서버의 modelList 키다. **모든 서버 toolset을 끈 별도 planner 인스턴스**를 사용하라. 설정을 확인한 뒤 `server_tools_disabled=true`를 기록한다. 이 값은 운영자가 확인했다는 선언이며 원격 서버 권한을 제한하는 보안 기능이 아니다. HTTP 응답의 tool_calls가 있으면 분석을 거부하지만 이미 실행된 서버 동작을 되돌릴 수는 없다. 이 엔진에 운영 변경 도구를 연결하지 말라.
 
-`enable_tool_approval=true`만으로 읽기 전용을 보장하지 않는다. 모델에는 마스킹된 표본 최대 6,000자/근거와 조회 카탈로그 제목이 전달된다. 해당 데이터의 모델 제공자 전송이 승인된 범위에서만 Holmes 모드를 실행하라. 로그 내용은 신뢰할 수 없는 입력으로 취급한다.
+`enable_tool_approval=true`만으로 읽기 전용을 보장하지 않는다. 모델에는 마스킹된 표본 최대 6,000자/근거, 정규화 메트릭과 조회 카탈로그 제목이 전달된다. 메트릭 256포인트 이하는 전체를 제공하고, 그 이상은 전체 시간 창의 대표 표본 및 최소·최대 원본 값/시각을 제공한다. points_complete·original_point_count·coverage·극값을 명시한다. 대표 표본은 이상 구간 전체나 모든 변동을 보장하지 않으므로 미확인으로 남겨 원본을 추가 검토한다. 원본 로그 전체를 읽는 추가 chunk 도구는 아직 없다. 해당 데이터의 모델 제공자 전송이 승인된 범위에서만 Holmes 모드를 실행하라. 로그 내용은 신뢰할 수 없는 입력으로 취급한다.
 
 ### 자체 AI planner 설정
 
@@ -128,6 +129,7 @@ Planner 계약은 `investigate.py`의 `PLAN_SCHEMA`다. `status`는 unknown/supp
 - `incident.json`, `report.html`, `report.md`: 예비 보고서
 - `evidence/E_<query-id>.json`: 쿼리 변수·마스킹 응답·조회 시각·해석 한계
 - `plan-<round>.json`: 받아들인 계획·판정
+- `planner-input-<round>.json`: 실제 모델에 전달한 마스킹 context와 가시 범위; state 감사 기록에 해시 포함
 - `manifest.json`: 마스킹 설정·카탈로그
 - `state.json`: 쿼리/계획 감사 기록·실패·중단 이유·보존본 해시
 

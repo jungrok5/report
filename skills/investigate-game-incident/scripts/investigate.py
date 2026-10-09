@@ -237,6 +237,7 @@ class Engine:
             params, source_url = {}, None
             self.done.add(qid)
             failure, limitations, new_metrics, new_events = None, [], [], []
+            quality_reasons = []
             raw = None
             observed_start, observed_end = self.config["window"]["start"], self.config["window"]["end"]
             try:
@@ -262,14 +263,34 @@ class Engine:
                 raw = self.masked(raw)
                 if fmt == "prometheus":
                     new_metrics, limitations = self.prometheus(raw, q, eid)
+                    if any(v is None for m in new_metrics for _, v in m["points"]):
+                        quality_reasons.append("missing_or_nonfinite_metric_points")
+                    if raw.get("warnings") or raw.get("infos"):
+                        quality_reasons.append("api_warning")
                 elif fmt == "loki":
                     new_events, limitations = self.loki(raw, q, eid)
+                    count = sum(len(stream["values"]) for stream in raw["data"]["result"])
+                    if q.get("coverage_complete") is not True:
+                        quality_reasons.append("log_coverage_not_declared")
+                        limitations.append("로그 조회 성공·빈 결과만으로 수집 파이프라인과 대상 범위의 완전성을 입증하지 못함; 배제 전 별도 확인 필요")
+                    if count >= self.budget["log_limit"]:
+                        quality_reasons.append("log_limit_reached")
+                    if q.get("extract_events") and len(new_events) < count:
+                        quality_reasons.append("events_not_fully_extracted")
+                    if raw.get("warnings"):
+                        quality_reasons.append("api_warning")
                 elif fmt == "snapshot":
                     a, b = iso(raw["observed_start"]), iso(raw["observed_end"])
                     if a > b or a < self.start or b > self.end:
                         raise ValueError("snapshot observation range outside window")
                     observed_start, observed_end = raw["observed_start"], raw["observed_end"]
                     new_events = self.event_records(raw.get("events", []), qid, eid)
+                    if any(not a <= iso(event["at"]) <= b for event in new_events):
+                        raise ValueError("snapshot event outside its declared observation range")
+                    if a > self.start or b < self.end:
+                        quality_reasons.append("partial_observation_window")
+                    if raw.get("coverage_complete") is not True:
+                        quality_reasons.append("snapshot_completeness_not_declared")
                     limitations = [raw.get("limitations", "파일 제공자가 기록한 시각·완전성은 별도 확인 필요")]
                 else:
                     raise ValueError("unsupported snapshot format")
@@ -280,6 +301,7 @@ class Engine:
                 limitations = ["조회 또는 해석 실패: 데이터가 없다는 근거로 사용할 수 없음"]
                 self.failures.append({"query_id": qid, "error": failure})
                 new_metrics, new_events = [], []
+                quality_reasons.append("collection_failed")
             if self.config["meta"]["synthetic"]:
                 source_url = None
                 limitations.append("가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님" if getattr(self, "planner", None) == "replay" else "합성 관측 데이터: 운영 데이터가 아님; 모델 실행 여부는 조사 모드와 감사 기록을 별도 확인")
@@ -288,18 +310,23 @@ class Engine:
                 limitations.append("민감정보가 포함된 조회 변수로 원본 링크를 공유본에서 생략")
             limitations += ["보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시"]
             limitations.append("본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인")
+            raw_text = dumps(raw)
+            excerpt_truncated = len(raw_text) > 6000
+            quality = {"incomplete": bool(quality_reasons), "reasons": quality_reasons,
+                       "excerpt_truncated": excerpt_truncated, "response_characters": len(raw_text)}
             archive_name = "evidence/" + eid + ".json"
             sha = self.save(archive_name, {"query_id": qid, "parameters": params, "response": raw,
-                                           "retrieved_at": self.now(), "limitations": limitations})
+                                           "retrieved_at": self.now(), "limitations": limitations, "quality": quality})
             archive_base = self.config.get("archive_base_url")
             archive_url = safe_base(archive_base) + "/" + archive_name if archive_base else None
             ev = {"id": eid, "title": q["title"], "source": source["kind"] + " / " + q["source"],
                   "observed_start": observed_start, "observed_end": observed_end,
                   "retrieved_at": self.now(), "query": q.get("query"), "parameters": params,
-                  "sample": dumps(raw)[:6000], "source_url": source_url, "archive_url": archive_url,
+                  "sample": raw_text[:6000], "source_url": source_url, "archive_url": archive_url,
                   "sha256": sha, "limitations": " / ".join(limitations) + "; 로컬 보존본: " + archive_name}
             ev["collection_status"] = "failed" if failure else "ok"
-            ev["incomplete"] = failure is not None or any(x.startswith(("부분", "상한", "경고")) for x in limitations)
+            ev["incomplete"] = quality["incomplete"]
+            ev["quality"] = quality
             self.evidence.append(self.masked(ev))
             self.metrics.extend(new_metrics)
             self.events.extend(new_events)
@@ -340,6 +367,9 @@ class Engine:
                   "points": [[stamp(datetime.fromtimestamp(t, timezone.utc)), v] for t, v in sorted(points.items())],
                   "evidence_ids": [eid]}
         limits = ["Prometheus range 평가 시각이며 원래 scrape 시각과 다를 수 있음; lookback으로 이전 scrape 값이 사용될 수 있음"]
+        missing = sum(v is None for _, v in metric["points"])
+        if missing and values:
+            limits.append(f"부분: {len(metric['points'])}개 평가 시각 중 {missing}개가 누락/비유한값; 전구간 부재 판단 불가")
         if not values:
             limits.append("부분: 반환 표본 없음; 관측 부재를 서비스 정상/정지로 해석할 수 없음")
         if raw.get("warnings") or raw.get("infos"):
@@ -390,11 +420,40 @@ class Engine:
             limits.append("경고: " + dumps(raw["warnings"]))
         return self.event_records(records, q["id"], eid), limits
 
+    def planner_metrics(self):
+        result = []
+        for m in self.metrics:
+            points = m["points"]
+            valid = [(index, p) for index, p in enumerate(points) if p[1] is not None]
+            indices = {0, len(points) - 1}
+            low = min(valid, key=lambda item: item[1][1]) if valid else None
+            high = max(valid, key=lambda item: item[1][1]) if valid else None
+            if valid:
+                indices.update([low[0], high[0]])
+            # Bound model input while retaining window-wide samples and exact extrema.
+            if len(points) <= 256:
+                indices.update(range(len(points)))
+            else:
+                indices.update(round(i * (len(points) - 1) / 249) for i in range(250))
+            result.append({k: v for k, v in m.items() if k != "points"} | {
+                "points": [points[i] for i in sorted(indices)],
+                "points_complete": len(indices) == len(points), "original_point_count": len(points),
+                "coverage": {"valid": len(valid), "missing": len(points) - len(valid)},
+                "minimum": low[1] if low else None, "maximum": high[1] if high else None,
+                "limitations": "원본 평가 시각을 보존. 256개 초과는 전구간 대표 표본과 극값만 전달하며 전체 패턴 확인이 아님"})
+        return result
+
+    def save_planner_input(self):
+        context = self.context()
+        sha = self.save("planner-input-" + str(self.round) + ".json", context)
+        self.audit.append({"kind": "planner_input", "round": self.round, "sha256": sha, "at": self.now()})
+        return context
+
     def context(self):
         return self.masked({"window": self.config["window"], "scope": self.config["meta"]["scope"],
                             "catalog": [{"id": q["id"], "title": q["title"], "collected": q["id"] in self.done}
                                         for q in self.queries.values()],
-                            "evidence": self.evidence, "events": self.events,
+                            "evidence": self.evidence, "metrics": self.planner_metrics(), "events": self.events,
                             "history": self.steps, "failures": self.failures})
 
     def holmes(self):
@@ -407,7 +466,7 @@ class Engine:
                   "이미 조회한 근거만 판정/요약/후보에 인용하라. 인과 후보는 검증됨으로 표현하지 말라. "
                   "조회 실패·부분 결과로 부재를 주장하거나 후보를 배제하지 말라. "
                   "query_ids가 빈 배열이면 조사를 끝낸다. candidates의 target_event_ids는 실제 사건 ID만 사용한다. "
-                  "추론 과정을 쓰지 말고 재현 가능한 예측·관측·판정과 한계를 적어라.\n" + dumps(self.context()))
+                  "추론 과정을 쓰지 말고 재현 가능한 예측·관측·판정과 한계를 적어라.\n" + dumps(self.save_planner_input()))
         body = {"ask": prompt, "stream": False, "enable_tool_approval": True,
                 "response_format": {"type": "json_schema", "json_schema": {
                     "name": "incident_next_step", "strict": True, "schema": PLAN_SCHEMA}}}
@@ -438,7 +497,7 @@ class Engine:
                         "내부 추론 대신 재현 가능한 예측·관측·판정·한계·다음 확인을 기록하라.")
         body = {"model": source["model"], "messages": [
                     {"role": "system", "content": instructions},
-                    {"role": "user", "content": dumps(self.context())}],
+                    {"role": "user", "content": dumps(self.save_planner_input())}],
                 "response_format": {"type": "json_schema", "json_schema": {
                     "name": "incident_next_step", "strict": True, "schema": PLAN_SCHEMA}},
                 "max_completion_tokens": limit, "stream": False}
@@ -455,7 +514,8 @@ class Engine:
     def accept(self, plan):
         check_shape(plan, PLAN_SCHEMA)
         good = {e["id"] for e in self.evidence if e["collection_status"] == "ok"}
-        incomplete = {e["id"] for e in self.evidence if e["incomplete"]}
+        incomplete = {e["id"] for e in self.evidence if e["incomplete"] or e.get("quality", {}).get("excerpt_truncated")}
+        incomplete.update(eid for m in self.planner_metrics() if not m["points_complete"] for eid in m["evidence_ids"])
         def refs(value, required=False):
             if len(set(value)) != len(value) or not set(value) <= good or (required and not value):
                 raise ValueError("planner evidence must reference existing successful queries")

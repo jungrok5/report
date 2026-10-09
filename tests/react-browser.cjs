@@ -60,7 +60,7 @@ const { chromium } = require("playwright");
       content:
         "@font-face{font-family:TestKR;src:url(data:font/woff;base64," +
         font +
-        ")}body,button,input,select,textarea,.timeline text{font-family:TestKR,system-ui!important}",
+        ")}body,button,input,select,textarea,pre,code,.timeline text{font-family:TestKR,system-ui!important}",
     });
     await page.evaluate(() => document.fonts.ready);
   }
@@ -73,12 +73,81 @@ const { chromium } = require("playwright");
         .filter({
           hasText:
             slug === "restart"
-              ? "자동 조사"
+              ? "월드 07"
               : slug === "db-lock"
-                ? "정산"
-                : "클라이언트",
+                ? "로그인 요청"
+                : "Android 2.14",
         })
         .waitFor();
+      const fixture = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "../docs/cases", slug, "incident.json"),
+        ),
+      );
+      const ordering = await page.evaluate(() => {
+        const title = document.querySelector("h1"),
+          toolbar = document.querySelector(".toolbar"),
+          what = document.querySelector('[aria-label="무슨 일이 있었나"]'),
+          cause = document.querySelector(".conclusion");
+        return {
+          titleFirst: !!(
+            title.compareDocumentPosition(toolbar) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+          ),
+          whatThenCause: !!(
+            what.compareDocumentPosition(cause) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+          ),
+          causeY: cause.getBoundingClientRect().top + scrollY,
+        };
+      });
+      if (!ordering.titleFirst || !ordering.whatThenCause)
+        throw Error("issue → phenomenon → cause order");
+      if (
+        (await page.locator("[data-narrative-step]").count()) !==
+        fixture.investigation.length
+      )
+        throw Error("continuous investigation missing");
+      for (const i of fixture.investigation) {
+        const t = await page
+          .locator('[data-narrative-step="' + i.id + '"]')
+          .innerText();
+        if (!t.includes(i.observed) || !t.includes(i.decision))
+          throw Error("narrative must show observation and decision");
+      }
+      await page.emulateMedia({ media: "print" });
+      if (
+        (await page.locator("[data-print-event]").count()) !==
+          fixture.events.length ||
+        (await page.locator("[data-print-edge]").count()) !==
+          fixture.edges.length ||
+        (await page.locator("[data-print-node]").count()) !==
+          fixture.nodes.length
+      )
+        throw Error("print omits incident/causal records");
+      for (const i of fixture.investigation) {
+        const t = await page
+          .locator('[data-print-step="' + i.id + '"]')
+          .innerText();
+        for (const k of [
+          "hypothesis",
+          "prediction",
+          "observed",
+          "decision",
+          "next_test",
+        ])
+          if (!t.includes(i[k])) throw Error("print missing " + i.id + " " + k);
+      }
+      const fixedPrint = await page.locator(".print-flow").innerText();
+      await page.emulateMedia({ media: "screen" });
+      console.log(
+        "CAUSE position " +
+          slug +
+          " width=" +
+          width +
+          " y=" +
+          Math.round(ordering.causeY),
+      );
       await page.waitForFunction(
         () => document.querySelectorAll(".react-flow__node").length >= 4,
       );
@@ -105,6 +174,10 @@ const { chromium } = require("playwright");
         )
       )
         throw Error("investigation");
+      await page.emulateMedia({ media: "print" });
+      if ((await page.locator(".print-flow").innerText()) !== fixedPrint)
+        throw Error("print content depends on selection");
+      await page.emulateMedia({ media: "screen" });
       await page.getByRole("tab", { name: "근거 전체", exact: true }).click();
       const details = page.locator("#panel-evidence details");
       await details.locator("summary").click();
@@ -113,6 +186,35 @@ const { chromium } = require("playwright");
         .filter({ visible: true })
         .click();
       await page.getByRole("status").filter({ hasText: "해시 일치" }).waitFor();
+      const archive = fs.readFileSync(
+        path.join(
+          __dirname,
+          "../docs/cases",
+          slug,
+          "evidence",
+          fixture.evidence[0].id + ".json",
+        ),
+      );
+      await page
+        .locator("#panel-evidence input[data-evidence-import]")
+        .setInputFiles({
+          name: "archive.json",
+          mimeType: "application/json",
+          buffer: archive,
+        });
+      await page.getByRole("status").filter({ hasText: "해시 일치" }).waitFor();
+      await page
+        .locator("#panel-evidence input[data-evidence-import]")
+        .setInputFiles({
+          name: "tampered.json",
+          mimeType: "application/json",
+          buffer: Buffer.from("{}"),
+        });
+      await page
+        .getByRole("status")
+        .filter({ hasText: "해시 불일치" })
+        .waitFor();
+
       await page.getByRole("tab", { name: "검토 · 버전", exact: true }).click();
       const review = await page.locator("#panel-review").innerText();
       if (slug === "db-lock" && !review.includes("가상 검토자"))
@@ -129,6 +231,7 @@ const { chromium } = require("playwright");
         el.dispatchEvent(new Event("input", { bubbles: true }));
         el.dispatchEvent(new Event("change", { bubbles: true }));
       });
+      await page.locator(".timeline-tools summary").click();
       // React range interaction is also exercised with the native keyboard path.
       await page.getByLabel("모든 지표의 시각 탐색").focus();
       await page.keyboard.press("ArrowRight");
@@ -141,10 +244,9 @@ const { chromium } = require("playwright");
         throw Error("hover descriptions");
       await page.keyboard.press("Escape");
       if (width === 320) {
-        const chart = await page.locator('svg.timeline').boundingBox();
-        await page.touchscreen.tap(chart.x + chart.width / 2, chart.y + 120);
+        await page.locator("[data-chart-hit]").tap();
         await page.locator('[role="tooltip"]').waitFor();
-        await page.keyboard.press('Escape');
+        await page.keyboard.press("Escape");
       }
       const bounds = await page.evaluate(() => ({
         w: innerWidth,
@@ -175,13 +277,11 @@ const { chromium } = require("playwright");
   data.meta.id = "INC-LOCAL-IMPORT";
   data.meta.title = "내 로컬 보고서";
   delete data.governance;
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "incident.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(data)),
-    });
+  await page.locator("input[data-report-import]").setInputFiles({
+    name: "incident.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(data)),
+  });
   await page
     .getByRole("heading", { name: "내 로컬 보고서", exact: true })
     .waitFor();
@@ -190,27 +290,23 @@ const { chromium } = require("playwright");
     throw Error("local import replaced");
   const bad = structuredClone(data);
   bad.summary.evidence_ids = ["fake"];
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "bad.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(bad)),
-    });
+  await page.locator("input[data-report-import]").setInputFiles({
+    name: "bad.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(bad)),
+  });
   await page.getByRole("alert").waitFor();
   const versioned = fs.readFileSync(
     path.join(__dirname, "../docs/cases/client-retry/incident.json"),
   );
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "stored.json",
-      mimeType: "application/json",
-      buffer: versioned,
-    });
+  await page.locator("input[data-report-import]").setInputFiles({
+    name: "stored.json",
+    mimeType: "application/json",
+    buffer: versioned,
+  });
   await page
     .getByRole("heading", {
-      name: "클라이언트 재시도 변경 이후 로그인 지연",
+      name: "Android 2.14 로그인 지연·동접 감소",
       exact: true,
     })
     .waitFor();
@@ -233,6 +329,31 @@ const { chromium } = require("playwright");
   await page.emulateMedia({ media: "print" });
   if (!(await page.locator(".print-evidence").isVisible()))
     throw Error("print evidence");
+  if (process.env.INCIDENT_PDF_PATH) {
+    await page.locator("input[data-report-import]").setInputFiles({
+      name: "db.json",
+      mimeType: "application/json",
+      buffer: fs.readFileSync(
+        path.join(__dirname, "../docs/cases/db-lock/incident.json"),
+      ),
+    });
+    await page
+      .getByRole("heading", { name: "로그인 요청 지연·동접 감소", exact: true })
+      .waitFor();
+    await page.setViewportSize({ width: 1100, height: 1000 });
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      );
+    });
+    await page.pdf({
+      path: process.env.INCIDENT_PDF_PATH,
+      format: "A4",
+      printBackground: true,
+      margin: { top: "15mm", bottom: "15mm", left: "12mm", right: "12mm" },
+    });
+  }
   if (errors.length) throw Error(errors.join(";"));
   await browser.close();
   console.log(

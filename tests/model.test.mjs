@@ -54,3 +54,28 @@ test("reviewed content cannot be silently changed while keeping prior review", a
   mismatched.governance.reviews[0].version_sha = "0".repeat(64);
   await assert.rejects(verifyGovernance(mismatched), /해시/);
 });
+
+test("manual imports cannot exclude without successful complete evidence", () => {
+  const c = structuredClone(cases[1]);
+  c.investigation[0].evidence_ids = [];
+  assert.throws(() => validateReport(c), /근거 참조/);
+  const id = cases[1].investigation[0].evidence_ids[0];
+  c.investigation[0].evidence_ids = [id];
+  const e = c.evidence.find((e) => e.id === id);
+  e.incomplete = true;
+  assert.throws(() => validateReport(c), /불완전/);
+  e.incomplete = false;
+  e.quality = { excerpt_truncated: true };
+  assert.throws(() => validateReport(c), /불완전/);
+  e.quality = {};
+  e.collection_status = "failed";
+  assert.throws(() => validateReport(c), /조회 실패/);
+});
+test("review metadata requires a current history row and valid review time", () => {
+  const c = structuredClone(cases[1]);
+  c.governance.history = [];
+  assert.throws(() => validateReport(c));
+  c.governance.history = structuredClone(cases[1].governance.history);
+  c.governance.reviews[0].reviewed_at = "not-a-timestamp";
+  assert.throws(() => validateReport(c));
+});

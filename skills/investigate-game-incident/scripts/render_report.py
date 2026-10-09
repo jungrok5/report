@@ -19,9 +19,9 @@ def fragment(data):
 def markdown(data):
     lines=[f"# {data['meta']['title']}","",f"{data['meta']['id']} · {data['meta']['scope']} · {data['meta']['timezone']} · v{data['meta']['version']}",""]
     if data['meta']['synthetic']: lines += ["**가상 예시: 모든 사건·수치는 합성 데이터입니다.**",""]
-    lines += ["## 장애 전후 관측",""]
+    lines += ["## 무슨 일이 있었나",""]
     for event in data['events']: lines += [f"- {event['at']} [{event['kind']}] {event['label']}: {event['detail']} ({', '.join(event['evidence_ids'])})"]
-    s=data['summary'];lines += ["","## 원인 또는 현재 후보", "",f"상태: {s['status']}","",s['text'],"",f"영향: {s['impact']}",f"복구: {s['recovery']}",f"근거: {', '.join(s['evidence_ids'])}",f"한계: {s['limitations']}","","## 인과관계",""]
+    s=data['summary'];lines += ["","## 원인", "",f"상태: {s['status']}","",s['text'],"",f"영향: {s['impact']}",f"복구: {s['recovery']}",f"근거: {', '.join(s['evidence_ids'])}",f"한계: {s['limitations']}","","## 인과관계",""]
     nodes={n['id']:n for n in data['nodes']}
     for edge in data['edges']: lines += [f"- {nodes[edge['source']]['label']} → {nodes[edge['target']]['label']} [{edge['status']}]: {edge['mechanism']} ({', '.join(edge['evidence_ids'])}); 한계: {edge['limitations']}"]
     lines += ["","## 조사 과정",""]

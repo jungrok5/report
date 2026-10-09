@@ -153,7 +153,27 @@ export function validateReport(r) {
     const items = key === "summary" ? [r.summary] : r[key];
     for (const x of items) {
       if (!Object.hasOwn(statuses, x.status)) fail("증거 상태가 잘못됐습니다.");
-      refs(x, ["observed", "verified", "supported"].includes(x.status));
+      refs(
+        x,
+        ["observed", "verified", "supported", "excluded"].includes(x.status),
+      );
+      for (const id of x.evidence_ids) {
+        const e = r.evidence.find((e) => e.id === id);
+        if (
+          ["observed", "verified", "supported", "excluded"].includes(
+            x.status,
+          ) &&
+          e.collection_status === "failed"
+        )
+          fail("조회 실패 근거로 관측·원인·배제를 판단할 수 없습니다.");
+        if (
+          x.status === "excluded" &&
+          (e.incomplete === true ||
+            e.quality?.incomplete === true ||
+            e.quality?.excerpt_truncated === true)
+        )
+          fail("불완전하거나 잘린 근거로 후보를 배제할 수 없습니다.");
+      }
     }
   }
   for (const e of r.evidence) {
@@ -245,6 +265,7 @@ export function validateReport(r) {
     )
       fail("검토·버전 구조 오류");
     strings(g, ["author", "created_at", "identity_assurance"]);
+    if (!ts(g.created_at)) fail("검토 버전 생성 시각 오류");
     for (const review of g.reviews) {
       strings(review, [
         "reviewer",
@@ -255,8 +276,35 @@ export function validateReport(r) {
       ]);
       if (!["approved", "changes_requested"].includes(review.decision))
         fail("검토 상태 오류");
+      if (
+        !ts(review.reviewed_at) ||
+        Date.parse(review.reviewed_at) < Date.parse(g.created_at)
+      )
+        fail("검토 시각 오류");
     }
-    for (const h of g.history) strings(h, ["sha", "author", "created_at"]);
+    const revisions = new Set();
+    for (const h of g.history) {
+      strings(h, ["sha", "author", "created_at"]);
+      if (
+        !Number.isInteger(h.revision) ||
+        h.revision < 1 ||
+        revisions.has(h.revision) ||
+        !ts(h.created_at) ||
+        !/^[a-f0-9]{64}$/.test(h.sha)
+      )
+        fail("버전 이력 오류");
+      revisions.add(h.revision);
+    }
+    if (
+      !g.history.some(
+        (h) =>
+          h.revision === g.revision &&
+          h.sha === g.content_sha256 &&
+          h.author === g.author &&
+          h.created_at === g.created_at,
+      )
+    )
+      fail("현재 버전과 이력이 일치하지 않습니다.");
   }
   return r;
 }

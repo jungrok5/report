@@ -8,14 +8,14 @@ export default function Timeline({ report, onEvidence }) {
     ),
     [hover, setHover] = useState(null),
     [pinned, setPinned] = useState(false),
-    [selected, setSelected] = useState(report.events[0]?.id);
+    [selected, setSelected] = useState(null);
   const start = Date.parse(report.window.start),
     end = Date.parse(report.window.end),
     left = 44,
     right = 18,
     top = 40,
-    bottom = 276,
-    height = 325;
+    height = width < 480 ? 220 : 270,
+    bottom = height - 49;
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) =>
       setWidth(Math.max(220, entry.contentRect.width)),
@@ -43,6 +43,8 @@ export default function Timeline({ report, onEvidence }) {
       ...m,
       color: colors[i % colors.length],
       low,
+      actualMin: values.length ? Math.min(...values) : null,
+      actualMax: values.length ? Math.max(...values) : null,
       high: high === low ? high + 1 : high,
     };
   });
@@ -91,14 +93,16 @@ export default function Timeline({ report, onEvidence }) {
     active = hover ?? at,
     event = report.events.find((e) => e.id === selected);
   return (
-    <section className="section" aria-label="장애 전후 현상">
+    <section className="section" aria-label="무슨 일이 있었나">
       <div className="headerline">
-        <h2>장애 전후에 무엇이 일어났나</h2>
+        <h2>무슨 일이 있었나</h2>
         <span className="small">
           {time(start, report.meta.timezone)}–{time(end, report.meta.timezone)}{" "}
           · {report.meta.timezone}
         </span>
       </div>
+      <p className="phenomenon">{report.summary.impact}</p>
+      <p className="small">회복 기록: {report.summary.recovery}</p>
       <div className="legend">
         {metrics.map((m, i) => (
           <span key={m.id}>
@@ -109,8 +113,10 @@ export default function Timeline({ report, onEvidence }) {
                   i % 3 === 0 ? "solid" : i % 3 === 1 ? "dashed" : "dotted",
               }}
             />
-            {m.label} · {m.unit} ({m.low.toLocaleString()}–
-            {m.high.toLocaleString()})
+            {m.label} · {m.unit}{" "}
+            {m.actualMin === null
+              ? "표본 없음"
+              : `${m.actualMin.toLocaleString()}–${m.actualMax.toLocaleString()}`}
           </span>
         ))}
       </div>
@@ -161,7 +167,7 @@ export default function Timeline({ report, onEvidence }) {
               </g>
             );
           })}
-          <text x={left} y={29}>
+          <text x={left} y={height - 4}>
             지표별 상대 높이 (%)
           </text>
           {report.events.map((e, i) => (
@@ -235,6 +241,15 @@ export default function Timeline({ report, onEvidence }) {
         </svg>
         {hover !== null && (
           <div className="charttip" role="tooltip">
+            <button
+              className="charttip-close"
+              onClick={() => {
+                setHover(null);
+                setPinned(false);
+              }}
+            >
+              탐색 정보 닫기
+            </button>
             <strong>
               {time(hover, report.meta.timezone)} ·{" "}
               {pinned ? "고정 · Esc로 닫기" : "가까운 원본 표본"}
@@ -256,27 +271,30 @@ export default function Timeline({ report, onEvidence }) {
           </div>
         )}
       </div>
-      <label className="timecontrol">
-        시각 탐색{" "}
-        <input
-          aria-label="모든 지표의 시각 탐색"
-          type="range"
-          min="0"
-          max="1000"
-          value={Math.round(((active - start) / (end - start)) * 1000)}
-          onChange={(e) => {
-            const t = start + ((end - start) * Number(e.target.value)) / 1000;
-            setHover(t);
-            setPinned(true);
-            setAt(t);
-          }}
-        />
-        <span className="small">{time(active, report.meta.timezone)}</span>
-      </label>
-      <p className="small">
-        마우스 이동: 수치 확인 · 클릭/터치: 고정 · Esc: 닫기. 원본 표본 시각을
-        표시하며 보간하지 않습니다. 공백은 관측 누락입니다.
-      </p>
+      <details className="timeline-tools no-print">
+        <summary>키보드 시각 탐색 · 조작 방법</summary>
+        <label className="timecontrol">
+          시각 탐색{" "}
+          <input
+            aria-label="모든 지표의 시각 탐색"
+            type="range"
+            min="0"
+            max="1000"
+            value={Math.round(((active - start) / (end - start)) * 1000)}
+            onChange={(e) => {
+              const t = start + ((end - start) * Number(e.target.value)) / 1000;
+              setHover(t);
+              setPinned(true);
+              setAt(t);
+            }}
+          />
+          <span className="small">{time(active, report.meta.timezone)}</span>
+        </label>
+        <p className="small">
+          마우스 이동: 수치 확인 · 클릭/터치: 고정 · Esc: 닫기. 원본 표본 시각을
+          표시하며 보간하지 않습니다. 공백은 관측 누락입니다.
+        </p>
+      </details>
       <div className="events">
         {report.events.map((e, i) => (
           <button
@@ -292,7 +310,7 @@ export default function Timeline({ report, onEvidence }) {
       {event ? (
         <div className="selected">
           <strong>
-            {time(event.at, report.meta.timezone)} · {event.label}
+            선택한 사건 · {time(event.at, report.meta.timezone)} · {event.label}
           </strong>
           <p>{event.detail}</p>
           <div className="values">
@@ -309,9 +327,21 @@ export default function Timeline({ report, onEvidence }) {
             이 사건의 근거 확인 →
           </button>
         </div>
-      ) : (
+      ) : report.events.length === 0 ? (
         <p>사건 기록이 없습니다.</p>
-      )}
+      ) : null}
+      <div className="print-events">
+        <h3>전체 사건 시간표</h3>
+        {report.events.map((e, index) => (
+          <article key={e.id} data-print-event={e.id}>
+            <strong>
+              {index + 1}. {e.at} · {e.label}
+            </strong>
+            <p>{e.detail}</p>
+            <p>근거: {e.evidence_ids.join(", ")}</p>
+          </article>
+        ))}
+      </div>
       <p className="small">
         시간 정렬은 인과관계의 증명이 아닙니다. 아래에서 연결 근거와 미확인
         내용을 확인합니다.

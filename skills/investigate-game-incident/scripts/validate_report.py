@@ -69,15 +69,21 @@ def validate(data):
             if not isinstance(item_id,str) or not re.fullmatch(r"[A-Za-z0-9_-]+",item_id): fail(f"{key}[{i}].id", "expected simple identifier"); continue
             if item_id in ids[key]: fail(key, f"duplicate ID {item_id}")
             ids[key].add(item_id)
+    evidence_by_id={e.get("id"):e for e in data["evidence"] if isinstance(e,dict)}
     def refs(item, path, strong=False):
         value=item.get("evidence_ids")
         if not isinstance(value,list) or any(not isinstance(x,str) for x in value): fail(path, "evidence_ids must be an array of IDs"); return
         for ref in value:
             if ref not in ids["evidence"]: fail(path, f"unknown evidence {ref}")
+            ev=evidence_by_id.get(ref,{})
+            decision=item.get("status")
+            quality=ev.get("quality",{}) if isinstance(ev.get("quality",{}),dict) else {}
+            if decision in {"verified","supported","observed","excluded"} and ev.get("collection_status")=="failed": fail(path, "failed collection cannot back a positive or exclusion claim")
+            if decision=="excluded" and (ev.get("incomplete") is True or quality.get("incomplete") is True or quality.get("excerpt_truncated") is True): fail(path, "incomplete or truncated evidence cannot exclude a candidate")
         if strong and not value: fail(path, "requires at least one evidence ID")
     def status(item,path):
         if item.get("status") not in STATUSES: fail(path,"invalid status")
-        refs(item,path,item.get("status") in {"verified","supported","observed"})
+        refs(item,path,item.get("status") in {"verified","supported","observed","excluded"})
     summary=data["summary"]
     require(summary,["status","text","impact","recovery","evidence_ids","limitations"],"summary")
     if summary.get("status") not in {"verified","supported","unknown"}: fail("summary.status","invalid conclusion status")

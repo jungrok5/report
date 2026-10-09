@@ -577,3 +577,122 @@ footer {
     --accent: #315bb0;
   }
 }
+
+/* Read the incident first; explore details without pushing the cause far down. */
+.events {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+.events button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.phenomenon {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.narrative-step {
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+}
+.narrative-step h3 {
+  margin-top: 4px;
+}
+.print-flow {
+  display: none;
+}
+@media print {
+  .narrative,
+  #panel-investigation {
+    display: none !important;
+  }
+  .print-flow {
+    display: block;
+  }
+  .print-flow article {
+    break-inside: avoid;
+  }
+}
+
+.local-archive {
+  display: block;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.local-archive input {
+  display: block;
+  max-width: 100%;
+  margin-top: 8px;
+}
+.print-events {
+  display: none;
+}
+@media print {
+  #panel-cause aside,
+  .graph,
+  .narrative,
+  #panel-investigation {
+    display: none !important;
+  }
+  .selected {
+    display: none;
+  }
+  .print-events {
+    display: block;
+  }
+  .print-events article {
+    break-inside: avoid;
+  }
+  .section,
+  .print-evidence > div {
+    break-inside: auto;
+  }
+  .print-flow h3,
+  .print-events strong,
+  .print-evidence h3 {
+    break-after: avoid;
+  }
+}
+@media (max-width: 700px) {
+  .react-flow__controls button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media print {
+  #panel-evidence {
+    display: none !important;
+  }
+}
+
+.charttip-close {
+  pointer-events: auto;
+  min-height: 44px;
+  font-size: 12px;
+}
+
+.file-tools {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.file-tools summary {
+  min-height: 44px;
+  font-size: 12px;
+}
+.timeline-tools {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+@media print {
+  .timeline {
+    height: 220px;
+    width: 100%;
+  }
+  button {
+    display: none !important;
+  }
+}

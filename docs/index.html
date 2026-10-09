@@ -11,14 +11,17 @@
 @media(max-width:600px){#eir-report .eir-charttip{position:static;width:auto!important;max-width:none!important;margin:8px 0;box-shadow:none}}
 @media print{#eir-report .eir-charttip,#eir-report .eir-chartreadout{display:none!important}}
 @media print{#eir-report{color-scheme:light;max-width:none;border:0}#eir-report .eir-tabs,#eir-report .eir-events,#eir-report .eir-links,#eir-report .eir-evidencepicker{display:none}#eir-report [role="tabpanel"][hidden]{display:block!important}#eir-report .eir-layout{display:block}#eir-report .eir-detail{margin:12px 0}#eir-report .eir-print-evidence{display:block}#eir-report .eir-section{break-inside:avoid}#eir-report .eir-step{break-inside:avoid}#eir-report a:after{content:" (" attr(href) ")";overflow-wrap:anywhere}}
+#eir-report .eir-print-flow,#eir-report .eir-print-events{display:none}
+#eir-report .eir-narrative-step{border-top:1px solid var(--border);padding:12px 0}
+@media print{#eir-report #eir-investigation,#eir-report #eir-cause-detail,#eir-report #eir-narrative,#eir-report #eir-eventdetail,#eir-report #eir-graph{display:none!important}#eir-report .eir-print-flow,#eir-report .eir-print-events{display:block}#eir-report .eir-section{break-inside:auto}#eir-report .eir-print-flow article,#eir-report .eir-print-events article{break-inside:avoid}}
 </style>
-<header class="eir-chrome"><strong>Incident Evidence Review</strong><span class="eir-small" id="eir-mode"></span></header>
+<header class="eir-chrome"><strong>장애 보고서</strong><span class="eir-small" id="eir-mode"></span></header>
 <main class="eir-body">
-  <div class="eir-meta" id="eir-meta"></div><h1 id="eir-title"></h1>
+  <h1 id="eir-title"></h1><div class="eir-meta" id="eir-meta"></div>
   <nav class="eir-source" id="eir-related" aria-label="관련 예시와 사용 방법" hidden></nav>
-  <section class="eir-section" id="eir-observations" aria-label="장애 전후 현상">
-    <div class="eir-headerline"><h2>장애 전후에 무엇이 일어났나</h2><span class="eir-small" id="eir-window"></span></div>
-    <div class="eir-small" id="eir-phases"></div>
+  <section class="eir-section" id="eir-observations" aria-label="무슨 일이 있었나">
+    <div class="eir-headerline"><h2>무슨 일이 있었나</h2><span class="eir-small" id="eir-window"></span></div>
+    <p id="eir-phenomenon"></p><p class="eir-small" id="eir-recovery-observation"></p><div class="eir-small" id="eir-phases"></div>
     <div class="eir-legend" id="eir-legend" aria-label="지표와 색상"></div>
     <div class="eir-small">높이는 지표별 관측 범위(0 포함)를 0–100%로 표시합니다. 서로 다른 지표의 크기를 비교하는 축은 아닙니다. 실제 값·단위·설명은 마우스를 올리거나 터치해서 확인합니다.</div>
     <div class="eir-chartwrap" id="eir-chartwrap">
@@ -28,14 +31,16 @@
     <div class="eir-chartreadout"><label for="eir-charttime">시각 탐색 <input id="eir-charttime" type="range" min="0" max="1000" step="1" value="0" aria-label="그래프 시각을 선택해 모든 지표의 수치와 설명 확인" aria-describedby="eir-charthelp"></label><span id="eir-charttime-label" aria-live="polite"></span></div>
     <div class="eir-small" id="eir-charthelp">마우스 이동: 수치 확인 · 클릭/터치: 고정 · Esc: 닫기 · 슬라이더: 키보드 탐색. 가까운 원본 표본과 실제 표본 시각을 표시하며 보간하지 않습니다.</div>
     <div class="eir-events" id="eir-events" aria-label="사건 선택"></div>
-    <div class="eir-selected" id="eir-eventdetail" aria-live="polite"></div>
+    <div class="eir-selected" id="eir-eventdetail" aria-live="polite"></div><div class="eir-print-events" id="eir-print-events"></div>
     <div class="eir-small" style="margin-top:10px">시간 정렬은 인과관계의 증명이 아닙니다. 아래에서 연결 근거를 확인합니다. 빈 구간은 관측 누락입니다.</div>
   </section>
-  <section class="eir-section eir-summary" aria-label="핵심 결론"><span id="eir-summary-status" class="eir-badge"></span><p id="eir-conclusion"></p><div class="eir-summaryfooter"><span id="eir-impact"></span><span id="eir-recovery"></span></div><p class="eir-small" id="eir-summary-limit"></p></section>
+  <section class="eir-section eir-summary" aria-label="원인"><h2>원인</h2><span id="eir-summary-status" class="eir-badge"></span><p id="eir-conclusion"></p><div class="eir-summaryfooter"><span id="eir-impact"></span><span id="eir-recovery"></span></div><p class="eir-small" id="eir-summary-limit"></p></section>
+  <section class="eir-section" id="eir-narrative"><h2>원인 판단에 어떻게 도달했나</h2></section>
   <nav class="eir-tabs" role="tablist" aria-label="분석 보기"><button id="eir-tab-cause" role="tab" aria-controls="eir-cause" aria-selected="true" data-view="cause" type="button">인과관계</button><button id="eir-tab-investigation" role="tab" aria-controls="eir-investigation" aria-selected="false" data-view="investigation" type="button">조사 과정</button><button id="eir-tab-actions" role="tab" aria-controls="eir-actions" aria-selected="false" data-view="actions" type="button">조치 · 남은 질문</button></nav>
   <section id="eir-cause" role="tabpanel" aria-labelledby="eir-tab-cause"><div class="eir-layout"><div><h2>원인과 영향의 연결</h2><div id="eir-graph" class="eir-graph"><svg class="eir-graphsvg" aria-hidden="true"></svg><div id="eir-levels"></div></div><div class="eir-links" id="eir-edges"></div><p class="eir-small">실선: 검증 · 점선: 유력·미확인. 연결도 선택해 검증 근거를 확인하세요.</p></div><aside class="eir-detail" id="eir-cause-detail" aria-live="polite"></aside></div></section>
   <section id="eir-investigation" role="tabpanel" aria-labelledby="eir-tab-investigation" hidden><div class="eir-layout"><div><h2>가설을 어떻게 좁혔나</h2><p class="eir-small">아래 시각은 조사 시각입니다. 사건 발생 시각과 구분합니다.</p><div id="eir-steps"></div></div><aside class="eir-detail" id="eir-step-detail" aria-live="polite"></aside></div></section>
   <section id="eir-actions" role="tabpanel" aria-labelledby="eir-tab-actions" hidden><div class="eir-section"><h2>복구와 재발 방지</h2><div id="eir-actionlist"></div><h2 style="margin-top:20px">아직 확인하지 못한 것</h2><div id="eir-unknownlist"></div></div></section>
+  <section id="eir-print-flow" class="eir-print-flow"></section>
   <section id="eir-print-evidence" class="eir-print-evidence"><h2>증거 부록</h2></section>
   <footer class="eir-footer">발생 시각 → 관측 → 원인·후보 → 검증 근거 · 이 화면은 저장된 조회 결과를 표시합니다. 원본 링크로 같은 범위를 다시 확인할 수 있습니다.</footer>
 </main>
@@ -58,6 +63,7 @@ text('#eir-title',data.meta.title);text('#eir-mode',data.meta.synthetic?'가상 
 const reportDate=new Intl.DateTimeFormat('ko-KR',{timeZone:data.meta.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(data.window.start));
 text('#eir-meta',`${data.meta.id} · ${reportDate} · ${data.meta.scope} · ${data.meta.timezone} · v${data.meta.version}`);
 text('#eir-window',`${time(data.window.start)}–${time(data.window.end)} · ${data.meta.timezone}`);
+text('#eir-phenomenon',data.summary.impact);text('#eir-recovery-observation','회복 기록: '+data.summary.recovery);
 text('#eir-conclusion',data.summary.text);text('#eir-impact','영향: '+data.summary.impact);text('#eir-recovery','복구: '+data.summary.recovery);text('#eir-summary-limit','근거: '+data.summary.evidence_ids.join(', ')+' · 한계: '+data.summary.limitations);
 text('#eir-phases',(data.phases||[]).map(p=>time(p.start).slice(0,5)+'–'+time(p.end).slice(0,5)+' '+p.label).join(' · '));
 $('#eir-summary-status').replaceWith(badge(data.summary.status));
@@ -159,6 +165,16 @@ if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step
 data.actions.forEach(a=>{const item=el('div','eir-action');item.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')),el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
 data.unknowns.forEach(u=>{const item=el('div','eir-action');item.append(el('strong','',u.question),el('p','eir-small',u.owner+' · 다음 확인: '+u.next_test));$('#eir-unknownlist').append(item)});
 if(!data.unknowns.length)$('#eir-unknownlist').append(el('p','eir-small','기록된 미확인 질문 없음. 검증이 완전하다는 의미는 아닙니다.'));
+
+data.events.forEach((event,i)=>{const item=el('article','');item.append(el('h3','',String(i+1)+'. '+event.at+' · '+event.label),el('p','',event.detail),el('p','eir-small','근거: '+event.evidence_ids.join(', ')));$('#eir-print-events').append(item)});
+data.investigation.forEach((step,i)=>{const item=el('article','eir-narrative-step');item.append(el('h3','',String(i+1)+'. '+step.question),badge(step.status),el('p','','확인한 사실: '+step.observed),el('p','','판정: '+step.decision));const detail=el('details','');detail.append(el('summary','','가설 · 예측 · 다음 확인'),el('p','','가설: '+step.hypothesis),el('p','','예측: '+step.prediction),el('p','','다음 확인: '+step.next_test));item.append(detail);attachEvidence(item,step.evidence_ids);$('#eir-narrative').append(item)});
+const printFlow=$('#eir-print-flow');printFlow.append(el('h2','','원인별 확인 내용'));
+data.nodes.forEach(n=>{const item=el('article','');item.append(el('h3','',n.label+' · '+statusLabels[n.status]),el('p','',n.statement),el('p','','판단 근거: '+n.rationale),el('p','','한계: '+n.limitations),el('p','','근거: '+n.evidence_ids.join(', ')));printFlow.append(item)});
+printFlow.append(el('h2','','모든 인과 연결의 근거'));
+data.edges.forEach(e=>{const item=el('article','');item.append(el('h3','',nodes.get(e.source).label+' → '+nodes.get(e.target).label+' · '+statusLabels[e.status]),el('p','',e.mechanism),el('p','','한계: '+e.limitations),el('p','','근거: '+e.evidence_ids.join(', ')));printFlow.append(item)});
+printFlow.append(el('h2','','전체 조사 기록'));
+data.investigation.forEach(step=>{const item=el('article','');item.dataset.printStep=step.id;item.append(el('h3','',step.question+' · '+statusLabels[step.status]),el('p','',step.investigated_at));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>item.append(el('p','',label+': '+value)));item.append(el('p','','근거: '+step.evidence_ids.join(', ')));printFlow.append(item)});
+
 data.evidence.forEach(e=>$('#eir-print-evidence').append(evidenceView(e.id)));
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
 if(selectedEvent)selectEvent(selectedEvent);else $('#eir-eventdetail').append(el('p','','사건 기록이 없습니다.'));

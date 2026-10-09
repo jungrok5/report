@@ -69,3 +69,9 @@ unknowns 필수: `question`, `owner`, `next_test`.
 `governance`는 report_store.py export가 생성한다. revision(양의 정수), content_sha256, content_canonical(저장된 정확한 UTF-8 JSON 문자열), author, created_at, delivery_status(pending/approved/changes_requested), reviews, history, identity_assurance를 포함한다. 해시 대상은 governance를 제외한 저장 시점의 canonical JSON 바이트다. UI는 고정 문자열의 해시와 현재 내용이 같은지 확인한다. 내용 수정은 새 버전으로 저장하고 기존 검토 기록을 붙이지 말라.
 
 reviews는 reviewer·decision·note·reviewed_at·version_sha를 포함하며 각 기록은 해당 revision의 내용 해시와 일치해야 한다. history는 revision·sha·author·created_at을 포함한다. 신원 인증·필수 검토자 수는 지원하지 않는다. 검토 승인으로 원인 상태가 변경되지 않는다. Python 독립 렌더러는 이 추가 메타데이터를 무시하므로 버전·검토를 전달하려면 export JSON 또는 React 화면을 함께 제공하라.
+
+## 관측 품질과 검증의 범위
+
+엔진 evidence는 collection_status, incomplete, quality(incomplete/reasons/excerpt_truncated/response_characters)를 추가한다. excluded에도 근거 ID가 필수이며, 명시적으로 불완전·잘림으로 표시된 자료는 배제 근거로 사용할 수 없다. failed 조회는 관측·유력·검증·배제 판단의 근거가 될 수 없다. unknown 단계의 실패 기록은 보존할 수 있다.
+
+형식·참조·해시·DAG 통과는 원인 진실이나 문장의 의미 일치를 입증하지 않는다. 수동 imported JSON의 표본/메트릭/사건과 archive의 자동 대조 파서는 아직 없다. 작성자·검토자는 전체 보존본을 열어 claim의 값·범위·집계·방향과 반증 자료를 확인해야 한다. 합성 자료를 실제 운영 자료로 바꾸어 표시하지 말라. verified에는 실제로 확인한 직접 관계 또는 대조 조건·환경·절차·원본 run·결과·한계가 필요하다. 대조 수치 요약만 있다면 실제 검증 완료로 승격하지 말라.

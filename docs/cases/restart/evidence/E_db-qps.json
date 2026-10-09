@@ -127,5 +127,11 @@
     "가상 재생 데이터: 운영 시스템이나 실제 모델을 실행한 결과가 아님",
     "보존본은 민감정보를 마스킹한 응답이며 SHA-256은 이 보존본 바이트의 해시",
     "본문 표본은 최대 6,000자; 전체 마스킹 응답은 보존본에서 확인"
-  ]
+  ],
+  "quality": {
+    "incomplete": false,
+    "reasons": [],
+    "excerpt_truncated": false,
+    "response_characters": 1959
+  }
 }
