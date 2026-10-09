@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "restart",
+    "label": "프로세스 다운·재기동 지연",
+    "path": "restart/incident.json",
+    "synthetic": true,
+    "revision": 2,
+    "delivery_status": "pending"
+  },
+  {
+    "slug": "db-lock",
+    "label": "DB 잠금·로그인 지연",
+    "path": "db-lock/incident.json",
+    "synthetic": true,
+    "revision": 1,
+    "delivery_status": "approved"
+  },
+  {
+    "slug": "client-retry",
+    "label": "클라이언트 재시도·로그인 지연",
+    "path": "client-retry/incident.json",
+    "synthetic": true,
+    "revision": 1,
+    "delivery_status": "pending"
+  }
+]

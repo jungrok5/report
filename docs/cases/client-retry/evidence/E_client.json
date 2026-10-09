@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_client",
+    "title": "클라이언트 재시도 추적",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": {
+      "version": "Android 2.14",
+      "retry_attempts_per_session": 18,
+      "configured_backoff_ms": 0,
+      "versions_2_13_ios": "같은 경로의 지연 상승 미관측",
+      "sample_count": 860,
+      "sampling": "로그인 시도 세션만; ISP별 분포 미제공"
+    },
+    "query": null,
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

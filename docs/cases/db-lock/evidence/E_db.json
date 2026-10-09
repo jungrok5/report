@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_db",
+    "title": "DB 잠금 대기 그래프",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": {
+      "blocker": "T742",
+      "waiter_query": "login-state SELECT FOR UPDATE",
+      "locked_row": "account:<masked>",
+      "waiters": 186,
+      "wait_type": "row_lock",
+      "lock_start": "2026-10-08T21:02:00+09:00"
+    },
+    "query": "승인된 DB 잠금 대기 통계 export",
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_host",
+    "title": "프로세스·호스트 대안 확인",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": {
+      "process_up_full_window": true,
+      "cpu_peak_pct": 43,
+      "oom_count": 0,
+      "scope": "영향 프로세스·커널 이벤트를 모두 포함한 가상 표본"
+    },
+    "query": null,
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

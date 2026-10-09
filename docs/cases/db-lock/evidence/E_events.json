@@ -1,0 +1,94 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_events",
+    "title": "작업·알림·조치 기록",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": [
+      {
+        "id": "V1",
+        "at": "2026-10-08T21:02:00+09:00",
+        "label": "정산 트랜잭션 시작",
+        "kind": "change",
+        "detail": "정산 작업 transaction T742가 같은 계정 행을 갱신하기 시작했다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V2",
+        "at": "2026-10-08T21:03:00+09:00",
+        "label": "DB 대기 증가",
+        "kind": "observation",
+        "detail": "login-state SELECT가 T742의 행 잠금을 기다리기 시작했다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V3",
+        "at": "2026-10-08T21:04:00+09:00",
+        "label": "지연 장애 알림",
+        "kind": "alert",
+        "detail": "관측 p99가 2초를 넘었다는 가상 알림 기록.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V4",
+        "at": "2026-10-08T21:08:00+09:00",
+        "label": "지연 피크",
+        "kind": "observation",
+        "detail": "요청 p99 5,100ms, 동접 감소가 함께 관측됐다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V5",
+        "at": "2026-10-08T21:09:00+09:00",
+        "label": "블로커 종료 조치",
+        "kind": "intervention",
+        "detail": "정산 작업의 문제 트랜잭션 종료 조치가 기록됐다. 실제 시스템 조작은 수행하지 않았다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V6",
+        "at": "2026-10-08T21:12:00+09:00",
+        "label": "지연 정상화",
+        "kind": "recovery",
+        "detail": "p99 96ms로 관측됐다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V7",
+        "at": "2026-10-08T21:17:00+09:00",
+        "label": "동접 회복",
+        "kind": "recovery",
+        "detail": "동접 42,000명으로 회복했다.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      }
+    ],
+    "query": null,
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

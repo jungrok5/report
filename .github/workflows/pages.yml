@@ -2,7 +2,7 @@ name: Publish example report
 on:
   push:
     branches: [main]
-    paths: ['docs/**', 'skills/**', '.github/workflows/pages.yml']
+    paths: ['docs/**', 'skills/**', 'web/**', 'tools/**', 'tests/**', 'package*.json', 'vite.config.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,16 +17,24 @@ jobs:
       pages: read
     steps:
       - uses: actions/checkout@v5
-      - name: Validate and render the synthetic example
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Validate reports and exact archived evidence
         run: |
           python3 -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
           python3 tests/check_demo.py
+          python3 tests/check_cases.py
+          npm run test:model
           python3 skills/investigate-game-incident/scripts/render_report.py skills/investigate-game-incident/assets/example-restart.json --out /tmp/report.html
           cmp /tmp/report.html docs/index.html
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: site-dist
   deploy:
     needs: build
     runs-on: ubuntu-latest

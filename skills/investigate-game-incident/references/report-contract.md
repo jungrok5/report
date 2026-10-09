@@ -63,3 +63,9 @@ unknowns 필수: `question`, `owner`, `next_test`.
 ## 선택적인 관련 보고서 링크
 
 `meta.related_reports`는 `{label,url}` 객체 배열이다. 실제 HTTP(S) URL만 사용하고 인증 정보·secret query parameter를 넣지 않는다. 제목 아래 예시/사용 방법 링크로 표시한다.
+
+## 선택적 버전·검토 메타데이터 v2
+
+`governance`는 report_store.py export가 생성한다. revision(양의 정수), content_sha256, content_canonical(저장된 정확한 UTF-8 JSON 문자열), author, created_at, delivery_status(pending/approved/changes_requested), reviews, history, identity_assurance를 포함한다. 해시 대상은 governance를 제외한 저장 시점의 canonical JSON 바이트다. UI는 고정 문자열의 해시와 현재 내용이 같은지 확인한다. 내용 수정은 새 버전으로 저장하고 기존 검토 기록을 붙이지 말라.
+
+reviews는 reviewer·decision·note·reviewed_at·version_sha를 포함하며 각 기록은 해당 revision의 내용 해시와 일치해야 한다. history는 revision·sha·author·created_at을 포함한다. 신원 인증·필수 검토자 수는 지원하지 않는다. 검토 승인으로 원인 상태가 변경되지 않는다. Python 독립 렌더러는 이 추가 메타데이터를 무시하므로 버전·검토를 전달하려면 export JSON 또는 React 화면을 함께 제공하라.

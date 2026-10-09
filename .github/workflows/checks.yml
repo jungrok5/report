@@ -9,11 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Test evidence integrity and output safety
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Test collection, investigation and immutable report versions
         run: python3 -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
-      - name: Check synthetic investigation page and evidence drift
-        run: python3 tests/check_demo.py
-      - name: Validate sample and detect generated report drift
+      - name: Check synthetic investigation and case archive drift
+        run: |
+          python3 tests/check_demo.py
+          python3 tests/check_cases.py
+          npm run test:model
+      - name: Validate portable offline report
         run: |
           python3 skills/investigate-game-incident/scripts/validate_report.py skills/investigate-game-incident/assets/example-restart.json
           python3 skills/investigate-game-incident/scripts/render_report.py skills/investigate-game-incident/assets/example-restart.json --out /tmp/report.html --markdown-out /tmp/report.md
@@ -21,3 +29,5 @@ jobs:
           cmp /tmp/report.html docs/index.html
           cmp /tmp/report.md examples/restart-recovery.md
           cmp /tmp/report.md docs/report.md
+      - name: Build React Flow report page
+        run: npm run build

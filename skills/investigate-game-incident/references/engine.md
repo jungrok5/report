@@ -30,6 +30,7 @@ python scripts/investigate.py /path/to/config.json --planner holmes --out /path/
 | Prometheus | GET `/api/v1/query_range`, 명시적 시간·step·timeout |
 | Loki | GET `/loki/api/v1/query_range`, 순방향·로그 상한 |
 | DB·클라이언트·dump·배포 기록 | 관측 범위를 가진 JSON 파일 import. 직접 SQL 실행은 미구현 |
+| 자체 AI planner | POST `/chat/completions`, strict JSON Schema 계획, 도구 없이 호출 |
 | HolmesGPT | POST `/api/chat`, 비스트리밍 structured output의 `analysis` JSON 문자열 해석 |
 | Grafana | 입력 근거의 실제 URL을 이용한 재조회. 엔진 기본 링크는 Prometheus/Loki 조회 API URL |
 | OpenSearch·Tempo·OpenTelemetry | 전용 조회 어댑터 미구현 |
@@ -108,6 +109,18 @@ Planner 계약은 `investigate.py`의 `PLAN_SCHEMA`다. `status`는 unknown/supp
 
 `enable_tool_approval=true`만으로 읽기 전용을 보장하지 않는다. 모델에는 마스킹된 표본 최대 6,000자/근거와 조회 카탈로그 제목이 전달된다. 해당 데이터의 모델 제공자 전송이 승인된 범위에서만 Holmes 모드를 실행하라. 로그 내용은 신뢰할 수 없는 입력으로 취급한다.
 
+### 자체 AI planner 설정
+
+`--planner compatible`은 `ai.base_url` 뒤에 `/chat/completions`를 붙여 호출한다. 예: `https://YOUR-MODEL-ENDPOINT/v1`. `ai.model`과 선택적 bearer_env/headers_env, 양의 정수 max_completion_tokens(기본 8000)를 설정한다. 서버는 비스트리밍 Chat Completions와 strict JSON Schema response_format을 지원해야 한다. 자동으로 JSON object 모드나 다른 API로 우회하지 않는다.
+
+```json
+{"ai":{"base_url":"https://YOUR-MODEL-ENDPOINT/v1","model":"YOUR-MODEL","bearer_env":"INCIDENT_AI_TOKEN","max_completion_tokens":8000}}
+```
+
+마스킹한 이미 수집된 근거와 미조회 카탈로그 ID만 모델에 전달한다. tool 정의는 제공하지 않는다. 함수/도구 호출, refusal, 잘린 응답, JSON/참조 오류는 실패로 기록하고 마지막 예비 보고서를 보존한다. 이 planner도 supported/unknown/excluded만 판정하며 원인 확정을 자동화하지 않는다. 자체 모델 서버·프록시를 사용할 수 있지만 JSON Schema와 token 파라미터 호환성은 해당 제공자에서 확인하라. 운영 모델 실행은 승인된 데이터 전송 범위에서만 하라.
+
+`--store /internal/incidents.sqlite --author '작성자'`를 함께 지정하면 생성한 보고서와 exact evidence bytes를 버전 저장소에 등록한다. 검토용 export와 의견 반영은 [workbench.md](workbench.md)를 읽어라. SQLite 저장은 수집 실패가 보존된 예비 보고서도 가능하며 검토 승인이나 원인 승격을 수행하지 않는다.
+
 ## 보존본·링크·마스킹
 
 산출물:
@@ -126,9 +139,11 @@ SHA-256은 **마스킹 보존본의 정확한 파일 바이트**를 해시한다
 
 ## 검토 및 검증 범위
 
-로컬 fake HTTP 서버로 Prometheus·Loki 요청 파라미터, Holmes `/api/chat` 요청/응답 계약, 에러 보존, 참조 검증, 예산, redirect 거부, 크기 제한, null 및 다중 시계열 처리 등을 테스트했다. 가상 재생 전체 실행도 테스트했다. 실제 Holmes 서비스/모델·운영 Prometheus/Loki·직접 DB 연결은 이 예시에서 실행하지 않았다. API 버전·인증·쿼리·시간대·누락·모델 비용과 데이터 전송 정책은 연결 환경에서 확인하라.
+로컬 fake HTTP 서버로 Prometheus·Loki 요청 파라미터, Holmes `/api/chat`와 Chat Completions 호환 planner 요청/응답 계약, 에러 보존, 참조 검증, 예산, redirect 거부, 크기 제한, null 및 다중 시계열 처리 등을 테스트했다. 가상 재생 전체 실행도 테스트했다. 실제 Holmes 서비스/모델·자체 planner 모델·운영 Prometheus/Loki·직접 DB 연결은 이 예시에서 실행하지 않았다. API 버전·인증·쿼리·시간대·누락·모델 비용과 데이터 전송 정책은 연결 환경에서 확인하라.
 
 공식 API 문서(2026-10-09 확인):
 - https://prometheus.io/docs/prometheus/latest/querying/api/
 - https://grafana.com/docs/loki/latest/reference/loki-http-api/
 - https://holmesgpt.dev/latest/reference/http-api/
+
+- https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create

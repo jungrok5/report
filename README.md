@@ -1,113 +1,130 @@
-# Incident Evidence Skill
+# Incident Evidence Report · v2
 
-게임·서비스 장애를 **현상 시간축 → 원인·후보 요약 → 인과관계 → 조사 과정 → 근거 → 후속 조치** 순서로 설명하는 재사용 스킬입니다. 한국어를 기본으로 작성하고 영어 보고서도 지원합니다.
+게임·서비스 장애를 **현상 시간축 → 원인·후보 요약 → 인과관계 → 조사 과정 → 근거 → 후속 조치·검토** 순서로 설명하는 보고서 화면과 읽기 전용 조사 엔진입니다. 기존 보고서의 내용·구성을 유지하면서 **React Flow 화면, 근거 저장소, 버전별 검토 기록**을 추가했습니다.
 
-![장애 전후 현상과 근거 보고서](examples/restart-recovery.png)
+[보고서 열기](https://jungrok5.github.io/report/) · [DB 잠금 예시](https://jungrok5.github.io/report/?case=db-lock) · [클라이언트 재시도 예시](https://jungrok5.github.io/report/?case=client-retry)
 
-## 사용하기
+페이지 상단에서 세 사례를 선택할 수 있습니다. **모두 가상 사례**이며 실제 과거 장애 3건을 분석한 결과가 아닙니다. 검토자·대조 실험도 명확히 표시된 합성 예시입니다. 실제 운영 시스템과 실제 AI 모델은 실행하지 않았습니다.
 
-Agent Skills를 지원하는 도구의 스킬 디렉터리에 `skills/investigate-game-incident` 폴더를 복사합니다. ChatGPT Work에서는 `investigate-game-incident` 스킬로 사용할 수 있고, 이 저장소는 이식 가능한 원본입니다.
+## 화면
 
-```text
-$investigate-game-incident를 사용해 첨부한 메트릭·로그·DB 정보로 장애 보고서를 작성해줘.
-상단에 장애 전후 현상을 공통 시간축으로 배치하고, 원인 후보의 검증 근거와 남은 질문을 기록해줘.
-```
+- **현상부터:** 동접·DB 요청·지연을 한 시간축에 겹칩니다. 프로세스 종료·알림·재기동·로딩·회복을 같은 시간대에 표시합니다. 색과 선 모양을 구분하고 마우스·터치·키보드로 실제 값·단위·원본 표본 시각·설명을 확인합니다.
+- **바로 아래 결론:** 직접 원인 또는 가장 유력한 후보, 메커니즘, 영향과 회복을 표시합니다. 유력·미확인·검증됨을 구분합니다.
+- **원인 연결:** React Flow와 Dagre를 실제로 사용합니다. 확대·이동하고 노드 또는 연결선을 선택해 설명과 근거를 봅니다. 화면에서 노드를 옮기는 것은 배치 변경이며 인과관계 수정이 아닙니다.
+- **조사 과정:** 질문 → 가설 → 예측 → 조회·관측 → 판정 → 다음 확인. 배제한 후보와 모순도 보존합니다.
+- **근거:** 쿼리·변수·절대 시간·표본·한계·원본 조회·당시 보존본·SHA-256을 함께 표시합니다. 같은 출처의 보존본은 브라우저에서 실제 바이트 해시를 검증합니다.
+- **전달:** 버전별 작성자·검토자·검토 의견·내용 해시를 기록합니다. 검토 완료는 원인 확정과 별개이며 새 버전에 자동 승계되지 않습니다.
 
-분석 자료를 준비한 뒤 스킬이 JSON 입력을 작성하고 검증·렌더링 명령을 실행합니다. 입력 규약은 [report-contract.md](skills/investigate-game-incident/references/report-contract.md)를 참고합니다.
+단위가 다른 지표의 Y축은 각 관측 범위에 대한 상대 높이입니다. 실제 범위는 범례에, 원본 값은 툴팁에 표시합니다. 지표 간 절대 크기 비교를 뜻하지 않으며 보간하지 않습니다. null과 표본 공백은 끊어진 선으로 표현합니다.
 
-## 예제 실행
+`보고서 JSON 열기`는 파일을 브라우저 안에서만 읽습니다. 업로드하지 않습니다. JSON 다운로드·인쇄/PDF를 지원하고, 검토 의견은 **초안 파일**로 내려받습니다. 공유 기록 반영은 아래 저장소 CLI에서 수행합니다. 이 정적 페이지에는 계정 인증·공유 편집 서버가 없습니다.
 
-Python 3.10 이상, 표준 라이브러리만 필요합니다. 네트워크·API 키·웹 서버는 필요하지 않습니다.
+## 실제 사용한 구성
+
+| 구성 | 구현 상태 | 역할 |
+| --- | --- | --- |
+| React / React Flow / Dagre / Vite | **실제 사용** | 보고서 화면, 클릭 가능한 인과 그래프, 자동 배치, 빌드 |
+| SVG / React | **실제 사용** | 공통 시간축·툴팁·사건 탐색. ECharts는 사용하지 않음 |
+| Python 표준 라이브러리 / SQLite | **실제 사용** | 조회, 근거 바이트 보존, 보고서 버전·검토 저장, 오프라인 HTML/Markdown |
+| Prometheus / Loki | 어댑터 구현·모의 HTTP 검증 | 동접·지연·DB 지표 및 게임 로그 range 조회 |
+| DB·클라이언트·dump·배포 기록 | JSON import 구현 | 승인된 통계·표본·기록 파일. 직접 SQL 실행은 미구현 |
+| HolmesGPT | 연결 코드·모의 HTTP 검증 | 저장된 근거에서 다음 카탈로그 조회·후보 판정 제안 |
+| 자체 AI 조사 루프 | 연결 코드·모의 HTTP 검증 | Chat Completions 호환 모델을 같은 조회·검증 루프에 연결 |
+| Playwright / GitHub Actions / Pages | 실제 사용 | 브라우저 검증·자동 검증·예시 배포 |
+| Grafana / OpenSearch / OpenTelemetry / Quarto / ELK | 전용 조회·실행 미구현 | 실제 제공된 Grafana 조회 링크는 보고서에 표시 가능 |
+
+운영 연결과 실제 모델 호출은 주소·쿼리·인증·자료가 준비된 환경에서 별도로 검증해야 합니다. 예시의 가상 계획 재생은 AI 성능 평가가 아닙니다.
+
+## React 화면 실행
+
+Node.js 24와 Python 3.10+를 사용합니다. 버전은 `package-lock.json`에 고정합니다.
 
 ```bash
-python skills/investigate-game-incident/scripts/render_report.py \
-  skills/investigate-game-incident/assets/example-restart.json \
+npm ci
+npm run dev
+npm run build
+```
+
+개발 주소는 `http://127.0.0.1:5173/report/`입니다. 개발 서버에서 예시 파일을 읽도록 먼저 `npm run build`한 후 `npx vite preview --host 127.0.0.1`로 전체 패키지를 볼 수도 있습니다. 빌드 결과는 `site-dist/`이며 운영 자료는 포함하지 않습니다. 다른 저장소 이름으로 복제하면 `vite.config.mjs`의 base를 변경합니다.
+
+## 스킬로 사용
+
+Agent Skills를 지원하는 도구에 `skills/investigate-game-incident` 폴더를 설치합니다. ChatGPT Work에서는 `investigate-game-incident`로 사용할 수 있습니다.
+
+```text
+$investigate-game-incident를 사용해 첨부한 메트릭·로그·DB 자료로 보고서를 작성해줘.
+현상 시간축을 맨 위에 두고, 원인 후보·배제 근거·남은 질문을 기록해줘.
+근거 보존본과 보고서 버전을 저장하고 검토용 JSON도 만들어줘.
+```
+
+스킬은 실제 제공된 자료를 분석하고 [입력 규약](skills/investigate-game-incident/references/report-contract.md)에 따라 `incident.json`을 작성합니다. 이 JSON을 페이지에서 열어 같은 화면으로 읽을 수 있습니다. 시안 요청 외에는 가상 예시를 실제 보고서로 제출하지 않습니다.
+
+Python만 있는 환경의 독립 HTML도 유지합니다. 외부 라이브러리나 CDN 없이 직접 열 수 있습니다.
+
+```bash
+python skills/investigate-game-incident/scripts/render_report.py incident.json \
   --out report.html --markdown-out report.md
 ```
 
-생성한 `report.html`을 브라우저에서 엽니다. [예시 HTML](examples/restart-recovery.html)과 [Markdown](examples/restart-recovery.md)도 포함합니다. 페이지용 예시는 `docs/index.html`입니다. [예시 보고서 페이지](https://jungrok5.github.io/report/)에서 바로 열어볼 수 있습니다. HTML 파일을 다운로드해서 직접 열 수도 있습니다.
+[기존 오프라인 예시](https://jungrok5.github.io/report/legacy.html) · [조회 루프 재생 보고서](https://jungrok5.github.io/report/investigation.html)
 
-예제 사건과 모든 수치는 가상입니다. 실제 장애 분석 대신 이 예제를 제출하지 마세요.
-
-## GitHub Pages
-
-현재 저장소는 GitHub Actions로 배포됩니다. 복제한 저장소에서는 **Settings → Pages → Build and deployment → Source: GitHub Actions**를 선택합니다. 이후 main에 푸시하거나 Actions의 **Publish example report**를 실행하면 `docs/`만 공개됩니다. `.github/workflows/pages.yml`은 검증을 통과한 예시를 배포합니다. 실제 운영 로그를 공개 예시에 넣지 마세요.
-
-## 상단 시간축
-
-- 동접(명), DB 부하(QPS), 지연(ms)을 한 시간축의 한 차트에 겹칩니다. 색과 실선·파선·점선으로 구분합니다.
-- Y축은 지표별 관측 범위(0 포함)를 0–100%로 표시한 상대 높이입니다. 원본 값은 유지하며 서로 다른 지표의 절대 크기 비교를 뜻하지 않습니다. 범례에 실제 표시 범위를 명시합니다.
-- 마우스 이동·터치·키보드 슬라이더는 모든 지표의 실제 값·단위·실제 표본 시각·설명을 함께 보여줍니다. 클릭/터치로 고정하고 Esc로 해제합니다. 가까운 원본 표본을 사용하며 보간하지 않습니다.
-- 프로세스 종료, 알림, 재부팅, 로딩, 부하 피크, 로그인 재개, 지연 회복, 동접 회복을 선택할 수 있습니다.
-- 사건 선택은 모든 지표의 시각선·당시 관측값·근거를 함께 바꿉니다. 가까운 표본을 표시할 때는 표본의 실제 시각을 함께 표시합니다.
-- 관측 누락은 null과 끊어진 선으로 표현합니다. 0으로 대체하지 않습니다.
-- 사건 시간축과 조사 시각을 구분합니다. 선후 관계만으로 원인을 확정하지 않습니다.
-
-## 분석 규칙
-
-확정된 원인과 유력 후보, 관측 사실, 미확인 질문을 구분합니다. 노드와 연결 모두 근거 ID를 요구합니다. 질문·가설·예측·조회·관측·판정·다음 확인을 보존합니다. 원본 조회 링크와 당시 결과를 함께 남깁니다. 담당·기한·완료 기준이 있는 후속 조치를 작성합니다.
-
-렌더러는 입력 형식과 참조를 검사하며 원인 진위를 검증하지 않습니다. 아래 조회 CLI가 운영 데이터를 읽고 HTML 화면은 저장된 결과를 표시합니다. 자동 복구는 수행하지 않습니다. 원본 링크는 제공된 주소를 사용자가 클릭할 때만 엽니다. 외부 차트·폰트 라이브러리는 포함하지 않습니다.
-
-## 실제로 사용한 것과 도입 후보
-
-가설 → 예측 → 관측 → 판정 → 다음 확인, 현상 시간축, 결론 요약, 근거가 연결된 인과 그래프는 현재 구현된 보고서 방식입니다. 조회·근거 보존·반복 조사 CLI도 구현했습니다. 운영 환경 연결과 실제 Holmes 모델 실행은 아직 하지 않았습니다.
-
-| 구성 | 현재 사용 여부 | 역할 |
-| --- | --- | --- |
-| Python 표준 라이브러리 | 사용 | JSON 검증, HTML/Markdown 생성 |
-| HTML/CSS/JavaScript/SVG | 직접 구현 | 겹친 시계열, 툴팁, 인과 그래프, 근거·조사 화면 |
-| Playwright | 검증에만 사용 | 브라우저 동작·모바일 레이아웃 테스트 |
-| GitHub Actions / Pages | 사용 | 검증 자동 실행·예시 보고서 배포 |
-| ECharts, React Flow, Dagre/ELK | 미사용·확장 후보 | 시계열 기능 및 그래프 편집·배치 확장 |
-| Prometheus / Loki | 조회 어댑터 구현·fake HTTP 테스트 | 읽기 전용 range 조회, 사건 추출, 절대 시간 링크 |
-| DB·클라이언트·dump | JSON import 구현 | 승인된 통계·표본 파일을 근거로 보존. 직접 SQL 연결 미구현 |
-| Grafana / OpenSearch / OpenTelemetry | 전용 조회 미구현 | 제공된 Grafana 링크 지원 / 이후 연결 후보 |
-| HolmesGPT | HTTP 연결 코드·mock 계약 테스트 | 근거를 읽고 다음 카탈로그 query ID와 후보 판정 제안. 실제 서비스/모델 실행 미검증 |
-| Quarto | 미사용·참고 후보 | 보고서 출판 |
-
-보고서 화면은 외부 라이브러리나 CDN 없이 동작합니다. 예시 근거와 수치는 모두 가상이며 실제 운영 시스템에서 조회한 결과가 아닙니다.
-
-## 조회와 조사 엔진
-
-[자동 조사 예시 보고서](https://jungrok5.github.io/report/investigation.html)에서 **6개 조회 근거 → 3회 질문·확인 → 두 원인 후보**를 볼 수 있습니다. 조회 보존본도 클릭할 수 있습니다. 가상 API 응답과 사람이 작성한 계획의 재생이며 실제 운영 조회나 실제 Holmes 모델 실행이 아닙니다.
+## 조회·AI 조사·저장
 
 ```bash
+# 네트워크·모델 없이 6개 조회와 3회 계획을 가상 재생
 python skills/investigate-game-incident/scripts/investigate.py \
   skills/investigate-game-incident/assets/engine-demo/config.json \
-  --planner replay --out /tmp/new-incident-demo
+  --planner replay --out /tmp/new-incident-demo \
+  --store /tmp/incidents.sqlite --author '예시 작성자'
+
+# 사람이 정한 bootstrap 조회만 수집하고 원인 미확인 예비 보고서 생성
+python skills/investigate-game-incident/scripts/investigate.py config.json \
+  --planner collect --out incident-001
+
+# 준비된 endpoint: 수집 → 후보 평가 → 다음 카탈로그 조회 → 재평가
+python skills/investigate-game-incident/scripts/investigate.py config.json \
+  --planner compatible --out incident-002 --store incidents.sqlite --author '작성자'
+# Holmes의 별도 planner 서버를 사용할 때는 --planner holmes
 ```
 
-실데이터는 [engine-config.example.json](skills/investigate-game-incident/assets/engine-config.example.json)을 복사하고 실제 주소·메트릭 이름·라벨·쿼리·기간을 입력합니다. 예제의 `example.invalid`, `YOUR-*`는 바꿔야 합니다. 인증은 환경변수로 전달합니다. 기본 `--planner collect`는 초기 조회 후 원인 미확인 보고서를 생성하고, `--planner holmes`는 수집 → 가설·판정 → 다음 조회를 반복합니다.
+[설정 예제](skills/investigate-game-incident/assets/engine-config.example.json)의 주소·메트릭·라벨·기간·파일을 실제 값으로 바꿉니다. 인증은 환경변수로 전달합니다. 모델은 이미 등록된 읽기 카탈로그의 ID만 선택하며 새 URL·셸·SQL을 실행하지 않습니다. 후보를 자동으로 verified로 승격하지 않습니다. 자세한 계약·중단·마스킹·검증 범위는 [engine.md](skills/investigate-game-incident/references/engine.md)를 참조합니다.
 
-Holmes 모드는 도구를 끈 별도 서버를 사용합니다. 임의 셸/SQL/새 쿼리를 실행하는 기능은 없고, 사람이 정한 읽기 카탈로그만 조회합니다. 연결 방식·계약·예산·마스킹·종료 코드·검토 범위는 [engine.md](skills/investigate-game-incident/references/engine.md)에 정리했습니다.
+결과는 `incident.json`, `report.html/md`, `evidence/*.json`, `plan-*.json`, `manifest.json`, `state.json`입니다. 실패·부분 결과도 예비 보고서에 보존합니다. 실제 모델 전송은 승인된 자료 범위에서 실행합니다.
 
-결과는 `incident.json`, `report.html/md`, `evidence/*.json`, `plan-*.json`, `manifest.json`, `state.json`입니다. 후보는 자동으로 확정되지 않습니다. SHA-256은 마스킹 보존본 해시이며, 실패/부분 결과와 남은 질문을 보고서에 남깁니다. 오류가 있어도 예비 보고서를 보존하고 종료 코드 2를 반환합니다.
+## 버전과 검토
 
-## 검증
+```bash
+python skills/investigate-game-incident/scripts/report_store.py --db incidents.sqlite \
+  ingest incident-001/incident.json --evidence-dir incident-001/evidence --author '작성자'
+
+python skills/investigate-game-incident/scripts/report_store.py --db incidents.sqlite \
+  export INC-EDIT-ME --revision 1 --out review-r1
+
+# 페이지에서 저장한 검토 초안: report ID·revision·내용 해시가 모두 같아야 반영
+python skills/investigate-game-incident/scripts/report_store.py --db incidents.sqlite \
+  review-import INC-EDIT-ME-r1-review-draft.json
+
+# 검토 반영 후 새 폴더로 export하여 공유
+python skills/investigate-game-incident/scripts/report_store.py --db incidents.sqlite \
+  export INC-EDIT-ME --revision 1 --out reviewed-r1
+```
+
+저장소는 exact archive bytes·내용 해시·revision·검토 기록을 추가하며 기존 행 UPDATE/DELETE를 거부합니다. DB 소유자가 스키마를 바꾸는 것을 막는 보안 장치는 아니며 검토자 이름도 SSO/전자서명이 아닙니다. 같은 보고서 ID로 수정본을 ingest하면 새 revision을 만들고 검토 대기로 시작합니다. 자세한 절차는 [workbench.md](skills/investigate-game-incident/references/workbench.md)를 참조합니다.
+
+## 검증과 배포
 
 ```bash
 python -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
-python skills/investigate-game-incident/scripts/validate_report.py \
-  skills/investigate-game-incident/assets/example-restart.json
-```
-
-선택적 브라우저 점검:
-
-```bash
-npm install
+python tests/check_demo.py
+python tests/check_cases.py
+npm run test:model
+npm run build
 npx playwright install chromium
-npm run test:browser
+npm run test:app
 ```
 
-브라우저 점검은 사건 선택·공통 시각선·근거 전환·조사 과정·320px 레이아웃·관측 누락을 확인합니다. CI 기본 점검은 Python만 사용합니다.
+브라우저 검증은 세 사례, 노드·연결 선택, 공통 시각 탐색, 보존본 해시, 검토·버전, 로컬 import, 인쇄와 320/390/1100px 레이아웃을 확인합니다. CI는 Python·모델 규약·재생/예시 drift 검사·Vite 빌드를 실행합니다. 예시를 다시 만들 때는 **빈 출력 폴더**에 `python tools/build_cases.py /tmp/new-cases`를 실행합니다.
 
-## 구성
+GitHub Pages는 **Settings → Pages → Source: GitHub Actions**로 설정합니다. main 변경 후 검증한 `site-dist/`만 배포합니다. 공개하는 `docs/cases`는 모두 합성 자료입니다. 운영 자료·실제 SQLite DB는 저장소에 올리지 않습니다.
 
-- `skills/investigate-game-incident/SKILL.md`: 분석·보고서 작성 절차
-- `references/`: 분석 방법, 데이터 규약, 문체, 실데이터 연동
-- `assets/`: 렌더링 템플릿과 가상 입력
-- `scripts/`: 조회·조사 엔진, 검증기, HTML/Markdown 생성기, 테스트
-- `examples/`: 읽어볼 수 있는 결과 예제
-
-MIT 라이선스. 보고서에 넣는 외부 로그·메트릭의 권한과 보존 규정은 해당 자료의 조건을 따릅니다.
+MIT 라이선스. 외부 로그·메트릭의 권한과 보존 규정은 해당 자료의 조건을 따릅니다.

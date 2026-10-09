@@ -251,6 +251,39 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(len(events), 8)
         self.assertTrue(any(x.startswith("부분") for x in limits))
 
+    def test_compatible_planner_runs_the_same_bounded_evidence_loop(self):
+        plans = copy.deepcopy(self.config["replay_plans"])
+        calls = []
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *args): pass
+            def do_POST(self):
+                body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                calls.append((self.path, body, self.headers.get('Authorization')))
+                value = {'choices':[{'finish_reason':'stop','message':{'content':json.dumps(plans.pop(0))}}]}
+                self.send_response(200); self.end_headers(); self.wfile.write(json.dumps(value).encode())
+        base = self.server(Handler)
+        self.config['ai'] = {'base_url':base+'/v1','model':'mock-planner','bearer_env':'INCIDENT_AI_TEST_TOKEN'}
+        with patch.dict(os.environ, {'INCIDENT_AI_TEST_TOKEN':'secret-test-value'}):
+            engine = self.engine(); report = engine.run('compatible')
+        self.assertEqual(engine.failures, [])
+        self.assertEqual(len(engine.done), 6)
+        self.assertEqual(len(calls), 3)
+        for path, body, authorization in calls:
+            self.assertEqual(path, '/v1/chat/completions')
+            self.assertTrue(body['response_format']['json_schema']['strict'])
+            self.assertNotIn('tools', body)
+            self.assertEqual(authorization, 'Bearer secret-test-value')
+        self.assertNotIn('secret-test-value',''.join(p.read_text() for p in self.out.rglob('*.json')))
+        self.assertEqual(report['summary']['status'], 'supported')
+
+    def test_compatible_refusal_preserves_unknown_draft(self):
+        self.config['ai'] = {'base_url':'http://127.0.0.1:1/v1','model':'mock'}
+        with patch('investigate.request_json',return_value={'choices':[{'finish_reason':'length','message':{'content':'{}'}}]}):
+            engine = self.engine(); report = engine.run('compatible')
+        self.assertEqual(engine.stop, 'planner_failed')
+        self.assertEqual(report['summary']['status'], 'unknown')
+        self.assertTrue((self.out/'report.html').exists())
+
 
 if __name__ == "__main__":
     unittest.main()

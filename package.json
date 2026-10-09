@@ -1,6 +1,21 @@
 {
   "name": "incident-evidence-skill",
   "private": true,
-  "scripts": {"test:browser": "node tests/browser.cjs && node tests/engine-browser.cjs"},
-  "devDependencies": {"playwright": "1.62.1"}
+  "scripts": {
+    "test:browser": "node tests/browser.cjs && node tests/engine-browser.cjs",
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build && python3 tools/package_site.py",
+    "test:model": "node --test tests/model.test.mjs",
+    "test:app": "node tests/react-browser.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "vite": "7.3.7"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "1.1.8",
+    "@xyflow/react": "12.12.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
 }

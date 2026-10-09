@@ -25,7 +25,15 @@ python scripts/render_report.py incident.json --out report.html --markdown-out r
 
 연결·자동 조사 요청이면 [조회·조사 엔진](references/engine.md)을 읽고 `scripts/investigate.py`를 사용하라. 사람이 정한 읽기 전용 카탈로그로 Prometheus/Loki를 조회하고 DB·클라이언트·dump JSON을 import한다. 주소가 없으면 예비 보고서와 설정 초안을 만들고 연결에 필요한 정보를 묻는다. 가상 replay를 운영 조회나 실제 Holmes 모델 실행이라고 주장하지 말라.
 
+Chat Completions 호환 자체 planner(`--planner compatible`)도 같은 근거·카탈로그 검증 루프를 사용한다. 실제 모델을 호출하지 않은 모의 검증과 실제 운영 실행을 구분하라.
+
 Holmes 모드는 서버 도구를 끈 별도 planner 인스턴스와 데이터 전송이 승인된 범위에서 실행하라. 후보는 검토 전 verified로 승격하지 않는다. `state.json`의 실패·중단 이유, 부분 결과와 마스킹 보존본 해시를 확인하라. 운영 변경·자동 복구·메시지 전송은 수행하지 않는다.
+
+## 화면·버전·검토
+
+React Flow 화면, 근거 저장 구조, 전달용 버전·검토를 요청받으면 [보고서 워크벤치](references/workbench.md)를 읽어라. 기존 내용·구성을 유지한 `incident.json`을 생성하고 보고서 페이지에서 열 수 있게 한다. 제공 자료와 exact evidence bytes를 `scripts/report_store.py`로 저장하고 revision·작성자·검토 의견·내용 해시를 포함한 JSON을 export하라. 검토 초안은 해당 report ID·revision·해시가 일치할 때만 반영한다. 새 버전은 검토 대기이며 이전 검토를 자동 승계하지 않는다.
+
+검토 완료를 원인 검증됨으로 해석하지 말라. 검토자 이름은 CLI 입력 기록이며 인증된 신원이 아니다. 과거 실제 장애 자료가 없으면 가상 사례를 명시하며 실제 3건 검증을 완료했다고 주장하지 말라.
 
 ## 현상부터 보여주기
 
@@ -68,6 +76,7 @@ Holmes 모드는 서버 도구를 끈 별도 planner 인스턴스와 데이터 �
 - [데이터 규약](references/report-contract.md): JSON 생성·변경 때 읽어라.
 - [작성 문체](references/writing.md): 보고서 서술을 작성·다듬을 때 읽어라.
 - [조회·조사 엔진](references/engine.md): CLI 실행·설정·데이터 조회·Holmes 연결 때 읽어라.
+- [보고서 워크벤치](references/workbench.md): React Flow 화면·근거 저장·버전·검토 전달 때 읽어라.
 - [연동과 도입](references/integrations.md): 실데이터 연결·도입 요청 때 읽어라.
 - `assets/report-template.html`: 외부 라이브러리 없이 동작하는 렌더링 템플릿.
 - `assets/example-restart.json`: 프로세스 종료 → 재부팅 → 로딩 부하 → 접속 회복의 가상 예시.

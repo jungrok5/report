@@ -3,7 +3,7 @@
     "id": "INC-EDIT-ME",
     "title": "운영 데이터 조사 예비 보고서",
     "timezone": "Asia/Seoul",
-    "version": "1.2",
+    "version": "2.0",
     "synthetic": false,
     "scope": "EDIT-ME"
   },
@@ -108,5 +108,11 @@
     },
     "server_tools_disabled": false,
     "model": "YOUR-SERVER-MODEL-KEY"
+  },
+  "ai": {
+    "base_url": "https://ai.example.invalid/v1",
+    "model": "YOUR-JSON-SCHEMA-MODEL",
+    "bearer_env": "INCIDENT_AI_TOKEN",
+    "max_completion_tokens": 8000
   }
 }
