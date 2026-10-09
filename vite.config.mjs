@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-const docs = fileURLToPath(new URL("./docs/", import.meta.url));
+const docs = path.resolve(fileURLToPath(new URL("./docs/", import.meta.url)));
 export default defineConfig({
   root: "web",
   base: "/report/",
