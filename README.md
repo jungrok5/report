@@ -25,13 +25,13 @@ python skills/investigate-game-incident/scripts/render_report.py \
   --out report.html --markdown-out report.md
 ```
 
-생성한 `report.html`을 브라우저에서 엽니다. [예시 HTML](examples/restart-recovery.html)과 [Markdown](examples/restart-recovery.md)도 포함합니다. 페이지용 예시는 `docs/index.html`입니다. [예시 보고서 페이지](https://jungrok5.github.io/report/)는 아래 GitHub Pages 설정 이후 활성화됩니다. HTML 파일을 다운로드해서 직접 열 수도 있습니다.
+생성한 `report.html`을 브라우저에서 엽니다. [예시 HTML](examples/restart-recovery.html)과 [Markdown](examples/restart-recovery.md)도 포함합니다. 페이지용 예시는 `docs/index.html`입니다. [예시 보고서 페이지](https://jungrok5.github.io/report/)에서 바로 열어볼 수 있습니다. HTML 파일을 다운로드해서 직접 열 수도 있습니다.
 
 예제 사건과 모든 수치는 가상입니다. 실제 장애 분석 대신 이 예제를 제출하지 마세요.
 
 ## GitHub Pages
 
-저장소 **Settings → Pages → Build and deployment → Source: GitHub Actions**를 선택합니다. 이후 main에 푸시하거나 Actions의 **Publish example report**를 실행하면 `docs/`만 공개됩니다. `.github/workflows/pages.yml`은 검증을 통과한 예시를 배포합니다. 실제 운영 로그를 공개 예시에 넣지 마세요.
+현재 저장소는 GitHub Actions로 배포됩니다. 복제한 저장소에서는 **Settings → Pages → Build and deployment → Source: GitHub Actions**를 선택합니다. 이후 main에 푸시하거나 Actions의 **Publish example report**를 실행하면 `docs/`만 공개됩니다. `.github/workflows/pages.yml`은 검증을 통과한 예시를 배포합니다. 실제 운영 로그를 공개 예시에 넣지 마세요.
 
 ## 상단 시간축
 
