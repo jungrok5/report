@@ -14,6 +14,7 @@
 <header class="eir-chrome"><strong>Incident Evidence Review</strong><span class="eir-small" id="eir-mode"></span></header>
 <main class="eir-body">
   <div class="eir-meta" id="eir-meta"></div><h1 id="eir-title"></h1>
+  <nav class="eir-source" id="eir-related" aria-label="관련 예시와 사용 방법" hidden></nav>
   <section class="eir-section" id="eir-observations" aria-label="장애 전후 현상">
     <div class="eir-headerline"><h2>장애 전후에 무엇이 일어났나</h2><span class="eir-small" id="eir-window"></span></div>
     <div class="eir-small" id="eir-phases"></div>
@@ -35,7 +36,7 @@
   <section id="eir-investigation" role="tabpanel" aria-labelledby="eir-tab-investigation" hidden><div class="eir-layout"><div><h2>가설을 어떻게 좁혔나</h2><p class="eir-small">아래 시각은 조사 시각입니다. 사건 발생 시각과 구분합니다.</p><div id="eir-steps"></div></div><aside class="eir-detail" id="eir-step-detail" aria-live="polite"></aside></div></section>
   <section id="eir-actions" role="tabpanel" aria-labelledby="eir-tab-actions" hidden><div class="eir-section"><h2>복구와 재발 방지</h2><div id="eir-actionlist"></div><h2 style="margin-top:20px">아직 확인하지 못한 것</h2><div id="eir-unknownlist"></div></div></section>
   <section id="eir-print-evidence" class="eir-print-evidence"><h2>증거 부록</h2></section>
-  <footer class="eir-footer">발생 시각 → 관측 → 원인·후보 → 검증 근거 · 이 보고서는 자동으로 원본 시스템을 조회하지 않습니다.</footer>
+  <footer class="eir-footer">발생 시각 → 관측 → 원인·후보 → 검증 근거 · 이 화면은 저장된 조회 결과를 표시합니다. 원본 링크로 같은 범위를 다시 확인할 수 있습니다.</footer>
 </main>
 <script type="application/json" id="eir-data">__REPORT_DATA__</script>
 <script>
@@ -60,6 +61,7 @@ text('#eir-conclusion',data.summary.text);text('#eir-impact','영향: '+data.sum
 text('#eir-phases',(data.phases||[]).map(p=>time(p.start).slice(0,5)+'–'+time(p.end).slice(0,5)+' '+p.label).join(' · '));
 $('#eir-summary-status').replaceWith(badge(data.summary.status));
 function safeLink(value){try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password?u.href:null}catch{return null}}
+(data.meta.related_reports||[]).forEach(link=>{const href=safeLink(link.url);if(href){const a=el('a','',link.label);a.href=href;$('#eir-related').append(a);$('#eir-related').hidden=false}});
 function evidenceView(id){
  const e=evidence.get(id),box=el('div','eir-evidence');if(!e)return box;
  box.append(el('h3','',`${e.id} · ${e.title}`),el('div','eir-small',`${e.source} · 관측 ${e.observed_start}–${e.observed_end} · 조회 ${e.retrieved_at}`));
@@ -67,7 +69,7 @@ function evidenceView(id){
  const detail=el('details'),summary=el('summary','', '쿼리 · 변수 · 원본 조회');detail.append(summary);
  detail.append(el('pre','',e.query||'쿼리 미제공'),el('pre','',JSON.stringify(e.parameters||{},null,2)));
  const links=el('div','eir-source');[['원본에서 재조회',e.source_url],['당시 보존본',e.archive_url]].forEach(([label,url])=>{const href=safeLink(url);if(href){const a=el('a','',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';links.append(a)}else links.append(el('span','eir-small',label+': 연결 없음'))});detail.append(links);
- detail.append(el('p','eir-small','SHA-256: '+(e.sha256||'미기록')));box.append(detail,el('p','eir-small','해석 한계: '+e.limitations));return box;
+ const hash=el('p','eir-small','SHA-256: '+(e.sha256||'미기록'));hash.style.overflowWrap='anywhere';detail.append(hash);box.append(detail,el('p','eir-small','해석 한계: '+e.limitations));return box;
 }
 function attachEvidence(target,ids){
  target.append(el('h3','','근거를 직접 확인'));
@@ -149,7 +151,7 @@ data.edges.forEach(edge=>{const b=el('button','',edge.label+' · '+statusLabels[
 function drawGraph(){if($('#eir-cause').hidden)return;const graph=$('#eir-graph'),svg=graph.querySelector('svg'),box=graph.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);svg.replaceChildren();const defs=svgEl('defs'),marker=svgEl('marker',{id:'eir-arrow',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});marker.append(svgEl('path',{d:'M0 0 L6 3 L0 6 Z',fill:'currentColor'}));defs.append(marker);svg.append(defs);
  const get=id=>{const b=$$('[data-node]').find(n=>n.dataset.node===id),r=b.getBoundingClientRect();return{x:r.left-box.left+r.width/2,top:r.top-box.top,bottom:r.bottom-box.top}};
  data.edges.forEach(edge=>{const a=get(edge.source),b=get(edge.target),mid=(a.bottom+b.top)/2;svg.append(svgEl('path',{d:`M${a.x} ${a.bottom} C${a.x} ${mid} ${b.x} ${mid} ${b.x} ${b.top-3}`,fill:'none',stroke:'currentColor','stroke-width':1.2,'stroke-dasharray':edge.status==='verified'?'none':'4 4','marker-end':'url(#eir-arrow)'}))})}
-if(data.nodes.length){$$('[data-node]')[0].setAttribute('aria-pressed','true');nodeDetail(data.nodes[0])}else $('#eir-cause-detail').append(el('p','','아직 원인 후보가 없습니다. 필요한 검증을 조사 과정에 기록합니다.'));
+if(data.nodes.length){const first=data.nodes.find(n=>['원인 후보','직접 원인','direct cause'].includes(n.role))||data.nodes[0];$$('[data-node]').find(b=>b.dataset.node===first.id).setAttribute('aria-pressed','true');nodeDetail(first)}else $('#eir-cause-detail').append(el('p','','아직 원인 후보가 없습니다. 필요한 검증을 조사 과정에 기록합니다.'));
 function stepDetail(step){const target=$('#eir-step-detail');target.replaceChildren(badge(step.status),el('h2','',step.question));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>target.append(el('h3','',label),el('p','',value)));attachEvidence(target,step.evidence_ids)}
 data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
 if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step-detail').append(el('p','','조사 기록이 없습니다.'));

@@ -38,6 +38,8 @@ class ReportTests(unittest.TestCase):
         for url in ['javascript:alert(1)','https://name:secret@example.com/','https://example.com/?access_token=secret']:
             data=copy.deepcopy(self.data);data['evidence'][0]['source_url']=url
             self.assertTrue(any('HTTP(S) URL' in e for e in validate(data)))
+            data=copy.deepcopy(self.data);data['meta']['related_reports']=[{'label':'link','url':url}]
+            self.assertTrue(any('HTTP(S) URL' in e for e in validate(data)))
     def test_embedded_json_cannot_close_script(self):
         payload='</script><img src=x onerror=alert(1)>'
         self.data['evidence'][0]['sample']=payload

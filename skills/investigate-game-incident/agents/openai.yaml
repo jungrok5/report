@@ -1,4 +1,14 @@
 interface:
-  display_name: "게임 장애 근거 보고서"
-  short_description: "장애 전후 현상과 원인 검증 근거를 연결하는 인터랙티브 보고서"
-  default_prompt: "$investigate-game-incident를 사용해 제공한 로그와 메트릭으로 장애 전후 현상, 원인 후보, 검증 근거를 연결한 보고서를 작성해줘."
+  display_name: 게임 장애 근거 보고서
+  short_description: 장애 전후 현상과 원인 검증 근거를 연결하는 인터랙티브 보고서
+  default_prompt: $investigate-game-incident를 사용해 제공한 로그와 메트릭으로 장애 전후 현상, 원인 후보, 검증
+    근거를 연결한 보고서를 작성해줘.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

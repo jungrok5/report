@@ -21,6 +21,12 @@ python scripts/render_report.py incident.json --out report.html --markdown-out r
 
 상대 경로를 이 스킬 디렉터리 기준으로 해석하라. 제공된 자료를 분석하는 대신 예제를 결과로 제출하지 말라. 시안을 요청받았을 때만 `assets/example-restart.json`을 사용하라.
 
+## 실데이터 조회·반복 조사
+
+연결·자동 조사 요청이면 [조회·조사 엔진](references/engine.md)을 읽고 `scripts/investigate.py`를 사용하라. 사람이 정한 읽기 전용 카탈로그로 Prometheus/Loki를 조회하고 DB·클라이언트·dump JSON을 import한다. 주소가 없으면 예비 보고서와 설정 초안을 만들고 연결에 필요한 정보를 묻는다. 가상 replay를 운영 조회나 실제 Holmes 모델 실행이라고 주장하지 말라.
+
+Holmes 모드는 서버 도구를 끈 별도 planner 인스턴스와 데이터 전송이 승인된 범위에서 실행하라. 후보는 검토 전 verified로 승격하지 않는다. `state.json`의 실패·중단 이유, 부분 결과와 마스킹 보존본 해시를 확인하라. 운영 변경·자동 복구·메시지 전송은 수행하지 않는다.
+
 ## 현상부터 보여주기
 
 - 제목·범위 아래, 원인 요약보다 위에 장애 전후 시간축을 배치하라. 정상 구간, 악화, 조치, 서비스 회복을 포함하라.
@@ -61,6 +67,7 @@ python scripts/render_report.py incident.json --out report.html --markdown-out r
 - [분석 절차](references/investigation.md): 실제 조사·RCA 검토 때 읽어라.
 - [데이터 규약](references/report-contract.md): JSON 생성·변경 때 읽어라.
 - [작성 문체](references/writing.md): 보고서 서술을 작성·다듬을 때 읽어라.
+- [조회·조사 엔진](references/engine.md): CLI 실행·설정·데이터 조회·Holmes 연결 때 읽어라.
 - [연동과 도입](references/integrations.md): 실데이터 연결·도입 요청 때 읽어라.
 - `assets/report-template.html`: 외부 라이브러리 없이 동작하는 렌더링 템플릿.
 - `assets/example-restart.json`: 프로세스 종료 → 재부팅 → 로딩 부하 → 접속 회복의 가상 예시.

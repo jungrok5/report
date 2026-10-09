@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "id": "INC-EDIT-ME",
+    "title": "운영 데이터 조사 예비 보고서",
+    "timezone": "Asia/Seoul",
+    "version": "1.2",
+    "synthetic": false,
+    "scope": "EDIT-ME"
+  },
+  "window": {
+    "start": "2026-10-08T20:55:00+09:00",
+    "end": "2026-10-08T21:20:00+09:00",
+    "baseline_end": "2026-10-08T21:01:00+09:00"
+  },
+  "sources": {
+    "prom": {
+      "kind": "prometheus",
+      "base_url": "https://prometheus.example.invalid",
+      "bearer_env": "INCIDENT_PROM_TOKEN"
+    },
+    "logs": {
+      "kind": "loki",
+      "base_url": "https://loki.example.invalid",
+      "bearer_env": "INCIDENT_LOKI_TOKEN",
+      "headers_env": {}
+    },
+    "files": {
+      "kind": "snapshot"
+    }
+  },
+  "queries": [
+    {
+      "id": "ccu",
+      "source": "prom",
+      "title": "영향 월드 동접",
+      "query": "sum(game_ccu{region=\"kr\",world=~\"07|08|09|10|11|12\"})",
+      "step": 60,
+      "metric": {
+        "label": "영향 월드 동접",
+        "unit": "명",
+        "aggregation": "1분 말 세션 수, 월드 07–12 합계",
+        "description": "현재 접속 중인 세션 수입니다. 일일 활성 사용자 수나 누적 영향 사용자 수와 다릅니다."
+      }
+    },
+    {
+      "id": "db-qps",
+      "source": "prom",
+      "title": "DB 요청 부하",
+      "query": "sum(rate(db_requests_total{database=\"GameDB\"}[1m]))",
+      "step": 60,
+      "metric": {
+        "label": "DB 요청 부하",
+        "unit": "QPS",
+        "aggregation": "1분 평균, GameDB",
+        "description": "초당 DB 요청 수입니다. DB CPU 사용률이나 잠금을 직접 측정한 수치는 아닙니다."
+      }
+    },
+    {
+      "id": "latency",
+      "source": "prom",
+      "title": "가동 중 게임 요청 p99",
+      "query": "histogram_quantile(0.99,sum by (le)(rate(game_request_duration_ms_bucket{region=\"kr\"}[1m])))",
+      "step": 60,
+      "metric": {
+        "label": "가동 중 게임 요청 p99",
+        "unit": "ms",
+        "aggregation": "1분 p99, 가동 중 프로세스의 실제 응답 표본",
+        "description": "가동 중 프로세스가 응답한 게임 요청의 99백분위 지연입니다. 프로세스 종료 구간은 표본이 없어 null이며 0 ms가 아닙니다."
+      }
+    },
+    {
+      "id": "timeline",
+      "source": "logs",
+      "title": "프로세스·조치·알림 사건 기록",
+      "query": "{app=\"game\",world=\"07\"} | json",
+      "extract_events": true
+    },
+    {
+      "id": "crash",
+      "source": "files",
+      "file": "YOUR-crash.json",
+      "format": "snapshot",
+      "title": "dump·종료 직전 예외 요약"
+    },
+    {
+      "id": "warming",
+      "source": "files",
+      "file": "YOUR-warming.json",
+      "format": "snapshot",
+      "title": "DB 쿼리 태그·클라이언트 로딩 표본"
+    }
+  ],
+  "bootstrap": [
+    "ccu",
+    "db-qps",
+    "latency",
+    "timeline"
+  ],
+  "budget": {
+    "max_queries": 6,
+    "max_rounds": 3
+  },
+  "redact_patterns": [],
+  "holmes": {
+    "base_url": "https://holmes.example.invalid",
+    "headers_env": {
+      "X-API-Key": "INCIDENT_HOLMES_API_KEY"
+    },
+    "server_tools_disabled": false,
+    "model": "YOUR-SERVER-MODEL-KEY"
+  }
+}

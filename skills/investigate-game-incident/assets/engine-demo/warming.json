@@ -1,0 +1,16 @@
+{
+  "observed_start": "2026-10-08T20:55:00+09:00",
+  "observed_end": "2026-10-08T21:20:00+09:00",
+  "events": [],
+  "observations": {
+    "warming_start": "2026-10-08T21:05:30+09:00",
+    "configured_workers": 64,
+    "db_peak_qps": 1850,
+    "db_top_tag": "WorldLoader.prefetch",
+    "db_tag_share_pct": 72,
+    "client_loading_p99_ms": 4200,
+    "client_sample_count": 860,
+    "controlled_replay": "미실행"
+  },
+  "limitations": "가상 DB·클라이언트 요약. DB 부하 태그와 클라이언트 로딩은 해당 표본만 대표하며 재현/대조군 결과 없음."
+}

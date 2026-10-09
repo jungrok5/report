@@ -47,11 +47,11 @@ python skills/investigate-game-incident/scripts/render_report.py \
 
 확정된 원인과 유력 후보, 관측 사실, 미확인 질문을 구분합니다. 노드와 연결 모두 근거 ID를 요구합니다. 질문·가설·예측·조회·관측·판정·다음 확인을 보존합니다. 원본 조회 링크와 당시 결과를 함께 남깁니다. 담당·기한·완료 기준이 있는 후속 조치를 작성합니다.
 
-렌더러는 입력 형식과 참조를 검사하며 원인 진위를 검증하지 않습니다. 자체적으로 Grafana·DB·로그 시스템에 연결하거나 자동 복구하지 않습니다. 원본 링크는 제공된 주소를 사용자가 클릭할 때만 엽니다. 외부 차트·폰트 라이브러리는 포함하지 않습니다.
+렌더러는 입력 형식과 참조를 검사하며 원인 진위를 검증하지 않습니다. 아래 조회 CLI가 운영 데이터를 읽고 HTML 화면은 저장된 결과를 표시합니다. 자동 복구는 수행하지 않습니다. 원본 링크는 제공된 주소를 사용자가 클릭할 때만 엽니다. 외부 차트·폰트 라이브러리는 포함하지 않습니다.
 
 ## 실제로 사용한 것과 도입 후보
 
-가설 → 예측 → 관측 → 판정 → 다음 확인, 현상 시간축, 결론 요약, 근거가 연결된 인과 그래프는 현재 구현된 보고서 방식입니다. 자동 조사 엔진과 모니터링 연동은 아직 구현하지 않았습니다.
+가설 → 예측 → 관측 → 판정 → 다음 확인, 현상 시간축, 결론 요약, 근거가 연결된 인과 그래프는 현재 구현된 보고서 방식입니다. 조회·근거 보존·반복 조사 CLI도 구현했습니다. 운영 환경 연결과 실제 Holmes 모델 실행은 아직 하지 않았습니다.
 
 | 구성 | 현재 사용 여부 | 역할 |
 | --- | --- | --- |
@@ -60,16 +60,34 @@ python skills/investigate-game-incident/scripts/render_report.py \
 | Playwright | 검증에만 사용 | 브라우저 동작·모바일 레이아웃 테스트 |
 | GitHub Actions / Pages | 사용 | 검증 자동 실행·예시 보고서 배포 |
 | ECharts, React Flow, Dagre/ELK | 미사용·확장 후보 | 시계열 기능 및 그래프 편집·배치 확장 |
-| Prometheus/Grafana, Loki/OpenSearch, OpenTelemetry | 미연동·데이터 연동 후보 | 운영 메트릭·로그·트레이스 조회 |
-| HolmesGPT | 미사용·조사 엔진 후보 | 도구를 이용한 원인 조사 자동화 |
+| Prometheus / Loki | 조회 어댑터 구현·fake HTTP 테스트 | 읽기 전용 range 조회, 사건 추출, 절대 시간 링크 |
+| DB·클라이언트·dump | JSON import 구현 | 승인된 통계·표본 파일을 근거로 보존. 직접 SQL 연결 미구현 |
+| Grafana / OpenSearch / OpenTelemetry | 전용 조회 미구현 | 제공된 Grafana 링크 지원 / 이후 연결 후보 |
+| HolmesGPT | HTTP 연결 코드·mock 계약 테스트 | 근거를 읽고 다음 카탈로그 query ID와 후보 판정 제안. 실제 서비스/모델 실행 미검증 |
 | Quarto | 미사용·참고 후보 | 보고서 출판 |
 
 보고서 화면은 외부 라이브러리나 CDN 없이 동작합니다. 예시 근거와 수치는 모두 가상이며 실제 운영 시스템에서 조회한 결과가 아닙니다.
 
+## 조회와 조사 엔진
+
+[자동 조사 예시 보고서](https://jungrok5.github.io/report/investigation.html)에서 **6개 조회 근거 → 3회 질문·확인 → 두 원인 후보**를 볼 수 있습니다. 조회 보존본도 클릭할 수 있습니다. 가상 API 응답과 사람이 작성한 계획의 재생이며 실제 운영 조회나 실제 Holmes 모델 실행이 아닙니다.
+
+```bash
+python skills/investigate-game-incident/scripts/investigate.py \
+  skills/investigate-game-incident/assets/engine-demo/config.json \
+  --planner replay --out /tmp/new-incident-demo
+```
+
+실데이터는 [engine-config.example.json](skills/investigate-game-incident/assets/engine-config.example.json)을 복사하고 실제 주소·메트릭 이름·라벨·쿼리·기간을 입력합니다. 예제의 `example.invalid`, `YOUR-*`는 바꿔야 합니다. 인증은 환경변수로 전달합니다. 기본 `--planner collect`는 초기 조회 후 원인 미확인 보고서를 생성하고, `--planner holmes`는 수집 → 가설·판정 → 다음 조회를 반복합니다.
+
+Holmes 모드는 도구를 끈 별도 서버를 사용합니다. 임의 셸/SQL/새 쿼리를 실행하는 기능은 없고, 사람이 정한 읽기 카탈로그만 조회합니다. 연결 방식·계약·예산·마스킹·종료 코드·검토 범위는 [engine.md](skills/investigate-game-incident/references/engine.md)에 정리했습니다.
+
+결과는 `incident.json`, `report.html/md`, `evidence/*.json`, `plan-*.json`, `manifest.json`, `state.json`입니다. 후보는 자동으로 확정되지 않습니다. SHA-256은 마스킹 보존본 해시이며, 실패/부분 결과와 남은 질문을 보고서에 남깁니다. 오류가 있어도 예비 보고서를 보존하고 종료 코드 2를 반환합니다.
+
 ## 검증
 
 ```bash
-python -m unittest discover -s skills/investigate-game-incident/scripts -p test_report.py -v
+python -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
 python skills/investigate-game-incident/scripts/validate_report.py \
   skills/investigate-game-incident/assets/example-restart.json
 ```
@@ -89,7 +107,7 @@ npm run test:browser
 - `skills/investigate-game-incident/SKILL.md`: 분석·보고서 작성 절차
 - `references/`: 분석 방법, 데이터 규약, 문체, 실데이터 연동
 - `assets/`: 렌더링 템플릿과 가상 입력
-- `scripts/`: 검증기, HTML/Markdown 생성기, 무결성 테스트
+- `scripts/`: 조회·조사 엔진, 검증기, HTML/Markdown 생성기, 테스트
 - `examples/`: 읽어볼 수 있는 결과 예제
 
 MIT 라이선스. 보고서에 넣는 외부 로그·메트릭의 권한과 보존 규정은 해당 자료의 조건을 따릅니다.

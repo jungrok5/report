@@ -5,7 +5,17 @@
     "timezone": "Asia/Seoul",
     "version": "1.1",
     "synthetic": true,
-    "scope": "KR · 월드 07–12"
+    "scope": "KR · 월드 07–12",
+    "related_reports": [
+      {
+        "label": "자동 조사 실행 예시 →",
+        "url": "https://jungrok5.github.io/report/investigation.html"
+      },
+      {
+        "label": "사용 방법",
+        "url": "https://github.com/jungrok5/report"
+      }
+    ]
   },
   "window": {
     "start": "2026-10-08T20:55:00+09:00",

@@ -1,6 +1,6 @@
 {
   "name": "incident-evidence-skill",
   "private": true,
-  "scripts": {"test:browser": "node tests/browser.cjs"},
+  "scripts": {"test:browser": "node tests/browser.cjs && node tests/engine-browser.cjs"},
   "devDependencies": {"playwright": "1.62.1"}
 }

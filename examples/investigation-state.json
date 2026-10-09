@@ -1,0 +1,88 @@
+{
+  "stop_reason": "planner_finished",
+  "round": 3,
+  "completed_queries": [
+    "ccu",
+    "crash",
+    "db-qps",
+    "latency",
+    "timeline",
+    "warming"
+  ],
+  "failures": [],
+  "audit": [
+    {
+      "kind": "query",
+      "query_id": "ccu",
+      "evidence_id": "E_ccu",
+      "status": "ok",
+      "at": "2026-10-09T00:00:00.000000+00:00"
+    },
+    {
+      "kind": "query",
+      "query_id": "db-qps",
+      "evidence_id": "E_db-qps",
+      "status": "ok",
+      "at": "2026-10-09T00:00:00.000000+00:00"
+    },
+    {
+      "kind": "query",
+      "query_id": "latency",
+      "evidence_id": "E_latency",
+      "status": "ok",
+      "at": "2026-10-09T00:00:00.000000+00:00"
+    },
+    {
+      "kind": "query",
+      "query_id": "timeline",
+      "evidence_id": "E_timeline",
+      "status": "ok",
+      "at": "2026-10-09T00:00:00.000000+00:00"
+    },
+    {
+      "kind": "plan",
+      "round": 1,
+      "query_ids": [
+        "crash"
+      ],
+      "at": "2026-10-09T00:01:00.000000+00:00"
+    },
+    {
+      "kind": "query",
+      "query_id": "crash",
+      "evidence_id": "E_crash",
+      "status": "ok",
+      "at": "2026-10-09T00:01:00.000000+00:00"
+    },
+    {
+      "kind": "plan",
+      "round": 2,
+      "query_ids": [
+        "warming"
+      ],
+      "at": "2026-10-09T00:02:00.000000+00:00"
+    },
+    {
+      "kind": "query",
+      "query_id": "warming",
+      "evidence_id": "E_warming",
+      "status": "ok",
+      "at": "2026-10-09T00:02:00.000000+00:00"
+    },
+    {
+      "kind": "plan",
+      "round": 3,
+      "query_ids": [],
+      "at": "2026-10-09T00:03:00.000000+00:00"
+    }
+  ],
+  "evidence_hashes": {
+    "E_ccu": "9a3be53529184d421e6a9b4c19f87c56fc3fee3d0f8865118bb0e77907925b7d",
+    "E_db-qps": "f331913ec369220f882bce615173ee70145a7aa580e2d7b03e0cb6951aff83fc",
+    "E_latency": "abeb007e530b4bb7f16eaeb90c16040bb9d7d70ec2e9711e12b303c2e223028d",
+    "E_timeline": "b500bdadc7d21781b9bbfd1251da2d89d88f6136867335bcb1e3e0d75a108fcf",
+    "E_crash": "ca5de082c1f43798901890a845d8ea7508ced4856ba8621200d52b229027dd8e",
+    "E_warming": "8875e6e0d508095979da41539e31a7a1400af829fac6f652115d640035d9f1b0"
+  },
+  "synthetic": true
+}

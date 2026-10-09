@@ -59,3 +59,7 @@ unknowns 필수: `question`, `owner`, `next_test`.
 `validate_report.py`는 필수 필드, 시간대, 범위·정렬, ID 참조, URL scheme, 유한 수치, DAG, 근거 없는 강한 상태를 검사한다. 이것은 형식 검사이며 실제 원인 정확도를 보증하지 않는다.
 
 `render_report.py`는 검증 후 네트워크 요청 없이 단일 HTML과 선택적 Markdown을 생성한다. `--fragment-out`은 대화 내 미리보기를 위한 HTML 조각을 함께 생성한다. 원본 조회는 사용자 클릭으로만 수행한다. 입력 텍스트와 JSON을 HTML에 안전하게 이스케이프한다. 민감 데이터 익명화와 내용 판단은 작성자가 수행한다.
+
+## 선택적인 관련 보고서 링크
+
+`meta.related_reports`는 `{label,url}` 객체 배열이다. 실제 HTTP(S) URL만 사용하고 인증 정보·secret query parameter를 넣지 않는다. 제목 아래 예시/사용 방법 링크로 표시한다.

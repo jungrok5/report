@@ -29,6 +29,12 @@ def validate(data):
             return result
         except (ValueError, TypeError, AttributeError):
             fail(path, "expected timezone-aware ISO 8601 timestamp"); return None
+    def validate_url(value, path):
+        try:
+            parsed=urlsplit(value)
+            if parsed.scheme not in {"http","https"} or not parsed.hostname or parsed.username or parsed.password: raise ValueError()
+            if any(k.lower() in {"token","access_token","password","api_key","apikey","authorization"} for k,_ in parse_qsl(parsed.query)): raise ValueError()
+        except (TypeError,ValueError,AttributeError): fail(path,"expected HTTP(S) URL without credentials or secret query parameters")
     if not require(data, ["meta", "window", "summary", "metrics", "events", "evidence", "nodes", "edges", "investigation", "actions", "unknowns"], "report"):
         return errors
     for key in ("meta", "window", "summary"):
@@ -36,6 +42,12 @@ def validate(data):
     if errors: return errors
     require(data["meta"], ["id", "title", "timezone", "version", "synthetic", "scope"], "meta")
     if not isinstance(data["meta"].get("synthetic"), bool): fail("meta.synthetic", "expected boolean")
+    related=data["meta"].get("related_reports",[])
+    if not isinstance(related,list): fail("meta.related_reports","expected array")
+    else:
+        for link in related:
+            if require(link,["label","url"],"meta.related_reports"):
+                validate_url(link.get("url"),"meta.related_reports.url")
     try: ZoneInfo(data["meta"].get("timezone", ""))
     except (ZoneInfoNotFoundError, ValueError, TypeError): fail("meta.timezone", "unknown IANA timezone")
     require(data["window"], ["start", "end", "baseline_end"], "window")
@@ -82,11 +94,7 @@ def validate(data):
         for key in ("source_url","archive_url"):
             value=item.get(key)
             if value is not None:
-                try:
-                    parsed=urlsplit(value)
-                    if parsed.scheme not in {"http","https"} or not parsed.hostname or parsed.username or parsed.password: raise ValueError()
-                    if any(k.lower() in {"token","access_token","password","api_key","apikey","authorization"} for k,_ in parse_qsl(parsed.query)): raise ValueError()
-                except (TypeError,ValueError,AttributeError): fail(path+"."+key,"expected HTTP(S) URL without credentials or secret query parameters")
+                validate_url(value,path+"."+key)
         if item.get("sha256") is not None and not re.fullmatch(r"[0-9a-fA-F]{64}",str(item["sha256"])): fail(path+".sha256","invalid SHA-256")
     for item in data["metrics"]:
         if not isinstance(item,dict): continue

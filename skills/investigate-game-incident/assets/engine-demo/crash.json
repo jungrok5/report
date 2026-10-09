@@ -1,0 +1,13 @@
+{
+  "observed_start": "2026-10-08T20:55:00+09:00",
+  "observed_end": "2026-10-08T21:20:00+09:00",
+  "events": [],
+  "observations": {
+    "exception": "Uncaught CacheMissError at WorldLoader.lookup()",
+    "process_exit": "2026-10-08T21:02:00+09:00",
+    "build": "game-2026.10.08.2",
+    "host_oom_record": "검토 범위에서 기록 미제공",
+    "exit_code": 1
+  },
+  "limitations": "가상 dump 요약. 예외→종료의 재현·코드 검토 결과 미제공. OOM 기록 미제공은 OOM 배제 근거가 아님."
+}

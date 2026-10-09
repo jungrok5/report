@@ -19,7 +19,8 @@ jobs:
       - uses: actions/checkout@v5
       - name: Validate and render the synthetic example
         run: |
-          python3 -m unittest discover -s skills/investigate-game-incident/scripts -p test_report.py -v
+          python3 -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
+          python3 tests/check_demo.py
           python3 skills/investigate-game-incident/scripts/render_report.py skills/investigate-game-incident/assets/example-restart.json --out /tmp/report.html
           cmp /tmp/report.html docs/index.html
       - uses: actions/configure-pages@v5

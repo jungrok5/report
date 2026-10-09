@@ -10,7 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Test evidence integrity and output safety
-        run: python3 -m unittest discover -s skills/investigate-game-incident/scripts -p test_report.py -v
+        run: python3 -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
+      - name: Check synthetic investigation page and evidence drift
+        run: python3 tests/check_demo.py
       - name: Validate sample and detect generated report drift
         run: |
           python3 skills/investigate-game-incident/scripts/validate_report.py skills/investigate-game-incident/assets/example-restart.json
