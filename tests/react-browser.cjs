@@ -116,6 +116,7 @@ const { chromium } = require("playwright");
           throw Error("narrative must show observation and decision");
       }
       await page.emulateMedia({ media: "print" });
+      if (!(await page.locator(".print-document-info").isVisible()) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.id) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.timezone)) throw Error("print document metadata missing");
       if (
         (await page.locator("[data-print-event]").count()) !==
           fixture.events.length ||

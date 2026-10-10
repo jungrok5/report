@@ -1,12 +1,12 @@
-/* Report design system. Existing report layout, reviewed with ai-design polish-ui. */
+/* Editorial incident report. See DESIGN.md; ai-design polish-ui and polish-writing. */
 :root, #eir-report {
   color-scheme: light dark;
   --font-sans: system-ui, -apple-system, "Noto Sans KR", "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
-  --ink: #202d3d;
-  --page: #f3f5f8;
+  --ink: #19242f;
+  --page: #eaedf0;
   --paper: #fff;
-  --canvas: #f5f7fa;
+  --canvas: #f2f5f8;
   --muted: #52627a;
   --border: #d8e0eb;
   --control-border: #738092;
@@ -27,13 +27,24 @@
   --radius-medium: 6px;
   --radius-large: 8px;
   --radius-page: 10px;
+  --answer-surface: #172c3d;
+  --answer-ink: #f1f5fa;
+  --answer-muted: #bdcadd;
+  --answer-link: #a8d0ff;
+  --answer-green: #a2dbb9;
+  --answer-warm: #f1c68b;
+  --answer-border: #6f8599;
+  --report-width: 1224px;
+  --section-rail: 170px;
+  --title-size: clamp(1.625rem, 3.8vw, 2.625rem);
+  --answer-size: clamp(1.125rem, 2.1vw, 1.5rem);
 }
 @media (prefers-color-scheme: dark) {
   :root, #eir-report {
     --ink: #e4e6e8;
-    --page: #181b1e;
-    --paper: #1e2124;
-    --canvas: #16191c;
+    --page: #101316;
+    --paper: #171b20;
+    --canvas: #20262d;
     --muted: #b2becb;
     --border: #46515f;
     --control-border: #738092;
@@ -50,6 +61,7 @@
     --series-4: #7bd1c5;
     --series-5: #f59bad;
     --series-6: #c6d584;
+    --answer-surface: #243747;
   }
 }
 @media print {

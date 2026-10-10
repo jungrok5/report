@@ -67,6 +67,8 @@ const {chromium}=require('playwright');
   }
   await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:1024,height:1000});
   if(process.env.INCIDENT_SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.INCIDENT_SCREENSHOT_DIR,'report-dark.png'),fullPage:true});
+  await page.emulateMedia({media:'print'});
+  if(!(await page.locator('#eir-print-document-info').isVisible()) || !(await page.locator('#eir-print-document-info').innerText()).includes('Asia/Seoul'))throw Error('print document metadata missing');
   await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));
   if(!(await page.locator('#eir-print-evidence details').first().getAttribute('open')===''))throw Error('print evidence not expanded');
   await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));

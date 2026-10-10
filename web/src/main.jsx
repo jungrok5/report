@@ -490,105 +490,152 @@ function Report({ report, toolbar }) {
   ];
   return (
     <>
-      <h1>{report.meta.title}</h1>
-      <div className="meta">
-        {report.meta.id} ·{" "}
-        {new Intl.DateTimeFormat("ko-KR", {
-          timeZone: report.meta.timezone,
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        }).format(new Date(report.window.start))}{" "}
-        · {report.meta.scope} · {report.meta.timezone} · v{report.meta.version}
-        {report.governance && ` · revision ${report.governance.revision}`}
-      </div>
-      {report.meta.synthetic && (
-        <p className="synthetic">
-          가상 사례 · 사건·수치·실험·검토는 예시이며 실제 운영 분석이 아닙니다.
-        </p>
-      )}
-      {toolbar}
-      <Timeline report={report} onEvidence={focusEvidence} />
-      <section className="section conclusion" aria-label="원인">
-        <h2>원인</h2>
-        <Badge status={report.summary.status} />
-        <p className="conclusiontext">{report.summary.text}</p>
-        <div className="summaryfooter">
-          <span>영향: {report.summary.impact}</span>
-          <span>복구: {report.summary.recovery}</span>
+      <div className="report-heading">
+        <h1>{report.meta.title}</h1>
+        <div className="report-context">
+          <span>
+            {new Intl.DateTimeFormat("ko-KR", {
+              timeZone: report.meta.timezone,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }).format(new Date(report.window.start))}{" "}
+            · {report.meta.scope}
+          </span>
+          {report.meta.synthetic && (
+            <span className="synthetic-label">가상 예시</span>
+          )}
         </div>
-        <p className="small">
-          근거: {report.summary.evidence_ids.join(", ")} · 한계:{" "}
-          {report.summary.limitations}
-        </p>
-        <button
-          className="textbutton"
-          onClick={() => focusEvidence(report.summary.evidence_ids)}
-        >
-          결론의 근거 확인
-        </button>
+        <div className="heading-tools">
+          <details className="report-meta">
+            <summary>보고서 정보</summary>
+            <div className="meta">
+              {report.meta.id} ·{" "}
+              {new Intl.DateTimeFormat("ko-KR", {
+                timeZone: report.meta.timezone,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              }).format(new Date(report.window.start))}{" "}
+              · {report.meta.scope} · {report.meta.timezone} · v
+              {report.meta.version}
+              {report.governance && ` · revision ${report.governance.revision}`}
+            </div>
+            {report.meta.synthetic && (
+              <p className="synthetic">
+                가상 사례 · 사건·수치·실험·검토는 예시이며 실제 운영 분석이
+                아닙니다.
+              </p>
+            )}
+          </details>
+          {toolbar}
+        </div>
+        <div className="print-document-info">
+          {report.meta.id} · {report.meta.scope} · {report.meta.timezone} · v
+          {report.meta.version}
+          {report.governance && ` · revision ${report.governance.revision}`}
+          {report.meta.synthetic && (
+            <p>
+              가상 사례 · 사건·수치·실험·검토는 예시이며 실제 운영 분석이
+              아닙니다.
+            </p>
+          )}
+        </div>
+      </div>
+      <Timeline report={report} onEvidence={focusEvidence} />
+      <section
+        className="section conclusion"
+        id="cause-summary"
+        aria-label="원인"
+      >
+        <header className="section-title">
+          <h2>원인</h2>
+          <Badge status={report.summary.status} />
+        </header>
+        <div className="section-content">
+          <p className="conclusiontext">{report.summary.text}</p>
+          <div className="summaryfooter">
+            <span>영향: {report.summary.impact}</span>
+            <span>복구: {report.summary.recovery}</span>
+          </div>
+          <p className="small">
+            근거: {report.summary.evidence_ids.join(", ")} · 한계:{" "}
+            {report.summary.limitations}
+          </p>
+          <button
+            className="textbutton"
+            onClick={() => focusEvidence(report.summary.evidence_ids)}
+          >
+            결론의 근거 확인
+          </button>
+        </div>
       </section>
       <section
         className="section narrative"
+        id="investigation-story"
         aria-label="원인에 도달한 조사 흐름"
       >
-        <h2>원인 판단에 어떻게 도달했나</h2>
-        <p className="small">
-          질문과 판정을 순서대로 읽고, 단계별 확인 내용과 근거를 펼쳐
-          검증합니다.
-        </p>
-        {report.investigation.length ? (
-          report.investigation.map((i, index) => (
-            <article
-              key={i.id}
-              data-narrative-step={i.id}
-              className="narrative-step"
-            >
-              <h3>
-                {index + 1}. {i.question} <Badge status={i.status} />
-              </h3>
-              <p>
-                <strong>확인한 사실:</strong> {i.observed}
-              </p>
-              <p>
-                <strong>판정:</strong> {i.decision}
-              </p>
-              <button
-                className="textbutton no-print"
-                onClick={() => focusEvidence(i.evidence_ids)}
+        <header className="section-title">
+          <h2>원인 판단에 어떻게 도달했나</h2>
+          <p className="small">
+            질문과 판정을 순서대로 읽고, 단계별 확인 내용과 근거를 펼쳐
+            검증합니다.
+          </p>
+        </header>
+        <div className="section-content">
+          {report.investigation.length ? (
+            report.investigation.map((i, index) => (
+              <article
+                key={i.id}
+                data-narrative-step={i.id}
+                className="narrative-step"
               >
-                이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
-              </button>
-              <details>
-                <summary>가설 · 확인 내용 · 다음 확인</summary>
-                <p className="small">조사 {i.investigated_at}</p>
-                {[
-                  ["가설", i.hypothesis],
-                  ["예측", i.prediction],
-                  ["관측", i.observed],
-                  ["다음 확인", i.next_test],
-                ].map(([key, value]) => (
-                  <p key={key}>
-                    <strong>{key}:</strong> {value}
-                  </p>
-                ))}
+                <h3>
+                  {index + 1}. {i.question} <Badge status={i.status} />
+                </h3>
+                <p>
+                  <strong>확인한 사실:</strong> {i.observed}
+                </p>
+                <p>
+                  <strong>판정:</strong> {i.decision}
+                </p>
                 <button
                   className="textbutton no-print"
                   onClick={() => focusEvidence(i.evidence_ids)}
                 >
                   이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
                 </button>
-              </details>
-            </article>
-          ))
-        ) : (
-          <p>
-            조사 기록이 없습니다. 원인을 추정하지 않고 추가 자료를 확인해야
-            합니다.
-          </p>
-        )}
+                <details>
+                  <summary>가설 · 확인 내용 · 다음 확인</summary>
+                  <p className="small">조사 {i.investigated_at}</p>
+                  {[
+                    ["가설", i.hypothesis],
+                    ["예측", i.prediction],
+                    ["관측", i.observed],
+                    ["다음 확인", i.next_test],
+                  ].map(([key, value]) => (
+                    <p key={key}>
+                      <strong>{key}:</strong> {value}
+                    </p>
+                  ))}
+                  <button
+                    className="textbutton no-print"
+                    onClick={() => focusEvidence(i.evidence_ids)}
+                  >
+                    이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
+                  </button>
+                </details>
+              </article>
+            ))
+          ) : (
+            <p>
+              조사 기록이 없습니다. 원인을 추정하지 않고 추가 자료를 확인해야
+              합니다.
+            </p>
+          )}
+        </div>
       </section>
-      <nav className="tabs" role="tablist" aria-label="분석 보기">
+      <nav className="tabs" id="analysis" role="tablist" aria-label="분석 보기">
         {tabs.map(([id, label]) => (
           <button
             key={id}
@@ -931,7 +978,7 @@ function App() {
   const toolbar = (
     <div className="toolbar no-print">
       <label>
-        예시 보고서
+        <span className="toolbar-label">예시 보고서</span>
         <select
           aria-label="예시 보고서 선택"
           value={slug}
@@ -978,7 +1025,12 @@ function App() {
     <div className="report">
       <header className="chrome">
         <strong>장애 보고서</strong>
-        <span className="small">이슈 · 현상 · 원인 · 근거</span>
+        <nav aria-label="보고서 목차">
+          <a href="#phenomenon">현상</a>
+          <a href="#cause-summary">원인</a>
+          <a href="#investigation-story">조사</a>
+          <a href="#analysis">근거</a>
+        </nav>
       </header>
       <div className="body">
         {error && (
