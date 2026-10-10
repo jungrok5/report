@@ -9,7 +9,7 @@ description: "게임·서비스 장애의 메트릭, DB 상태, 클라이언트 
 
 ## 시작하기
 
-보고서를 생성하거나 다듬을 때 [ai-design 글 스킬](vendor/ai-design/plugins/ai-design/skills/polish-writing/SKILL.md)과 [공통 기준](vendor/ai-design/docs/standard.md)을 먼저 읽고 기본으로 적용하라. HTML·React 화면 변경에는 [ai-design UI 스킬](vendor/ai-design/plugins/ai-design/skills/polish-ui/SKILL.md)도 읽어라. 원본은 `vendor/ai-design/UPSTREAM.json`의 커밋에 고정돼 있으므로 별도 설치나 인터넷 조회 없이 사용할 수 있다.
+보고서를 생성하거나 다듬을 때 [ai-design 글 스킬](vendor/ai-design/plugins/ai-design/skills/polish-writing/INSTRUCTIONS.md)과 [공통 기준](vendor/ai-design/docs/standard.md)을 먼저 읽고 기본으로 적용하라. HTML·React 화면 변경에는 [ai-design UI 스킬](vendor/ai-design/plugins/ai-design/skills/polish-ui/INSTRUCTIONS.md)도 읽어라. 원본은 `vendor/ai-design/UPSTREAM.json`의 커밋에 고정돼 있으므로 별도 설치나 인터넷 조회 없이 사용할 수 있다.
 
 글은 합니다체로 다듬고 기존 보고서의 `assets/report-tokens.css` 또는 프로젝트 토큰을 사용하라. 증거 상태·수치·단위·시각·쿼리·URL·보존 바이트는 윤문 대상이 아니다. 의심스러운 사실은 윤문으로 보완하지 말고 미확인으로 기록하라. 최종 JSON에 `python scripts/check_style.py incident.json`을 실행하고 오류를 수정하라. HTML 렌더러도 같은 검사를 기본 실행한다. 스타일 검사에는 Python 3.11+가 필요하며 판단·접근성·원인 정확성을 자동 보증하지 않는다.
 

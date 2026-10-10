@@ -143,3 +143,5 @@ npm run test:app
 GitHub Pages는 **Settings → Pages → Source: GitHub Actions**로 설정합니다. main 변경 후 검증한 `site-dist/`만 배포합니다. 공개하는 `docs/cases`는 모두 합성 자료입니다. 운영 자료·실제 SQLite DB는 저장소에 올리지 않습니다.
 
 MIT 라이선스. 외부 로그·메트릭의 권한과 보존 규정은 해당 자료의 조건을 따릅니다.
+
+내장 ai-design의 하위 스킬 원문은 `INSTRUCTIONS.md`라는 참조 파일로 포함합니다. 설치 시 장애 보고서 스킬만 등록되며, 원문 바이트와 upstream 경로·해시는 `UPSTREAM.json`에 보존합니다.

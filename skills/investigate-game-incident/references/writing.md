@@ -10,4 +10,4 @@
 
 코드, 설정, 절차와 시스템 조건을 설명한다. 책임팀·조치 담당자는 기록하되 개인 탓으로 결론을 대신하지 않는다. 영어 요청 시 evidence ID, 숫자, 시간대, 상태를 유지한다.
 
-보고서 서술을 작성하거나 다듬을 때 `../vendor/ai-design/plugins/ai-design/skills/polish-writing/SKILL.md`와 `../vendor/ai-design/docs/standard.md`를 읽고 적용한다. 합니다체를 기본으로 유지하며 제목·표·범례는 개조식으로 작성한다. 근거 표본과 인용·조회 URL·수치·시각은 원문을 유지한다.
+보고서 서술을 작성하거나 다듬을 때 `../vendor/ai-design/plugins/ai-design/skills/polish-writing/INSTRUCTIONS.md`와 `../vendor/ai-design/docs/standard.md`를 읽고 적용한다. 합니다체를 기본으로 유지하며 제목·표·범례는 개조식으로 작성한다. 근거 표본과 인용·조회 URL·수치·시각은 원문을 유지한다.
