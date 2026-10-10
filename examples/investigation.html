@@ -943,7 +943,7 @@
 (()=>{
 const root=document.getElementById('eir-report');
 const data=JSON.parse(root.querySelector('#eir-data').textContent);
-const $=s=>root.querySelector(s),$=s=>Array.from(root.querySelectorAll(s));
+const $=s=>root.querySelector(s),$$=s=>Array.from(root.querySelectorAll(s));
 const statusLabels={observed:'관측됨',verified:'검증됨',supported:'유력',unknown:'미확인',excluded:'해당 범위 배제'};
 const kindLabels={observation:'관측',alert:'알림',intervention:'조치',recovery:'회복',change:'변경'};
 const evidence=new Map(data.evidence.map(e=>[e.id,e]));
@@ -990,7 +990,7 @@ let chartGeometry=null,hoverAt=null,hoverPinned=false;
 function closeChartTip(){hoverAt=null;hoverPinned=false;$('#eir-charttip').hidden=true;$('#eir-timeline .eir-hovercursor')?.remove()}
 function nearest(metric,at){let best=null;for(const p of metric.values){if(best===null||Math.abs(p.t-at)<Math.abs(best.t-at))best=p}return best&&Math.abs(best.t-at)<=metric.interval_seconds*1000?best:null}
 function selectEvent(event){
- closeChartTip();selectedEvent=event;$('[data-event]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.event===event.id)));
+ closeChartTip();selectedEvent=event;$$('[data-event]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.event===event.id)));
  const box=$('#eir-eventdetail');box.hidden=false;box.replaceChildren();box.append(el('strong','',`${time(event.at)} · ${kindLabels[event.kind]} · ${event.label}`),el('p','',event.detail));
  const values=el('div','eir-values'),at=Date.parse(event.at);
  parsedMetrics.forEach(m=>{const p=nearest(m,at);values.append(el('span','',`${m.label}: ${p&&p.v!==null?p.v.toLocaleString()+' '+m.unit+' ('+time(p.t)+')':'관측 없음'}`))});box.append(values);
@@ -1048,14 +1048,14 @@ data.edges.forEach(e=>indegree.set(e.target,indegree.get(e.target)+1));
 const queue=data.nodes.filter(n=>indegree.get(n.id)===0).map(n=>n.id);
 while(queue.length){const id=queue.shift();data.edges.filter(e=>e.source===id).forEach(e=>{levels.set(e.target,Math.max(levels.get(e.target),levels.get(id)+1));indegree.set(e.target,indegree.get(e.target)-1);if(indegree.get(e.target)===0)queue.push(e.target)})}
 const grouped=new Map();data.nodes.forEach(n=>{const level=levels.get(n.id);if(!grouped.has(level))grouped.set(level,[]);grouped.get(level).push(n)});
-Array.from(grouped.keys()).sort((a,b)=>a-b).forEach(level=>{const row=el('div','eir-level');grouped.get(level).forEach(node=>{const b=el('button','eir-node');b.type='button';b.dataset.node=node.id;b.setAttribute('aria-pressed','false');b.append(el('span','eir-small',node.role+' · '+statusLabels[node.status]),el('strong','',node.label));b.addEventListener('click',()=>{$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));nodeDetail(node)});row.append(b)});$('#eir-levels').append(row)});
-data.edges.forEach(edge=>{const b=el('button','',edge.label+' · '+statusLabels[edge.status]);b.type='button';b.dataset.edge=edge.id;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));edgeDetail(edge)});$('#eir-edges').append(b)});
+Array.from(grouped.keys()).sort((a,b)=>a-b).forEach(level=>{const row=el('div','eir-level');grouped.get(level).forEach(node=>{const b=el('button','eir-node');b.type='button';b.dataset.node=node.id;b.setAttribute('aria-pressed','false');b.append(el('span','eir-small',node.role+' · '+statusLabels[node.status]),el('strong','',node.label));b.addEventListener('click',()=>{$$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));nodeDetail(node)});row.append(b)});$('#eir-levels').append(row)});
+data.edges.forEach(edge=>{const b=el('button','',edge.label+' · '+statusLabels[edge.status]);b.type='button';b.dataset.edge=edge.id;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{$$('[data-node],[data-edge]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));edgeDetail(edge)});$('#eir-edges').append(b)});
 function drawGraph(){if($('#eir-cause').hidden)return;const graph=$('#eir-graph'),svg=graph.querySelector('svg'),box=graph.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);svg.replaceChildren();const defs=svgEl('defs'),marker=svgEl('marker',{id:'eir-arrow',markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'});marker.append(svgEl('path',{d:'M0 0 L6 3 L0 6 Z',fill:'currentColor'}));defs.append(marker);svg.append(defs);
- const get=id=>{const b=$('[data-node]').find(n=>n.dataset.node===id),r=b.getBoundingClientRect();return{x:r.left-box.left+r.width/2,top:r.top-box.top,bottom:r.bottom-box.top}};
+ const get=id=>{const b=$$('[data-node]').find(n=>n.dataset.node===id),r=b.getBoundingClientRect();return{x:r.left-box.left+r.width/2,top:r.top-box.top,bottom:r.bottom-box.top}};
  data.edges.forEach(edge=>{const a=get(edge.source),b=get(edge.target),mid=(a.bottom+b.top)/2;svg.append(svgEl('path',{d:`M${a.x} ${a.bottom} C${a.x} ${mid} ${b.x} ${mid} ${b.x} ${b.top-3}`,fill:'none',stroke:'currentColor','stroke-width':1.2,'stroke-dasharray':edge.status==='verified'?'none':'4 4','marker-end':'url(#eir-arrow)'}))})}
-if(data.nodes.length){const first=data.nodes.find(n=>['원인 후보','직접 원인','direct cause'].includes(n.role))||data.nodes[0];$('[data-node]').find(b=>b.dataset.node===first.id).setAttribute('aria-pressed','true');nodeDetail(first)}else $('#eir-cause-detail').append(el('p','','아직 원인 후보가 없습니다. 필요한 검증을 조사 과정에 기록합니다.'));
+if(data.nodes.length){const first=data.nodes.find(n=>['원인 후보','직접 원인','direct cause'].includes(n.role))||data.nodes[0];$$('[data-node]').find(b=>b.dataset.node===first.id).setAttribute('aria-pressed','true');nodeDetail(first)}else $('#eir-cause-detail').append(el('p','','아직 원인 후보가 없습니다. 필요한 검증을 조사 과정에 기록합니다.'));
 function stepDetail(step){const target=$('#eir-step-detail');target.replaceChildren(badge(step.status),el('h2','',step.question));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>target.append(el('h3','',label),el('p','',value)));attachEvidence(target,step.evidence_ids)}
-data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
+data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
 if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step-detail').append(el('p','','조사 기록이 없습니다.'));
 data.actions.forEach(a=>{const item=el('div','eir-action');item.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')),el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
 data.unknowns.forEach(u=>{const item=el('div','eir-action');item.append(el('strong','',u.question),el('p','eir-small',u.owner+' · 다음 확인: '+u.next_test));$('#eir-unknownlist').append(item)});
@@ -1071,12 +1071,12 @@ printFlow.append(el('h2','','전체 조사 기록'));
 data.investigation.forEach(step=>{const item=el('article','');item.dataset.printStep=step.id;item.append(el('h3','',step.question+' · '+statusLabels[step.status]),el('p','',step.investigated_at));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>item.append(el('p','',label+': '+value)));item.append(el('p','','근거: '+step.evidence_ids.join(', ')));printFlow.append(item)});
 
 data.evidence.forEach(e=>$('#eir-print-evidence').append(evidenceView(e.id)));
-$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
+$$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
 if(selectedEvent)selectEvent(selectedEvent);else if(!data.events.length)$('#eir-eventdetail').append(el('p','','사건 기록이 없습니다.'));else $('#eir-eventdetail').hidden=true;
 let observedWidth=null;new ResizeObserver(()=>{const width=root.getBoundingClientRect().width;if(width!==observedWidth){observedWidth=width;drawTimeline()}drawGraph()}).observe(root);drawTimeline();drawGraph();
-root.addEventListener('keydown',event=>{if(event.target.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){const tabs=$('[data-view]'),index=tabs.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();event.preventDefault()}});
-let printDetails=[];window.addEventListener('beforeprint',()=>{printDetails=$('details').map(d=>[d,d.open]);printDetails.forEach(([d])=>d.open=true)});window.addEventListener('afterprint',()=>{printDetails.forEach(([d,open])=>d.open=open);printDetails=[]});
-$('button,summary').forEach(n=>n.classList.add('cursor-interaction'));
+root.addEventListener('keydown',event=>{if(event.target.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){const tabs=$$('[data-view]'),index=tabs.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();event.preventDefault()}});
+let printDetails=[];window.addEventListener('beforeprint',()=>{printDetails=$$('details').map(d=>[d,d.open]);printDetails.forEach(([d])=>d.open=true)});window.addEventListener('afterprint',()=>{printDetails.forEach(([d,open])=>d.open=open);printDetails=[]});
+$$('button,summary').forEach(n=>n.classList.add('cursor-interaction'));
 })();
 </script>
 </div>
