@@ -48,3 +48,5 @@ jobs:
           npx playwright install --with-deps chromium
           npm run test:app
           npm run test:browser
+          sudo apt-get install -y fonts-noto-cjk
+          node tests/design-browser.cjs
