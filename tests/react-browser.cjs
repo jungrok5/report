@@ -115,6 +115,8 @@ const { chromium } = require("playwright");
         if (!t.includes(i.observed) || !t.includes(i.decision))
           throw Error("narrative must show observation and decision");
       }
+      const observationsText = await page.locator(".observations").innerText();
+      if (!observationsText.includes(fixture.summary.impact) || !observationsText.includes(fixture.summary.recovery) || (await page.locator(".conclusiontext").innerText()) !== fixture.summary.text) throw Error("summary information lost during deduplication");
       await page.emulateMedia({ media: "print" });
       if (!(await page.locator(".print-document-info").isVisible()) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.id) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.timezone)) throw Error("print document metadata missing");
       if (

@@ -22,7 +22,7 @@ lang = "ko"
 severity = "error"
 pattern = '(혁신|획기|압도|파격|폭발|대대|가히\s?혁명)적|전례\s?없는|막강한|게임\s?체인저|차세대\s?(솔루션|플랫폼|기술)'
 message = "근거 없는 과장 수식어"
-suggest = "무엇이 얼마나 나아지는지 숫자나 동작으로 쓰세요 (예: 응답 1 ms 이하)"
+suggest = "무엇이 얼마나 나아지는지 숫자나 동작으로 서술 (예: 응답 1 ms 이하)"
 
 [[rule]]
 id = "ko-ai-boilerplate"
@@ -30,7 +30,7 @@ lang = "ko"
 severity = "error"
 pattern = '강력한\s*(AI|인공지능|기능|성능)|AI\s?기반의?\s*(강력|혁신|스마트|지능형)|스마트한\s?(솔루션|경험)|새로운\s?패러다임'
 message = "AI가 자주 쓰는 상투 문구"
-suggest = "제품이 실제로 하는 일을 쓰세요"
+suggest = "제품이 실제로 하는 일로 교체"
 
 [[rule]]
 id = "ko-closing-formula"
@@ -38,7 +38,7 @@ lang = "ko"
 severity = "error"
 pattern = '결론적으로|요약하자면|정리하자면|종합하자면|종합적으로\s?볼\s?때'
 message = "결말 공식"
-suggest = "마지막 사실로 끝내고 요약 접속어는 지우세요"
+suggest = "요약 접속어 삭제, 마지막 사실로 마무리"
 
 [[rule]]
 id = "ko-inflation"
@@ -46,7 +46,7 @@ lang = "ko"
 severity = "error"
 pattern = '시사하는\s?바가\s?(크|큽|커)|주목할\s?만하|간과할\s?수\s?없|지평을\s?(열|넓)|새로운\s?장을\s?열|시대가\s?도래|패러다임\s?전환|중요한\s?이정표'
 message = "의미 부풀리기"
-suggest = "지우거나 구체적인 결과(날짜, 수치)로 바꾸세요"
+suggest = "삭제 또는 구체적인 결과(날짜, 수치)로 교체"
 
 [[rule]]
 id = "ko-now-is-the-time"
@@ -54,7 +54,7 @@ lang = "ko"
 severity = "error"
 pattern = '지금이야말로|할\s?때입니다|할\s?때예요|할\s?시점입니다'
 message = "선동형 결말"
-suggest = "지금 하면 무엇이 달라지는지 쓰세요"
+suggest = "지금 하면 달라지는 점을 서술"
 
 [[rule]]
 id = "ko-double-passive"
@@ -62,7 +62,7 @@ lang = "ko"
 severity = "error"
 pattern = '되어(지|집|진|져)|지게\s?(됩니다|돼요|된다)'
 message = "이중 피동"
-suggest = "돼요 / 누가 하는지 주어를 쓰세요"
+suggest = "됩니다 / 누가 하는지 주어 명시"
 
 [[rule]]
 id = "ko-ni-isseoseo"
@@ -77,8 +77,8 @@ id = "ko-chatbot-residue"
 lang = "ko"
 severity = "error"
 pattern = '도움이\s?되(셨|었)(길|으면)|궁금한\s?점이\s?있으시면\s?언제든|좋은\s?질문|물론입니다!'
-message = "챗봇 말투가 남았어요"
-suggest = "지우세요"
+message = "챗봇 말투가 남음"
+suggest = "삭제"
 
 [[rule]]
 id = "ko-must-important"
@@ -86,7 +86,7 @@ lang = "ko"
 severity = "warning"
 pattern = '것이\s?(중요|필수|핵심)(합니다|해요|하다|적)'
 message = "'~하는 것이 중요합니다'"
-suggest = "해야 할 일을 바로 쓰세요 (예: 매일 백업하세요)"
+suggest = "해야 할 일을 바로 서술 (예: 매일 백업합니다)"
 
 [[rule]]
 id = "ko-tonghae"
@@ -103,7 +103,7 @@ lang = "ko"
 severity = "warning"
 pattern = '에\s?대(해서?|하여)\s'
 message = "번역투 '~에 대해'"
-suggest = "목적어로 바로 쓰세요 (미래에 대해 분석 → 미래를 분석)"
+suggest = "목적어로 바로 연결 (미래에 대해 분석 → 미래를 분석)"
 max_per_file = 3
 
 [[rule]]
@@ -112,7 +112,7 @@ lang = "ko"
 severity = "warning"
 pattern = '을\s?가지고\s?있|를\s?가지고\s?있'
 message = "번역투 '~을 가지고 있다'"
-suggest = "성능이 높아요 / ~이 있어요"
+suggest = "성능이 높습니다 / ~이 있습니다"
 
 [[rule]]
 id = "ko-uihae"
@@ -137,7 +137,7 @@ lang = "ko"
 severity = "warning"
 pattern = '(중요한|필요한)\s?것은|핵심은\s|관건은\s'
 message = "'중요한 것은 X이다' 구문"
-suggest = "X를 주어로 바로 쓰세요"
+suggest = "X를 주어로 바로 서술"
 
 [[rule]]
 id = "ko-vague-praise"
@@ -145,7 +145,7 @@ lang = "ko"
 severity = "warning"
 pattern = '다양한|효과적(인|으로)|원활(한|하게)|최적의|효율적(인|으로)|손쉽게|간편하게|완벽(한|하게)|스마트한'
 message = "모호한 칭찬 어휘"
-suggest = "무엇이 몇 개인지, 어떻게 빠른지 쓰세요"
+suggest = "개수와 속도를 숫자로 서술"
 max_per_file = 2
 
 [[rule]]
@@ -154,7 +154,7 @@ lang = "ko"
 severity = "warning"
 pattern = '(작업|처리|검토|확인|배포|설치)(을|를)\s?(수행|진행|실시)'
 message = "명사 + 수행/진행/실시"
-suggest = "동사로 (삭제 작업을 수행합니다 → 삭제해요)"
+suggest = "동사로 (삭제 작업을 수행합니다 → 삭제합니다)"
 
 [[rule]]
 id = "ko-metadiscourse"
@@ -170,7 +170,7 @@ lang = "ko"
 severity = "warning"
 pattern = '것으로\s?(보입니다|보여요|예상됩니다|판단됩니다)|수\s?있을\s?것으로'
 message = "겹친 추측 표현"
-suggest = "확인한 사실이면 단정하고, 아니면 무엇을 모르는지 쓰세요"
+suggest = "확인한 사실은 단정, 모르는 것은 모른다고 명시"
 
 [[rule]]
 id = "ko-not-but"
@@ -178,7 +178,7 @@ lang = "ko"
 severity = "warning"
 pattern = '단순(히|한)\s?\S+(을|를)?\s?넘어|뿐만\s?아니라'
 message = "'단순한 X를 넘어 / ~뿐만 아니라' 대구"
-suggest = "할 수 있는 일을 그대로 나열하세요"
+suggest = "할 수 있는 일만 나열"
 max_per_file = 1
 
 [[rule]]
@@ -187,7 +187,7 @@ lang = "ko"
 severity = "warning"
 pattern = '(하|되|있|없|이|았|었|였|르|많|크|작|빠르|쉽)(고|며|면서|지만|는데|어서|아서),\s'
 message = "연결어미 뒤 쉼표"
-suggest = "쉼표 없이 이어 쓰세요"
+suggest = "쉼표 삭제 또는 문장 분리"
 max_per_file = 3
 
 [[rule]]
@@ -196,7 +196,7 @@ lang = "any"
 severity = "error"
 pattern = '(?m)^\s*([-*+]|#{1,6}|\d+\.)\s*[\U0001F300-\U0001FAFF☀-➿⭐]'
 message = "목록·제목 앞 이모지"
-suggest = "이모지를 지우세요 (상태 표시가 꼭 필요하면 표의 열로)"
+suggest = "이모지 삭제 (상태 표시가 꼭 필요하면 표의 열로)"
 
 [[rule]]
 id = "ko-register-mix"
@@ -205,7 +205,7 @@ lang = "ko"
 severity = "error"
 pattern = '(니다|니까)[.?!]|[^니]요[.?!]'
 message = "한 문서 안에서 종결 어미(합니다체·해요체·한다체)가 섞였습니다"
-suggest = "문서 하나는 한 가지 문체로 작성합니다 (문서 기본: 합니다체)"
+suggest = "문서 하나에 문체 하나 (문서 기본: 합니다체)"
 
 [[rule]]
 id = "ko-haeyo"
@@ -213,7 +213,7 @@ lang = "ko"
 severity = "error"
 pattern = '[가-힣](?<!니)(어요|아요|예요|에요|해요|돼요|죠|세요\?)[.?!]'
 message = "해요체 문장 (문서 기본은 합니다체)"
-suggest = "합니다체로: ~해요 → ~합니다, ~돼요 → ~됩니다. 제품 UI가 해요체를 쓰기로 했다면 레포의 .style/rules.toml에서 이 규칙을 끕니다"
+suggest = "합니다체로: ~해요 → ~합니다, ~돼요 → ~됩니다 (해요체 제품 UI는 .style/rules.toml에서 이 규칙 해제)"
 max_per_file = 2
 
 [[rule]]
@@ -222,7 +222,7 @@ lang = "ko"
 severity = "error"
 pattern = '거예요|거에요|잖아요|잖습니까|해\s?줘요|해\s?드려요|\s딱\s|\s그냥\s|\s되게\s|엄청'
 message = "구어체 표현"
-suggest = "문서체로 바꾸거나 삭제합니다"
+suggest = "문서체로 교체 또는 삭제"
 
 [[rule]]
 id = "ko-personify"
@@ -230,7 +230,7 @@ lang = "ko"
 severity = "error"
 pattern = '흘러가|알아서\s?(챙|처리|해)|일이\s?(돌아|굴러)|척척|술술|뚝딱'
 message = "일·도구를 사람처럼 쓰는 구어 표현"
-suggest = "주체와 동작을 명시합니다 (예: 워크플로가 라벨을 변경합니다)"
+suggest = "주체와 동작 명시 (예: 워크플로가 라벨을 변경합니다)"
 
 [[rule]]
 id = "ko-reader-talk"
@@ -238,7 +238,51 @@ lang = "ko"
 severity = "error"
 pattern = '걱정하지\s?마세요|어렵지\s?않(아요|습니다)|한번\s?볼까요|살펴볼까요|함께\s?(알아|살펴)보|궁금하시죠'
 message = "독자에게 말을 거는 문장"
-suggest = "삭제하고 바로 내용으로 들어갑니다"
+suggest = "삭제, 바로 내용으로 시작"
+
+# Added from an adversarial review of the ai-design page (structure-level tells in Korean prose).
+[[rule]]
+id = "ko-metaphor-verb"
+lang = "ko"
+severity = "warning"
+pattern = '(걸러|덜어|녹여|담아|짚어)\s?(내|냅|낸|냈|낼)|덜어\s?(줍|주는|드립|드리)|(담았|녹였)습니다|녹아\s?있'
+message = "동작을 비유 동사로 표현 ('걸러 냅니다', '덜어 줍니다', '담았습니다')"
+suggest = "실제 동작 동사로 교체 (걸러 냅니다 → 검사하고 위치를 알립니다)"
+max_per_file = 1
+
+[[rule]]
+id = "ko-universal-claim"
+lang = "ko"
+severity = "warning"
+pattern = '어느\s?\S+(에나|에서나|이든|든지)\s|어디(에나|서나|든)\s|어떤\s?\S+(에도|에서도)\s(붙|쓸|동작|적용|사용)'
+message = "근거 없는 범용 주장 ('어느 프로젝트에나')"
+suggest = "실제 전제 조건으로 교체 (Python 3.11 이상, .md·.html·.tsx 파일)"
+
+[[rule]]
+id = "ko-reason-cleft"
+lang = "ko"
+severity = "warning"
+pattern = '(이유|까닭)는\s[^.?!\n]{1,100}?때문(입니다|이다|이에요)[.]'
+message = "'~하는 이유는 ~때문입니다' 설명 구문"
+suggest = "원인을 주어로 바로 서술 (기본값을 매번 새로 정해서 화면이 비슷해집니다), 근거 없는 인과는 삭제"
+
+[[rule]]
+id = "ko-paired-contrast"
+lang = "ko"
+severity = "warning"
+pattern = '(?<![가-힣])[가-힣A-Za-z]+(은|는)\s[^,.\n]{1,30}?(으로|로|에만|만),\s[^,.\n]{0,15}?[가-힣A-Za-z]+(은|는|이면|으면)\s[^,.\n]{1,30}?(으로|로|에만|만)\s'
+message = "'X는 A로, Y는 B로' 대칭 대구 반복"
+suggest = "문장 하나에 사실 하나, 또는 표로 이동"
+max_per_file = 1
+
+[[rule]]
+id = "ko-just-one"
+lang = "ko"
+severity = "warning"
+pattern = '(?<=[가-힣A-Za-z0-9)])(?<!중)\s(하나|한\s가지)(로|가|를|만|뿐|입니다|\s|[.,)])'
+message = "'X 하나' 단일성 강조 반복"
+suggest = "수가 중요할 때만 유지 (합니다체 하나로 씁니다 → 합니다체로 씁니다)"
+max_per_file = 4
 
 # ───────────────────────── English prose ─────────────────────────
 
@@ -370,7 +414,7 @@ suggest = "one solid color; emphasize with size or weight"
 id = "ui-emoji-heading"
 kind = "markup"
 severity = "error"
-pattern = '<(h[1-6]|button|a|li)\b[^>]*>\s*[\U0001F300-\U0001FAFF✨⭐]'
+pattern = '<(h[1-6]|button|a|li)\b[^>]*>\s*(?P<hit>[\U0001F300-\U0001FAFF✨⭐])'
 message = "Emoji used as an icon in a heading, button, link or list item"
 suggest = "SVG icon with aria-hidden, or nothing"
 
@@ -490,3 +534,19 @@ pattern = '(?<![\w-])font-family\s*:\s*(?!\s*(?:var\(|inherit|initial|unset))'
 message = "Font stack outside the design tokens"
 suggest = "font-family: var(--font-sans) or var(--font-mono)"
 
+[[rule]]
+id = "ui-section-number"
+kind = "markup"
+severity = "warning"
+pattern = '<(span|div|p|small|b|strong|em|i)\b[^>]*>\s*0[1-9]\.?\s*</\1>|<(span|div)\b[^>]*class="(num|number|index|n)"[^>]*>\s*\d{1,2}\.?\s*</\2>'
+message = "순서가 아닌 절·항목에 붙인 번호 (01, 02 …)"
+suggest = "번호 삭제, 실제 순서면 ds-steps 사용"
+max_per_file = 2
+
+[[rule]]
+id = "ui-table-min-width"
+kind = "markup"
+severity = "warning"
+pattern = 'table[^{}]*\{[^}]*min-width:\s*([4-9]\d{2}|\d{4,})px'
+message = "Table with a fixed min-width wider than a phone screen"
+suggest = "turn a two-column table into a list (<dl>), or let it wrap; never wider than 375 px by force"

@@ -37,7 +37,7 @@
 
 ## 기본 글·화면 기준
 
-[jungrok5/ai-design](https://github.com/jungrok5/ai-design)의 `polish-writing`, `polish-ui`, 기준 문서와 스타일 검사기를 장애 조사 스킬에 포함했습니다. 원본은 `c5bd85fe73ebe35cf9af6780bbe636731adca710`(1.0.0)에 고정했습니다. 작성 시 두 스킬을 읽고, JSON·HTML 생성과 페이지 빌드에서 같은 검사 규칙을 적용합니다. `AGENTS.md`는 레포 작업에도 이 기준을 적용합니다.
+[jungrok5/ai-design](https://github.com/jungrok5/ai-design)의 `polish-writing`, `polish-ui`, 기준 문서와 스타일 검사기를 장애 조사 스킬에 포함했습니다. 원본은 `41a545e358ca7a87fa615746c1804661af76dbd5`(1.2.0)에 고정했습니다. 작성 시 두 스킬을 읽고, JSON·HTML 생성과 페이지 빌드에서 같은 검사 규칙을 적용합니다. `AGENTS.md`는 레포 작업에도 이 기준을 적용합니다.
 
 ```bash
 npm run style

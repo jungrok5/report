@@ -62,12 +62,25 @@ code, kbd, pre { font-family: var(--font-mono); }
   font-size: var(--text-s); line-height: 1.7; white-space: pre; overflow-x: auto;
 }
 .ds-cmd .ds-c { color: var(--code-muted); }
+/* The copy button stays quiet so a page with several commands keeps one primary action. */
 .ds-cmd button {
   align-self: flex-start; flex: none; min-height: 36px; padding: 0 var(--space-3); border-radius: var(--radius-s);
-  border: 0; background: var(--accent); color: var(--accent-fg); font: 700 13px / 1 var(--font-sans); cursor: pointer;
+  border: 1px solid var(--code-line); background: transparent; color: var(--code-fg);
+  font: 500 13px / 1 var(--font-sans); cursor: pointer;
 }
-.ds-cmd button:hover { background: var(--accent-hover); }
+.ds-cmd button:hover { border-color: var(--code-muted); }
 .ds-cmd button:focus-visible { outline-color: var(--code-fg); }
+@media (max-width: 600px) { .ds-cmd code, .ds-cmd pre { white-space: pre-wrap; overflow-wrap: anywhere; } }
+
+/* real output: what a command printed, pasted from an actual run; not copyable, lines marked by meaning */
+.ds-output {
+  margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: var(--radius-l);
+  padding: var(--space-4); font: var(--text-s) / 1.7 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.ds-output .ds-prompt { color: var(--code-muted); }
+.ds-output .ds-err { color: var(--code-danger); }
+.ds-output .ds-warn { color: var(--code-warn); }
+.ds-output .ds-ok { color: var(--code-ok); }
 
 /* numbered steps: a sequence; .is-human marks a person's decision */
 .ds-steps { list-style: none; margin: 0; padding: 0; counter-reset: ds-step; }
@@ -115,4 +128,3 @@ code, kbd, pre { font-family: var(--font-mono); }
 /* diagram frame (Mermaid or element-built diagrams) */
 .ds-figure { margin: 0; border: var(--border); border-radius: var(--radius-l); padding: var(--space-4); overflow-x: auto; background: var(--bg); }
 .ds-figure figcaption { font-size: 13px; color: var(--subtle); margin-top: var(--space-2); }
-

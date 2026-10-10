@@ -19,4 +19,3 @@
     document.dispatchEvent(new Event("themechange"));
   });
 })();
-

@@ -52,6 +52,32 @@ actors as a diagram first, prose only for conditions and exceptions; comparisons
 as charts. Never write an action as an explanation, an explanation as a list of commands, or repeat one fact in prose,
 table and diagram.
 
+## Page-level tells (the style check sees sentences, not pages)
+
+A page can pass every rule and still read as generated. Before you finish, read the whole page once for these:
+
+- **Show, then describe.** When the text introduces a tool, paste its real output from an actual run (a command and
+  what it printed). An example the reader can copy must be one you ran; if the result depends on a condition (a
+  threshold, a flag), say so next to it.
+- **Numbers carry their source.** Give a measurement its condition (`5 KB 파일 하나에 약 0.1초`, measured how). A count
+  that changes with the code (rules, tests, files) appears once, and every document in the repo states the same value.
+  When parts and a total appear together, the parts add up to the total. Do not call a made-up sample "real" or "typical".
+- **Scope is the real precondition.** Replace `어느 프로젝트에나`, `모든`, `항상` with what is actually required. A tool
+  page also says when not to use it and what it gets wrong.
+- **Say each point once.** A section does not open by restating its heading, and a later section repeats an earlier
+  fact only to add something new. If a steps list or diagram shows a flow, the hero lead and the section text do not
+  narrate the same flow again.
+- **Break the stamp.** If three sections share one frame (number, heading, lead, body) or three sentences share one
+  shape (`X는 A로, Y는 B로`), change the form of at least one; let the content set the number of items. Splitting a
+  paired sentence into two matching short sentences is the same stamp. Do not run three or more short sentences in a
+  row; join a cause and its result in one sentence. Lists of exactly three examples need a reason to be three.
+- **Literal verbs, one subject.** Name what the thing does (`검사합니다`, `알립니다`, `막습니다`), not a metaphor
+  (`걸러 냅니다`, `덜어 줍니다`). Keep one subject per sentence; do not start with the product and end with something else.
+- **One name per concept, one concept per name.** Do not rotate synonyms (흔적 / AI 티, 결과 / 출력) to avoid
+  repetition, and do not use one word for two actors (the AI that wrote the text and the AI that fixes it). An internal
+  name (a theme or code name) gets a plain noun the first time.
+- **Say who made it and why**, when the reader will ask: one honest paragraph from facts you have, never invented.
+
 ## Output
 
 When asked to polish existing text, return the revised text, then at most 5 bullets naming the biggest changes. When
@@ -59,4 +85,3 @@ writing new text, just write it to this standard. Fix every `error` from the sty
 keep it on purpose. To quote a bad example on purpose, mark the line with `style-ignore`.
 
 Sources and licenses: `THIRD_PARTY_NOTICES.md` in this plugin.
-

@@ -20,4 +20,3 @@ is copied verbatim.
 | [Tailwind CSS color palette](https://tailwindcss.com/docs/colors) | MIT, © Tailwind Labs | light-theme color values in `skills/polish-ui/design/tokens.css` |
 | [IBM Plex Mono](https://github.com/IBM/plex), [Noto Sans KR](https://github.com/notofonts/noto-cjk) | SIL OFL 1.1 | fonts named by the design tokens (loaded from Google Fonts, not bundled) |
 | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | W3C document license | contrast, focus and target-size numbers |
-

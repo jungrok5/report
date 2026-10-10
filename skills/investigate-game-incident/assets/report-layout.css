@@ -13,7 +13,7 @@
   background: var(--paper);
 }
 #eir-report .eir-chrome strong {
-  font-size: 12px;
+  font-size: var(--text-caption);
   font-weight: 600;
 }
 #eir-report .eir-chrome nav {
@@ -24,7 +24,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  font-size: 12px;
+  font-size: var(--text-caption);
   text-decoration: none;
   color: var(--muted);
 }
@@ -49,7 +49,7 @@
   max-width: 980px;
 }
 #eir-report h2 {
-  font-size: 19px;
+  font-size: var(--text-heading);
   line-height: 1.5;
   letter-spacing: -0.025em;
   font-weight: 600;
@@ -60,14 +60,14 @@
   gap: 8px 18px;
   flex-wrap: wrap;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--text-caption);
   margin-bottom: 12px;
 }
 #eir-report .eir-synthetic-label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--text-caption);
   padding: 2px 7px;
   background: var(--canvas);
   border: 1px solid var(--border);
@@ -91,7 +91,7 @@
   align-items: center;
   gap: 8px;
   min-height: 44px;
-  font-size: 12px;
+  font-size: var(--text-caption);
   color: var(--muted);
 }
 #eir-report .eir-report-meta summary::after {
@@ -133,7 +133,7 @@
   margin: 0;
   width: 100%;
   min-height: 44px;
-  font-size: 12px;
+  font-size: var(--text-caption);
   padding: 8px 28px 8px 10px;
   border-radius: var(--radius-small);
 }
@@ -143,7 +143,7 @@
 #eir-report .eir-file-tools summary {
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: var(--text-caption);
   color: var(--accent);
 }
 #eir-report .eir-file-tools[open] {
@@ -169,7 +169,7 @@
 }
 #eir-report .eir-section-title > .eir-small {
   display: block;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-section-title .eir-badge {
   margin-top: 4px;
@@ -178,7 +178,7 @@
   min-width: 0;
 }
 #eir-report .eir-phenomenon {
-  font-size: 16px;
+  font-size: var(--text-reading);
   line-height: 1.8;
   margin: 0 0 10px;
 }
@@ -203,13 +203,13 @@
 }
 #eir-report .eir-legend .eir-metric-label {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-caption);
   line-height: 1.45;
   color: var(--muted);
 }
 #eir-report .eir-legend .eir-metric-range {
   display: block;
-  font-size: 17px;
+  font-size: var(--text-reading);
   line-height: 1.4;
   margin-top: 5px;
   letter-spacing: -0.025em;
@@ -218,14 +218,14 @@
 #eir-report .eir-legend .eir-metric-unit {
   display: inline;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-chartwrap {
   margin-top: 12px;
 }
 #eir-report .eir-chart-note {
   margin: 0 0 4px;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-timeline-tools {
   border: 0;
@@ -236,7 +236,7 @@
   display: flex;
   align-items: center;
   min-height: 44px;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-timeline-tools summary::before {
   content: "+";
@@ -261,7 +261,7 @@
   padding: 6px 9px;
   text-align: left;
   background: none;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-events .eir-num {
   grid-row: span 2;
@@ -270,11 +270,12 @@
   font-variant-numeric: tabular-nums;
 }
 #eir-report .eir-events time {
-  font-size: 11px;
+  font-size: var(--text-caption);
   font-variant-numeric: tabular-nums;
   color: var(--accent);
 }
 #eir-report .eir-summary {
+  display: block;
   padding: 28px;
   margin: 6px -28px 32px;
   background: var(--answer-surface);
@@ -291,6 +292,16 @@
   --border: var(--answer-border);
   color: var(--ink);
 }
+#eir-report .eir-summary .eir-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+#eir-report .eir-summary .eir-section-content {
+  max-width: 980px;
+}
 #eir-report .eir-conclusiontext {
   margin: 0 0 18px;
   font-size: var(--answer-size);
@@ -299,7 +310,7 @@
   letter-spacing: -0.025em;
 }
 #eir-report .eir-summary .eir-section-title h2 {
-  font-size: 20px;
+  font-size: var(--text-heading);
 }
 #eir-report .eir-summary .eir-badge {
   padding: 3px 9px;
@@ -309,10 +320,10 @@
 #eir-report .eir-summary .eir-summaryfooter {
   margin-top: 18px;
   line-height: 1.75;
-  font-size: 12px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-summary .eir-small {
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-summary .eir-textbutton {
   color: var(--accent);
@@ -336,7 +347,7 @@
 }
 #eir-report .eir-narrative-step h3 {
   margin: 0 0 14px;
-  font-size: 17px;
+  font-size: var(--text-reading);
   line-height: 1.6;
   letter-spacing: -0.02em;
 }
@@ -345,11 +356,11 @@
   vertical-align: middle;
 }
 #eir-report .eir-narrative-step p {
-  font-size: 14px;
+  font-size: var(--text-body);
   line-height: 1.85;
 }
 #eir-report .eir-narrative-step p > strong {
-  font-size: 12px;
+  font-size: var(--text-caption);
   font-weight: 500;
   color: var(--muted);
   margin-right: 7px;
@@ -374,14 +385,14 @@
   content: "−";
 }
 #eir-report .eir-narrative-step .eir-textbutton {
-  font-size: 12px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-tabs {
   margin: 4px 0 24px;
   gap: 10px;
 }
 #eir-report .eir-tabs button {
-  font-size: 13px;
+  font-size: var(--text-body);
   padding: 8px 12px;
 }
 #eir-report .eir-detail {
@@ -391,11 +402,11 @@
   border-radius: var(--radius-small);
 }
 #eir-report .eir-detail h2 {
-  font-size: 21px;
+  font-size: var(--text-heading);
   margin: 10px 0 14px;
 }
 #eir-report .eir-detail h3 {
-  font-size: 13px;
+  font-size: var(--text-body);
   margin-top: 22px;
 }
 #eir-report .eir-graph {
@@ -459,7 +470,7 @@
     margin: 0 !important;
   }
   #eir-report .eir-section-title > .eir-small {
-    font-size: 11px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-summary {
     margin: 6px -20px 28px;
@@ -481,7 +492,7 @@
     gap: 18px;
   }
   #eir-report .eir-chrome nav a {
-    font-size: 11px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-body {
     padding: 24px 20px 28px;
@@ -493,7 +504,7 @@
     margin-bottom: 20px;
   }
   #eir-report .eir-report-context {
-    font-size: 11px;
+    font-size: var(--text-caption);
     gap: 8px;
     margin-bottom: 8px;
   }
@@ -505,7 +516,7 @@
     max-width: 100%;
   }
   #eir-report .eir-report-meta summary {
-    font-size: 11px;
+    font-size: var(--text-caption);
     white-space: nowrap;
   }
   #eir-report .eir-heading-tools:has(.eir-report-meta[open]) {
@@ -516,11 +527,11 @@
     gap: 10px;
   }
   #eir-report .eir-toolbar select {
-    font-size: 11px;
+    font-size: var(--text-caption);
     padding: 8px 20px 8px 8px;
   }
   #eir-report .eir-file-tools summary {
-    font-size: 11px;
+    font-size: var(--text-caption);
     white-space: nowrap;
   }
   #eir-report .eir-toolbar .eir-buttons {
@@ -531,13 +542,13 @@
     gap: 14px;
   }
   #eir-report h2 {
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
   #eir-report .eir-section-title > .eir-small {
-    font-size: 10px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-phenomenon {
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 1.75;
   }
   #eir-report .eir-legend {
@@ -545,26 +556,26 @@
     margin-top: 18px;
   }
   #eir-report .eir-legend .eir-metric-label {
-    font-size: 10px;
+    font-size: var(--text-caption);
     min-height: 29px;
   }
   #eir-report .eir-legend .eir-metric-range {
-    font-size: 12px;
+    font-size: var(--text-caption);
     letter-spacing: -0.02em;
   }
   #eir-report .eir-legend .eir-metric-unit {
-    font-size: 10px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-summary {
     margin: 4px -20px 24px;
     padding: 22px 20px;
   }
   #eir-report .eir-conclusiontext {
-    font-size: 18px;
+    font-size: var(--text-heading);
     line-height: 1.8;
   }
   #eir-report .eir-summary .eir-section-title h2 {
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
   #eir-report .eir-narrative {
     padding-top: 0;
@@ -573,10 +584,10 @@
     padding: 18px 0;
   }
   #eir-report .eir-narrative-step h3 {
-    font-size: 15px;
+    font-size: var(--text-reading);
   }
   #eir-report .eir-narrative-step p {
-    font-size: 13px;
+    font-size: var(--text-body);
   }
   #eir-report .eir-narrative .eir-section-title > p {
     display: none;
@@ -589,16 +600,16 @@
   }
   #eir-report .eir-tabs button {
     padding: 7px 9px;
-    font-size: 12px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-graph {
     height: 450px;
   }
   #eir-report .eir-events button {
-    font-size: 10px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-chart-note {
-    font-size: 10px;
+    font-size: var(--text-caption);
   }
 }
 @media (max-width: 350px) {
@@ -625,7 +636,7 @@
     gap: 8px;
   }
   #eir-report .eir-legend .eir-metric-range {
-    font-size: 11px;
+    font-size: var(--text-caption);
   }
   #eir-report .eir-summary {
     margin-left: -16px;
@@ -672,7 +683,7 @@
     color: var(--ink);
   }
   #eir-report .eir-conclusiontext {
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
   #eir-report .eir-summary .eir-section-title {
     margin-bottom: 8px;
@@ -681,7 +692,7 @@
     color: var(--ink);
   }
   #eir-report .eir-legend .eir-metric-range {
-    font-size: 14px;
+    font-size: var(--text-body);
   }
   #eir-report .eir-detail {
     background: var(--paper);
@@ -702,7 +713,7 @@
 @media print {
   #eir-report .eir-print-document-info {
     display: block;
-    font-size: 11px;
+    font-size: var(--text-caption);
     color: var(--muted);
     margin: 10px 0 20px;
   }
@@ -737,7 +748,7 @@
   margin: 0;
 }
 #eir-report .eir-chartreadout label {
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-chartreadout input {
   width: 130px;
@@ -751,7 +762,7 @@
   display: flex;
   align-items: center;
   min-height: 44px;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 #eir-report .eir-report-meta[open] {
   border: 0;
@@ -761,13 +772,13 @@
 }
 @media (max-width: 700px) {
   #eir-report .eir-summary #eir-conclusion {
-    font-size: 18px;
+    font-size: var(--text-heading);
     line-height: 1.8;
   }
 }
 @media print {
   #eir-report .eir-summary #eir-conclusion {
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
   #eir-report .eir-report-meta,
   #eir-report .eir-graph-help {
@@ -776,7 +787,7 @@
   #eir-report .eir-print-document-info {
     display: block;
     margin: 10px 0 20px;
-    font-size: 11px;
+    font-size: var(--text-caption);
     color: var(--muted);
   }
   #eir-report .eir-chart-note {

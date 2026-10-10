@@ -555,8 +555,7 @@ function Report({ report, toolbar }) {
         <div className="section-content">
           <p className="conclusiontext">{report.summary.text}</p>
           <div className="summaryfooter">
-            <span>영향: {report.summary.impact}</span>
-            <span>복구: {report.summary.recovery}</span>
+            <a href="#phenomenon">영향·회복 기록 확인</a>
           </div>
           <p className="small">
             근거: {report.summary.evidence_ids.join(", ")} · 한계:{" "}
@@ -606,24 +605,17 @@ function Report({ report, toolbar }) {
                   이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
                 </button>
                 <details>
-                  <summary>가설 · 확인 내용 · 다음 확인</summary>
+                  <summary>가설 · 예측 · 다음 확인</summary>
                   <p className="small">조사 {i.investigated_at}</p>
                   {[
                     ["가설", i.hypothesis],
                     ["예측", i.prediction],
-                    ["관측", i.observed],
                     ["다음 확인", i.next_test],
                   ].map(([key, value]) => (
                     <p key={key}>
                       <strong>{key}:</strong> {value}
                     </p>
                   ))}
-                  <button
-                    className="textbutton no-print"
-                    onClick={() => focusEvidence(i.evidence_ids)}
-                  >
-                    이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
-                  </button>
                 </details>
               </article>
             ))

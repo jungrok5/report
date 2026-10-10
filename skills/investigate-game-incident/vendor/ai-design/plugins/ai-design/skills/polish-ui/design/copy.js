@@ -11,4 +11,3 @@ document.addEventListener("click", async (e) => {
   try { await navigator.clipboard.writeText(text); btn.textContent = "복사됨"; } catch { btn.textContent = "복사 실패"; }
   setTimeout(() => { btn.textContent = label; }, 1500);
 });
-

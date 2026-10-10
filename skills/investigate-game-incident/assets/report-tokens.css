@@ -36,8 +36,13 @@
   --answer-border: #6f8599;
   --report-width: 1224px;
   --section-rail: 170px;
-  --title-size: clamp(1.625rem, 3.8vw, 2.625rem);
-  --answer-size: clamp(1.125rem, 2.1vw, 1.5rem);
+  --text-caption: 0.75rem;
+  --text-body: 0.875rem;
+  --text-reading: 1rem;
+  --text-heading: 1.25rem;
+  --text-answer: 1.5rem;
+  --title-size: clamp(1.75rem, 3.8vw, 2.625rem);
+  --answer-size: clamp(1.25rem, 2.1vw, 1.5rem);
 }
 @media (prefers-color-scheme: dark) {
   :root, #eir-report {

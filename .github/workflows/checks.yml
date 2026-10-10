@@ -14,6 +14,16 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - name: Verify pinned ai-design bytes
+        run: |
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root = Path('skills/investigate-game-incident/vendor/ai-design')
+          manifest = json.loads((root / 'UPSTREAM.json').read_text())
+          for name, expected in manifest['files_sha256'].items():
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == expected, name
+          PY
       - name: Check report prose and UI with pinned ai-design
         run: npm run style
       - name: Test collection, investigation and immutable report versions
@@ -33,3 +43,8 @@ jobs:
           cmp /tmp/report.md docs/report.md
       - name: Build React Flow report page
         run: npm run build
+      - name: Verify interactive and portable reports in Chromium
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:app
+          npm run test:browser
