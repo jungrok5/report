@@ -35,9 +35,20 @@
 
 운영 연결과 실제 모델 호출은 주소·쿼리·인증·자료가 준비된 환경에서 별도로 검증해야 합니다. 예시의 가상 계획 재생은 AI 성능 평가가 아닙니다.
 
+## 기본 글·화면 기준
+
+[jungrok5/ai-design](https://github.com/jungrok5/ai-design)의 `polish-writing`, `polish-ui`, 기준 문서와 스타일 검사기를 장애 조사 스킬에 포함했습니다. 원본은 `c5bd85fe73ebe35cf9af6780bbe636731adca710`(1.0.0)에 고정했습니다. 작성 시 두 스킬을 읽고, JSON·HTML 생성과 페이지 빌드에서 같은 검사 규칙을 적용합니다. `AGENTS.md`는 레포 작업에도 이 기준을 적용합니다.
+
+```bash
+npm run style
+python skills/investigate-game-incident/scripts/check_style.py incident.json
+```
+
+문서는 합니다체, 제목·표·범례는 개조식으로 작성합니다. 기존 보고서의 배치와 디자인 시스템을 유지하며 색·글꼴은 `report-tokens.css`에 정의합니다. 스타일 검사는 근거의 사실 여부나 접근성을 자동 보증하지 않습니다. 쿼리·URL·로그 표본·당시 보존 바이트는 검사할 서술과 분리하며 윤문하지 않습니다. 스타일 오류가 있으면 HTML 렌더링과 페이지 빌드를 중단합니다. MIT 출처·라이선스는 스킬의 `vendor/ai-design/`에 보존합니다.
+
 ## React 화면 실행
 
-Node.js 24와 Python 3.10+를 사용합니다. 버전은 `package-lock.json`에 고정합니다.
+Node.js 24와 Python 3.11+를 사용합니다. 버전은 `package-lock.json`에 고정합니다.
 
 ```bash
 npm ci

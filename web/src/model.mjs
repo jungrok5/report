@@ -10,7 +10,7 @@ export const delivery = {
   approved: "검토 완료",
   changes_requested: "수정 요청",
 };
-export const colors = ["#315bb0", "#b26a20", "#8653ad", "#258375", "#ba5064"];
+export const colors = [1, 2, 3, 4, 5].map((i) => `var(--series-${i})`);
 export function safeUrl(value) {
   try {
     const u = new URL(value);

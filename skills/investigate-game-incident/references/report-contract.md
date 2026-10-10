@@ -1,6 +1,6 @@
 # 보고서 입력 규약 v1
 
-Python 3.10+와 UTF-8 JSON을 사용한다. 모든 시각은 timezone이 포함된 ISO 8601로 기록한다. `null` 표본은 관측 누락이며 0과 다르다. 상세 예시는 `../assets/example-restart.json`을 참고한다.
+Python 3.11+와 UTF-8 JSON을 사용한다. 모든 시각은 timezone이 포함된 ISO 8601로 기록한다. `null` 표본은 관측 누락이며 0과 다르다. 상세 예시는 `../assets/example-restart.json`을 참고한다.
 
 ## 필수 최상위 필드
 

@@ -1,0 +1,67 @@
+/* Design system "Clear" (ai-design) — tokens. Light: 선명한 블루. Dark: 그래파이트.
+   Use only these variables in product CSS; the style check warns on raw colors and font stacks elsewhere.
+   Spec and component rules: DESIGN.md. Colors adapted from the Tailwind CSS palette (MIT). */
+:root {
+  /* color: surfaces */
+  --bg: #ffffff;
+  --surface: #f8fafc;
+  --sunk: #f1f5f9;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  /* color: text */
+  --fg: #0f172a;
+  --muted: #475569;
+  --subtle: #64748b;
+  /* color: the one accent (actions, links, current state, human gates) */
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-fg: #ffffff;
+  --accent-soft: #eff6ff;
+  /* color: status (meaning only, never decoration) */
+  --ok: #067647;      --ok-soft: #ecfdf3;
+  --warn: #b54708;    --warn-soft: #fffaeb;
+  --danger: #b42318;  --danger-soft: #fef3f2;
+  /* color: code and terminals */
+  --code-bg: #0f172a;
+  --code-fg: #e2e8f0;
+  --code-muted: #94a3b8;
+  --focus: #1d4ed8;
+
+  /* type */
+  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 12px; --text-s: 14px; --text-m: 16px; --text-l: 18px;
+  --text-h3: 18px; --text-h2: 24px; --text-h1: clamp(30px, 4.4vw, 44px);
+  --leading: 1.7; --leading-tight: 1.3;
+
+  /* space, shape */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --radius-s: 6px; --radius-m: 8px; --radius-l: 10px;
+  --border: 1px solid var(--line);
+  --measure: 72ch;
+  --page: 1120px;
+  --motion: 180ms ease-out;
+  color-scheme: light;
+}
+
+/* Dark follows the OS unless the page sets data-theme. Keep both blocks identical. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1e2124; --surface: #25292c; --sunk: #191b1e; --line: #33373b; --line-strong: #454b51;
+    --fg: #e4e6e8; --muted: #b4b9be; --subtle: #9ba1a6;
+    --accent: #7cb7e8; --accent-hover: #a9d0f0; --accent-fg: #10151a; --accent-soft: #233240;
+    --ok: #47cd89; --ok-soft: #16322a; --warn: #fdb022; --warn-soft: #3a2c12; --danger: #f97066; --danger-soft: #3b1f1d;
+    --code-bg: #141618; --code-fg: #e4e6e8; --code-muted: #7d8389; --focus: #7cb7e8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1e2124; --surface: #25292c; --sunk: #191b1e; --line: #33373b; --line-strong: #454b51;
+  --fg: #e4e6e8; --muted: #b4b9be; --subtle: #9ba1a6;
+  --accent: #7cb7e8; --accent-hover: #a9d0f0; --accent-fg: #10151a; --accent-soft: #233240;
+  --ok: #47cd89; --ok-soft: #16322a; --warn: #fdb022; --warn-soft: #3a2c12; --danger: #f97066; --danger-soft: #3b1f1d;
+  --code-bg: #141618; --code-fg: #e4e6e8; --code-muted: #7d8389; --focus: #7cb7e8;
+  color-scheme: dark;
+}
+

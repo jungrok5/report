@@ -9,11 +9,15 @@ description: "게임·서비스 장애의 메트릭, DB 상태, 클라이언트 
 
 ## 시작하기
 
+보고서를 생성하거나 다듬을 때 [ai-design 글 스킬](vendor/ai-design/plugins/ai-design/skills/polish-writing/SKILL.md)과 [공통 기준](vendor/ai-design/docs/standard.md)을 먼저 읽고 기본으로 적용하라. HTML·React 화면 변경에는 [ai-design UI 스킬](vendor/ai-design/plugins/ai-design/skills/polish-ui/SKILL.md)도 읽어라. 원본은 `vendor/ai-design/UPSTREAM.json`의 커밋에 고정돼 있으므로 별도 설치나 인터넷 조회 없이 사용할 수 있다.
+
+글은 합니다체로 다듬고 기존 보고서의 `assets/report-tokens.css` 또는 프로젝트 토큰을 사용하라. 증거 상태·수치·단위·시각·쿼리·URL·보존 바이트는 윤문 대상이 아니다. 의심스러운 사실은 윤문으로 보완하지 말고 미확인으로 기록하라. 최종 JSON에 `python scripts/check_style.py incident.json`을 실행하고 오류를 수정하라. HTML 렌더러도 같은 검사를 기본 실행한다. 스타일 검사에는 Python 3.11+가 필요하며 판단·접근성·원인 정확성을 자동 보증하지 않는다.
+
 1. 제공된 자료와 접근 가능한 도구를 먼저 확인하라. 이미 승인된 읽기 범위에서 조사하라.
 2. 사건 범위·시간대·영향 월드·관측 공백을 확인하라. 누락된 핵심 정보가 있을 때만 질문하고 나머지는 진행하라.
 3. 자료가 불충분하면 예비 보고서를 작성하라. 수치, 조회 결과, 원본 URL, 실행한 검증을 만들어내지 말라. 샘플 데이터는 `meta.synthetic=true`로 표시하라.
 4. [분석 절차](references/investigation.md)를 읽어 후보를 좁히고, [데이터 규약](references/report-contract.md)에 맞춰 `incident.json`을 작성하라.
-5. HTML 산출물이 필요하면 다음 명령을 실행하라. Python 3.10+ 표준 라이브러리만 필요하다.
+5. HTML 산출물이 필요하면 다음 명령을 실행하라. Python 3.11+ 표준 라이브러리만 필요하다.
 
 ```bash
 python scripts/render_report.py incident.json --out report.html --markdown-out report.md

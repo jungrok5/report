@@ -1,17 +1,7 @@
 :root {
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
-  color: #26354b;
-  background: #f3f5f8;
-  --paper: #fff;
-  --canvas: #f4f6f9;
-  --border: #d8e0eb;
-  --muted: #677b96;
-  --accent: #315bb0;
-  color-scheme: light;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--page);
 }
 * {
   box-sizing: border-box;
@@ -34,8 +24,8 @@ button {
   cursor: pointer;
   min-height: 44px;
   background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-small);
   padding: 7px 10px;
 }
 button:focus-visible,
@@ -46,7 +36,7 @@ select:focus-visible {
   outline-offset: 3px;
 }
 button[aria-pressed="true"] {
-  background: #edf3ff;
+  background: var(--wash);
   border-color: var(--accent);
 }
 button:disabled {
@@ -80,7 +70,7 @@ a {
   max-width: 1160px;
   margin: auto;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-large);
   overflow: clip;
 }
 .chrome {
@@ -119,8 +109,8 @@ a {
 select,
 input:not([type="range"]),
 textarea {
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-small);
   padding: 10px;
   background: var(--paper);
   color: inherit;
@@ -147,7 +137,7 @@ textarea {
   background: var(--paper);
   border: 1px solid var(--border);
   padding: 17px;
-  border-radius: 7px;
+  border-radius: var(--radius-large);
   margin: 18px 0;
 }
 .headerline {
@@ -184,8 +174,7 @@ textarea {
 }
 .timeline text {
   font:
-    11px system-ui,
-    sans-serif;
+    11px var(--font-sans);
   fill: var(--muted);
 }
 .charttip {
@@ -195,10 +184,10 @@ textarea {
   max-width: min(400px, 85%);
   background: var(--paper);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-medium);
   padding: 12px;
   font-size: 12px;
-  box-shadow: 0 4px 16px #25354b1c;
+  box-shadow: 0 4px 16px var(--overlay-shadow);
   pointer-events: none;
   z-index: 3;
 }
@@ -233,7 +222,7 @@ textarea {
 .selected,
 .reason {
   background: var(--canvas);
-  border-radius: 5px;
+  border-radius: var(--radius-medium);
   padding: 12px;
   font-size: 13px;
 }
@@ -257,23 +246,23 @@ textarea {
   font-size: 11px;
   padding: 3px 7px;
   background: var(--canvas);
-  border-radius: 4px;
+  border-radius: var(--radius-small);
   color: var(--accent);
 }
 .badge.verified,
 .badge.approved {
-  color: #36715a;
+  color: var(--green);
 }
 .badge.supported,
 .badge.unknown,
 .badge.changes_requested {
-  color: #976422;
+  color: var(--warm);
 }
 .badge.excluded {
   color: var(--muted);
 }
 .conclusion {
-  border-left: 4px solid var(--accent);
+  border-color: var(--border);
 }
 .conclusiontext {
   font-size: 17px;
@@ -323,15 +312,15 @@ textarea {
   min-width: 0;
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-medium);
   background: var(--paper);
 }
 .causenode {
   width: 215px;
   height: 110px;
   padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-medium);
   background: var(--paper);
   display: flex;
   flex-direction: column;
@@ -341,7 +330,7 @@ textarea {
 }
 .causenode.active {
   border-color: var(--accent);
-  background: #edf3ff;
+  background: var(--wash);
 }
 .causenode strong {
   font-size: 14px;
@@ -358,13 +347,15 @@ textarea {
   background: var(--paper);
 }
 .react-flow__controls button {
-  min-height: 28px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 5px;
   background: var(--paper);
   color: inherit;
 }
 .react-flow__edge-text {
   font-size: 11px;
+  fill: var(--ink);
 }
 .react-flow__edge-textbg {
   fill: var(--paper);
@@ -374,13 +365,10 @@ pre {
   overflow-wrap: anywhere;
   background: var(--canvas);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-medium);
   padding: 11px;
   font:
-    12px/1.7 ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace;
+    12px/1.7 var(--font-mono);
   color: inherit;
   max-height: 520px;
   overflow-y: auto;
@@ -433,9 +421,9 @@ textarea {
 }
 .error {
   padding: 14px;
-  border: 1px solid #c28c68;
+  border: 1px solid var(--danger-border);
   background: var(--paper);
-  color: #924822;
+  color: var(--danger);
 }
 .print-evidence {
   display: none;
@@ -491,41 +479,21 @@ footer {
     font-size: 12px;
   }
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #d7e0ee;
-    background: #101823;
-    --paper: #192432;
-    --canvas: #111c29;
-    --border: #34445a;
-    --muted: #a1b1ca;
-    --accent: #9abaff;
-  }
-  .causenode.active,
-  button[aria-pressed="true"] {
-    background: #203553;
-  }
-  .badge.verified,
-  .badge.approved {
-    color: #95ceac;
-  }
-  .badge.supported,
-  .badge.unknown,
-  .badge.changes_requested {
-    color: #e0b987;
-  }
-  .error {
-    color: #f0bc95;
-  }
-  .react-flow {
-    --xy-background-color-default: var(--paper);
-  }
+.react-flow {
+  --xy-background-color: var(--paper);
+  --xy-edge-label-color: var(--ink);
+  --xy-edge-label-background-color: var(--paper);
+  --xy-controls-button-color: var(--ink);
+  --xy-controls-button-color-hover: var(--ink);
+  --xy-controls-button-background-color: var(--paper);
+  --xy-controls-button-background-color-hover: var(--wash);
+  --xy-controls-button-border-color: var(--control-border);
 }
 @media print {
   body {
     padding: 0;
-    background: white;
-    color: #26354b;
+    background: var(--page);
+    color: var(--ink);
   }
   .report {
     border: 0;
@@ -568,13 +536,6 @@ footer {
   }
   .print-evidence a:after {
     content: " (" attr(href) ")";
-  }
-  :root {
-    --paper: white;
-    --canvas: #f3f5f8;
-    --border: #d8e0eb;
-    --muted: #677b96;
-    --accent: #315bb0;
   }
 }
 
@@ -696,3 +657,10 @@ footer {
     display: none !important;
   }
 }
+
+body { word-break: keep-all; overflow-wrap: anywhere; line-height: 1.75; font-size: 14px; }
+.body { background: var(--canvas); }
+.values, .legend, .small, .meta, pre { font-variant-numeric: tabular-nums; }
+textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+summary { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }

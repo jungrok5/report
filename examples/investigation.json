@@ -678,8 +678,8 @@
       "label": "처리되지 않은 CacheMissError 후보",
       "role": "원인 후보",
       "status": "supported",
-      "statement": "종료 직전 예외가 직접 원인 후보다.",
-      "rationale": "dump 요약에 예외 위치와 종료 코드 1이 있다.",
+      "statement": "종료 직전 예외가 직접 원인 후보입니다.",
+      "rationale": "dump 요약에 예외 위치와 종료 코드 1이 있습니다.",
       "evidence_ids": [
         "E_crash",
         "E_timeline"
@@ -691,14 +691,14 @@
       "label": "동시 초기 로딩의 DB 부하 후보",
       "role": "원인 후보",
       "status": "supported",
-      "statement": "재기동 후 과도한 동시 로딩이 지연 회복을 늦췄을 가능성이 있다.",
-      "rationale": "64개 로딩 worker 설정과 DB 피크에 로딩 태그가 다수인 기록이 함께 존재한다. 사건 로그의 약 79.5%와 DB 요약의 72%는 불일치한다.",
+      "statement": "재기동 후 과도한 동시 로딩이 지연 회복을 늦췄을 가능성이 있습니다.",
+      "rationale": "64개 로딩 worker 설정과 DB 피크에 로딩 태그가 다수인 기록이 함께 존재합니다. 사건 로그의 약 79.5%와 DB 요약의 72%는 불일치합니다.",
       "evidence_ids": [
         "E_warming",
         "E_db-qps",
         "E_latency"
       ],
-      "limitations": "태그 비율 79.5%/72%의 집계 범위·필터 불일치 여부가 미확인이다. 동시 관측만 있으며 worker 대조 실험과 다른 DB 쿼리 영향 확인 필요."
+      "limitations": "태그 비율 79.5%/72%의 집계 범위·필터 불일치 여부가 미확인입니다. 동시 관측만 있으며 worker 대조 실험과 다른 DB 쿼리 영향 확인 필요."
     }
   ],
   "edges": [
@@ -708,7 +708,7 @@
       "target": "V_timeline_1",
       "label": "처리되지 않은 CacheMissError 후보 → 월드 07 프로세스 종료",
       "status": "supported",
-      "mechanism": "예외 처리 누락이 프로세스 종료를 일으켰을 가능성. 예외와 종료의 직접 관계를 재현해야 한다.",
+      "mechanism": "예외 처리 누락이 프로세스 종료를 일으켰을 가능성. 예외와 종료의 직접 관계를 재현해야 합니다.",
       "evidence_ids": [
         "E_crash",
         "E_timeline"
@@ -721,23 +721,23 @@
       "target": "V_timeline_6",
       "label": "동시 초기 로딩의 DB 부하 후보 → DB 부하 피크",
       "status": "supported",
-      "mechanism": "동시 로딩이 DB 요청을 늘려 대기를 유발했을 가능성. worker 수 조절 실험으로 지연 변화를 확인해야 한다.",
+      "mechanism": "동시 로딩이 DB 요청을 늘려 대기를 유발했을 가능성. worker 수 조절 실험으로 지연 변화를 확인해야 합니다.",
       "evidence_ids": [
         "E_db-qps",
         "E_latency",
         "E_timeline",
         "E_warming"
       ],
-      "limitations": "태그 비율 79.5%/72%의 집계 범위·필터 불일치 여부가 미확인이다. 동시 관측만 있으며 worker 대조 실험과 다른 DB 쿼리 영향 확인 필요."
+      "limitations": "태그 비율 79.5%/72%의 집계 범위·필터 불일치 여부가 미확인입니다. 동시 관측만 있으며 worker 대조 실험과 다른 DB 쿼리 영향 확인 필요."
     }
   ],
   "investigation": [
     {
       "question": "다운 원인과 재기동 이후 지연은 같은 문제인가?",
-      "hypothesis": "종료 직전 예외와 초기 데이터 로딩 부하가 각각 관여했을 수 있다.",
-      "prediction": "dump에 종료 직전 예외가 있고, 로딩 이후 DB 부하가 상승한다.",
-      "observed": "21:02 종료, 21:05 재기동, 21:05:30 로딩, 21:07 DB 피크가 기록됐다.",
-      "decision": "선후 관계만으로 원인을 확정하지 않는다. 종료 직전 dump를 추가 확인한다.",
+      "hypothesis": "종료 직전 예외와 초기 데이터 로딩 부하가 각각 관여했을 수 있습니다.",
+      "prediction": "dump에 종료 직전 예외가 있고, 로딩 이후 DB 부하가 상승합니다.",
+      "observed": "21:02 종료, 21:05 재기동, 21:05:30 로딩, 21:07 DB 피크가 기록됐습니다.",
+      "decision": "선후 관계만으로 원인을 확정하지 않습니다. 종료 직전 dump를 추가 확인합니다.",
       "status": "unknown",
       "evidence_ids": [
         "E_timeline",
@@ -749,10 +749,10 @@
     },
     {
       "question": "종료 직전 예외가 직접 원인인가?",
-      "hypothesis": "CacheMissError가 처리되지 않아 프로세스가 종료됐을 수 있다.",
-      "prediction": "dump의 예외 경로와 종료 시각이 일치하고 동일 입력으로 종료를 재현할 수 있어야 한다.",
-      "observed": "가상 dump에는 CacheMissError와 종료 코드 1이 기록돼 있다. 동일 입력 재현은 미실행이다.",
-      "decision": "예외 경로를 유력 후보로 유지한다. 종료 원인과 재기동 후 지연을 구분해 DB 태그를 확인한다.",
+      "hypothesis": "CacheMissError가 처리되지 않아 프로세스가 종료됐을 수 있습니다.",
+      "prediction": "dump의 예외 경로와 종료 시각이 일치하고 동일 입력으로 종료를 재현할 수 있어야 합니다.",
+      "observed": "가상 dump에는 CacheMissError와 종료 코드 1이 기록돼 있습니다. 동일 입력 재현은 미실행입니다.",
+      "decision": "예외 경로를 유력 후보로 유지합니다. 종료 원인과 재기동 후 지연을 구분해 DB 태그를 확인합니다.",
       "status": "supported",
       "evidence_ids": [
         "E_crash",
@@ -764,10 +764,10 @@
     },
     {
       "question": "재기동 후 DB 피크와 로딩 지연은 어디서 왔는가?",
-      "hypothesis": "64개 worker의 동시 초기 로딩이 DB 부하를 키워 회복을 늦췄을 수 있다.",
-      "prediction": "DB 피크의 다수가 로딩 태그이고 worker 수를 줄이면 동일 조건 지연이 감소해야 한다.",
-      "observed": "가상 DB 요약은 prefetch 태그 72%, worker 설정 64를 기록한다. 사건 로그는 피크 1,850 QPS 중 로딩 태그 1,470 QPS(약 79.5%)를 기록해 비율이 일치하지 않는다. 요청 p99는 2,800 ms, 별도 클라이언트 표본의 로딩 p99는 4,200 ms다.",
-      "decision": "로딩 태그의 정확한 기여율은 자료 간 불일치로 미확인이다. 종료 직전 예외와 재기동 후 동시 로딩을 서로 다른 원인 후보로 유지한다. 통제된 재현은 미실행이므로 확정하지 않는다.",
+      "hypothesis": "64개 worker의 동시 초기 로딩이 DB 부하를 키워 회복을 늦췄을 수 있습니다.",
+      "prediction": "DB 피크의 다수가 로딩 태그이고 worker 수를 줄이면 동일 조건 지연이 감소해야 합니다.",
+      "observed": "가상 DB 요약은 prefetch 태그 72%, worker 설정 64를 기록합니다. 사건 로그는 피크 1,850 QPS 중 로딩 태그 1,470 QPS(약 79.5%)를 기록해 비율이 일치하지 않습니다. 요청 p99는 2,800 ms, 별도 클라이언트 표본의 로딩 p99는 4,200 ms입니다.",
+      "decision": "로딩 태그의 정확한 기여율은 자료 간 불일치로 미확인입니다. 종료 직전 예외와 재기동 후 동시 로딩을 서로 다른 원인 후보로 유지합니다. 통제된 재현은 미실행이므로 확정하지 않습니다.",
       "status": "supported",
       "evidence_ids": [
         "E_warming",

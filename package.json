@@ -2,9 +2,10 @@
   "name": "incident-evidence-skill",
   "private": true,
   "scripts": {
+    "style": "python3 tools/check_style.py",
     "test:browser": "node tests/browser.cjs && node tests/engine-browser.cjs",
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build && python3 tools/package_site.py",
+    "build": "npm run style && vite build && python3 tools/package_site.py",
     "test:model": "node --test tests/model.test.mjs",
     "test:app": "node tests/react-browser.cjs"
   },

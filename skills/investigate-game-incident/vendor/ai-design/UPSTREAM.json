@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/jungrok5/ai-design",
+  "revision": "c5bd85fe73ebe35cf9af6780bbe636731adca710",
+  "version": "1.0.0",
+  "license": "MIT",
+  "files_sha256": {
+    "LICENSE": "d540c6780013e36bff6e0ff1f52ca7bba5bd4a748df6bfab627e3dd61d444666",
+    "docs/standard.md": "f7acde75605dc6cb5040c8fc8ec98352df66f1df0615c9a54c4584f26dfe3139",
+    "plugins/ai-design/THIRD_PARTY_NOTICES.md": "6386a0b303466198961fb46a75551a99b9d27ddee30a447e99ff6759da1286b8",
+    "plugins/ai-design/skills/polish-ui/SKILL.md": "34acf32668602f893b9c341faf669cd339d09b6acd487a138a10e8aabf898d76",
+    "plugins/ai-design/skills/polish-ui/design/DESIGN.md": "d0dd0b15bd4246774aef2cd5ae7dec3524deb3ba36e4e4338252a911ee708fe0",
+    "plugins/ai-design/skills/polish-ui/design/components.css": "3f3f18c71f4c6a170aff6661782425f7cf9acad8e1f4022af794fd8dc8843810",
+    "plugins/ai-design/skills/polish-ui/design/copy.js": "78f792fa66be13e47d167f6286251a9e82de2b2adc49e016673ff1a7a8cd4015",
+    "plugins/ai-design/skills/polish-ui/design/theme.js": "dd51bf4c37021fa2badb98e0902a4c5021c34e97fa6865b1c40f11baacee3973",
+    "plugins/ai-design/skills/polish-ui/design/tokens.css": "1acafc381c86cdbd6fbc108e5db22fadc67e1b12c29d9db489307307f63c814f",
+    "plugins/ai-design/skills/polish-writing/SKILL.md": "f6b037b64cecea97cffc94f3b2962c996bad24ab3981811199e2ee51bd6f1d7d",
+    "plugins/ai-design/style/rules.toml": "0e18b537e4f284ee2b67179d79fe7d954621a23b0e0df1448f852db9c98f3966",
+    "plugins/ai-design/style/style_check.py": "10a610ee05d4dc39ccd09e39ac87903f0a00c8ff2a8700788fc9b22805aca9cd"
+  }
+}

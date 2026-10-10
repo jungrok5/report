@@ -1,0 +1,118 @@
+/* Design system "Clear" (ai-design) — base and components. Needs tokens.css first.
+   Every value comes from a token. Class names start with ds- so they can sit next to product CSS. */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-sans); font-size: var(--text-m); line-height: var(--leading);
+  word-break: keep-all; overflow-wrap: break-word;
+}
+h1, h2, h3, h4 { margin: 0; line-height: var(--leading-tight); font-weight: 700; text-wrap: balance; }
+h1 { font-size: var(--text-h1); letter-spacing: -0.02em; }
+h2 { font-size: var(--text-h2); letter-spacing: -0.01em; }
+h3 { font-size: var(--text-h3); }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+code, kbd, pre { font-family: var(--font-mono); }
+:not(pre) > code {
+  font-size: 0.88em; background: var(--sunk); border: var(--border); border-radius: 4px;
+  padding: 0 4px; overflow-wrap: anywhere; word-break: normal;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* layout */
+.ds-page { max-width: var(--page); margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-8); }
+@media (min-width: 720px) { .ds-page { padding-inline: var(--space-5); } }
+.ds-stack { display: grid; gap: var(--space-4); }
+.ds-lede { font-size: var(--text-l); color: var(--muted); max-width: var(--measure); }
+.ds-eyebrow { font-size: var(--text-s); font-weight: 700; color: var(--accent); }
+.ds-muted { color: var(--muted); }
+
+/* top bar */
+.ds-topbar {
+  display: flex; align-items: center; gap: var(--space-5); min-height: 60px;
+  padding: 0 var(--space-4); border-bottom: var(--border); background: var(--bg);
+}
+.ds-topbar a { color: var(--muted); text-decoration: none; font-size: var(--text-s); }
+.ds-topbar a[aria-current="page"] { color: var(--fg); font-weight: 700; }
+
+/* buttons: one primary per view */
+.ds-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; padding: 0 var(--space-4); border-radius: var(--radius-m);
+  font: 700 var(--text-s) / 1 var(--font-sans); cursor: pointer; text-decoration: none;
+  background: var(--bg); color: var(--fg); border: 1px solid var(--line-strong);
+  transition: background-color var(--motion), border-color var(--motion);
+}
+.ds-btn:hover { border-color: var(--subtle); }
+.ds-btn--primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.ds-btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-fg); }
+
+/* copyable command: an action the reader runs */
+.ds-cmd {
+  display: flex; align-items: center; gap: var(--space-2); min-width: 0;
+  background: var(--code-bg); color: var(--code-fg); border-radius: var(--radius-l);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+}
+.ds-cmd code, .ds-cmd pre {
+  flex: 1; min-width: 0; margin: 0; background: none; border: 0; padding: 0; color: inherit;
+  font-size: var(--text-s); line-height: 1.7; white-space: pre; overflow-x: auto;
+}
+.ds-cmd .ds-c { color: var(--code-muted); }
+.ds-cmd button {
+  align-self: flex-start; flex: none; min-height: 36px; padding: 0 var(--space-3); border-radius: var(--radius-s);
+  border: 0; background: var(--accent); color: var(--accent-fg); font: 700 13px / 1 var(--font-sans); cursor: pointer;
+}
+.ds-cmd button:hover { background: var(--accent-hover); }
+.ds-cmd button:focus-visible { outline-color: var(--code-fg); }
+
+/* numbered steps: a sequence; .is-human marks a person's decision */
+.ds-steps { list-style: none; margin: 0; padding: 0; counter-reset: ds-step; }
+.ds-steps > li {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: var(--space-3); align-items: start;
+  padding: var(--space-3) 0; border-bottom: var(--border);
+}
+.ds-steps > li:last-child { border-bottom: 0; }
+.ds-steps > li::before {
+  counter-increment: ds-step; content: counter(ds-step);
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--sunk); color: var(--fg); font: 700 13px / 1 var(--font-sans);
+}
+.ds-steps > li.is-human::before { background: var(--accent); color: var(--accent-fg); }
+.ds-steps .ds-who { font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; padding-top: 3px; }
+.ds-steps h3, .ds-steps h4 { font-size: var(--text-m); }
+.ds-steps p { font-size: 15px; color: var(--muted); margin-top: 2px; }
+
+/* table: comparisons and lists of facts */
+.ds-table-wrap { overflow-x: auto; }
+.ds-table { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+.ds-table th, .ds-table td { text-align: left; vertical-align: top; padding: 10px 16px 10px 0; border-bottom: var(--border); }
+.ds-table thead th { font-size: 13px; font-weight: 500; color: var(--subtle); border-bottom-color: var(--line-strong); }
+.ds-table tbody tr:last-child > * { border-bottom: 0; }
+
+/* panel: groups related content; border only, no shadow, no side stripe */
+.ds-panel { background: var(--bg); border: var(--border); border-radius: var(--radius-l); padding: var(--space-5); min-width: 0; }
+.ds-panel--sunk { background: var(--surface); }
+
+/* note: a short remark that must not be missed */
+.ds-note { display: grid; gap: var(--space-1); background: var(--accent-soft); border-radius: var(--radius-m); padding: var(--space-3) var(--space-4); font-size: 15px; }
+.ds-note--warn { background: var(--warn-soft); }
+.ds-note--danger { background: var(--danger-soft); }
+
+/* badge: state, owner, kind */
+.ds-badge {
+  display: inline-flex; align-items: center; min-height: 22px; padding: 0 var(--space-2); border-radius: 4px;
+  font-size: var(--text-xs); font-weight: 700; background: var(--sunk); color: var(--muted); white-space: nowrap;
+}
+.ds-badge--accent { background: var(--accent-soft); color: var(--accent); }
+.ds-badge--ok { background: var(--ok-soft); color: var(--ok); }
+.ds-badge--warn { background: var(--warn-soft); color: var(--warn); }
+.ds-badge--danger { background: var(--danger-soft); color: var(--danger); }
+
+/* diagram frame (Mermaid or element-built diagrams) */
+.ds-figure { margin: 0; border: var(--border); border-radius: var(--radius-l); padding: var(--space-4); overflow-x: auto; background: var(--bg); }
+.ds-figure figcaption { font-size: 13px; color: var(--subtle); margin-top: var(--space-2); }
+

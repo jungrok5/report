@@ -1,0 +1,31 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_server",
+    "title": "영향 서버 상태 표본",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": {
+      "process_up_full_window": true,
+      "request_p99_ms": 92,
+      "db_qps_range": [
+        278,
+        285
+      ],
+      "scope": "해당 세션이 연결한 가상 프로세스·DB"
+    },
+    "query": null,
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

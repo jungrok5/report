@@ -1,0 +1,94 @@
+{
+  "synthetic": true,
+  "evidence": {
+    "id": "E_events",
+    "title": "배포·신고·조치 기록",
+    "source": "가상 관측·검증 표본",
+    "observed_start": "2026-10-08T20:55:00+09:00",
+    "observed_end": "2026-10-08T21:20:00+09:00",
+    "retrieved_at": "2026-10-09T09:00:00+09:00",
+    "sample": [
+      {
+        "id": "V1",
+        "at": "2026-10-08T21:02:00+09:00",
+        "label": "Android 2.14 배포",
+        "kind": "change",
+        "detail": "신규 로그인 재시도 경로가 포함된 클라이언트 버전 배포 기록.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V2",
+        "at": "2026-10-08T21:03:00+09:00",
+        "label": "로그인 지연 신고",
+        "kind": "alert",
+        "detail": "Android 2.14 로딩 지연 신고와 표본 증가.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V3",
+        "at": "2026-10-08T21:07:00+09:00",
+        "label": "동접 하락",
+        "kind": "observation",
+        "detail": "동접 28,000명으로 감소. 종료 기여율은 별도 확인 필요.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V4",
+        "at": "2026-10-08T21:08:00+09:00",
+        "label": "클라이언트 지연 피크",
+        "kind": "observation",
+        "detail": "2.14 클라이언트 로그인 완료 p99가 9,100ms.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V5",
+        "at": "2026-10-08T21:09:00+09:00",
+        "label": "재시도 기능 플래그 중지",
+        "kind": "intervention",
+        "detail": "신규 재시도 경로의 플래그 중지 기록. 실제 운영 변경을 수행한 것은 아님.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V6",
+        "at": "2026-10-08T21:13:00+09:00",
+        "label": "로그인 지연 정상화",
+        "kind": "recovery",
+        "detail": "클라이언트 p99 160ms.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      },
+      {
+        "id": "V7",
+        "at": "2026-10-08T21:17:00+09:00",
+        "label": "동접 회복",
+        "kind": "recovery",
+        "detail": "동접 40,000명 회복.",
+        "evidence_ids": [
+          "E_events"
+        ]
+      }
+    ],
+    "query": null,
+    "parameters": {
+      "synthetic": true,
+      "window": {
+        "start": "2026-10-08T20:55:00+09:00",
+        "end": "2026-10-08T21:20:00+09:00",
+        "baseline_end": "2026-10-08T21:01:00+09:00"
+      }
+    },
+    "source_url": null,
+    "limitations": "모든 자료·조회·실험은 설명을 위한 합성 예시. 실제 운영 조회·실험·모델 실행이 아님."
+  }
+}

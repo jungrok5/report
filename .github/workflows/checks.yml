@@ -14,6 +14,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - name: Check report prose and UI with pinned ai-design
+        run: npm run style
       - name: Test collection, investigation and immutable report versions
         run: python3 -m unittest discover -s skills/investigate-game-incident/scripts -p 'test_*.py' -v
       - name: Check synthetic investigation and case archive drift

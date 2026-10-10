@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded read-only collection, evidence-led planning and preliminary reports.
 
-Python 3.10+, no runtime packages. See references/engine.md for the contract.
+Python 3.11+, no runtime packages. See references/engine.md for the contract.
 """
 import argparse
 import copy
@@ -466,6 +466,8 @@ class Engine:
                   "이미 조회한 근거만 판정/요약/후보에 인용하라. 인과 후보는 검증됨으로 표현하지 말라. "
                   "조회 실패·부분 결과로 부재를 주장하거나 후보를 배제하지 말라. "
                   "query_ids가 빈 배열이면 조사를 끝낸다. candidates의 target_event_ids는 실제 사건 ID만 사용한다. "
+                  "ai-design 기본 글 기준: 설명은 쉬운 한국어 합니다체로 쓰고 과장·홍보 표현을 쓰지 말라. "
+                  "근거의 수치·단위·시각·상태·쿼리·URL·인용 표본은 문체 수정으로 바꾸지 말라. "
                   "추론 과정을 쓰지 말고 재현 가능한 예측·관측·판정과 한계를 적어라.\n" + dumps(self.save_planner_input()))
         body = {"ask": prompt, "stream": False, "enable_tool_approval": True,
                 "response_format": {"type": "json_schema", "json_schema": {
@@ -494,6 +496,8 @@ class Engine:
                         "새 쿼리·URL·셸/SQL 명령을 실행하지 않는다. 인과 관계를 검증됨으로 표현하지 말라. "
                         "조회 실패·부분 결과로 부재를 주장하거나 후보를 배제하지 말라. "
                         "target_event_ids는 수집한 실제 사건 ID다. query_ids가 빈 배열이면 종료한다. "
+                        "ai-design 기본 글 기준: 설명은 쉬운 한국어 합니다체로 쓰고 과장·홍보 표현을 쓰지 말라. "
+                        "근거의 수치·단위·시각·상태·쿼리·URL·인용 표본은 문체 수정으로 바꾸지 말라. "
                         "내부 추론 대신 재현 가능한 예측·관측·판정·한계·다음 확인을 기록하라.")
         body = {"model": source["model"], "messages": [
                     {"role": "system", "content": instructions},
@@ -578,7 +582,7 @@ class Engine:
         title = html.escape(report["meta"]["title"])
         document = ('<!doctype html><html lang="ko"><head><meta charset="utf-8">'
                     '<meta name="viewport" content="width=device-width,initial-scale=1">'
-                    f'<title>{title}</title><style>body{{margin:0;padding:16px;background:#f4f6f8}}</style>'
+                    f'<title>{title}</title><style>body{{margin:0;padding:16px;background:var(--page)}}</style>'
                     '</head><body>' + fragment(report) + '</body></html>\n')
         (self.out / "report.html").write_text(document, encoding="utf-8")
         (self.out / "report.md").write_text(markdown(report), encoding="utf-8")

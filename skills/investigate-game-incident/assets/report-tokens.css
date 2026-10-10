@@ -1,0 +1,77 @@
+/* Report design system. Existing report layout, reviewed with ai-design polish-ui. */
+:root, #eir-report {
+  color-scheme: light dark;
+  --font-sans: system-ui, -apple-system, "Noto Sans KR", "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --ink: #202d3d;
+  --page: #f3f5f8;
+  --paper: #fff;
+  --canvas: #f5f7fa;
+  --muted: #52627a;
+  --border: #d8e0eb;
+  --control-border: #738092;
+  --accent: #2658a6;
+  --wash: #ecf3ff;
+  --green: #216247;
+  --warm: #855215;
+  --danger: #924822;
+  --danger-border: #c28c68;
+  --overlay-shadow: #202d3d20;
+  --series-1: #2765cc;
+  --series-2: #aa620b;
+  --series-3: #8049b6;
+  --series-4: #247d75;
+  --series-5: #be4c61;
+  --series-6: #626a21;
+  --radius-small: 4px;
+  --radius-medium: 6px;
+  --radius-large: 8px;
+  --radius-page: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root, #eir-report {
+    --ink: #e4e6e8;
+    --page: #181b1e;
+    --paper: #1e2124;
+    --canvas: #16191c;
+    --muted: #b2becb;
+    --border: #46515f;
+    --control-border: #738092;
+    --accent: #7cb7e8;
+    --wash: #24334c;
+    --green: #9ddbbc;
+    --warm: #eac28b;
+    --danger: #f0bc95;
+    --danger-border: #c28c68;
+    --overlay-shadow: #0006;
+    --series-1: #88b4ff;
+    --series-2: #f5b96a;
+    --series-3: #c0a0ed;
+    --series-4: #7bd1c5;
+    --series-5: #f59bad;
+    --series-6: #c6d584;
+  }
+}
+@media print {
+  :root, #eir-report {
+    color-scheme: light;
+    --ink: #202d3d;
+    --page: #fff;
+    --paper: #fff;
+    --canvas: #f5f7fa;
+    --muted: #52627a;
+    --border: #d8e0eb;
+    --control-border: #738092;
+    --accent: #2658a6;
+    --wash: #ecf3ff;
+    --green: #216247;
+    --warm: #855215;
+    --danger: #924822;
+    --series-1: #2765cc;
+    --series-2: #aa620b;
+    --series-3: #8049b6;
+    --series-4: #247d75;
+    --series-5: #be4c61;
+    --series-6: #626a21;
+  }
+}

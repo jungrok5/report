@@ -1,0 +1,492 @@
+# ai-design style rules: the AI tone in prose and the AI look in UI code.
+# Standard and reasoning: docs/standard.md (github.com/jungrok5/ai-design). Engine: style_check.py (stdlib only).
+#
+# severity: error   = almost always wrong in product copy and docs; CI fails on it
+#           warning = often wrong; the hook shows it to the agent, CI only reports it
+#           off     = disabled (use in a repo's .style/rules.toml to turn a rule off)
+# kind:     prose   = text a person reads (Markdown outside code, HTML text)
+#           markup  = raw HTML/CSS/JSX/TSX/Vue/Svelte source
+#           register= Korean speech level mixing (합니다체 vs 해요체) in one file
+# max_per_file: report only when the pattern occurs more often than this in one file.
+#
+# Pattern ideas are adapted from MIT/Apache-2.0 sources (blader/humanizer, epoko77-ai/im-not-ai,
+# DaleSeo/korean-skills, vercel-labs/writing-guidelines and web-interface-guidelines, anthropics/skills
+# frontend-design, pbakaus/impeccable) and paraphrased from Wikipedia "Signs of AI writing" (CC BY-SA)
+# and the Toss technical-writing guide (CC BY-NC-SA). See ../THIRD_PARTY_NOTICES.md. Wording is ours.
+
+# ───────────────────────── Korean prose ─────────────────────────
+
+[[rule]]
+id = "ko-hype"
+lang = "ko"
+severity = "error"
+pattern = '(혁신|획기|압도|파격|폭발|대대|가히\s?혁명)적|전례\s?없는|막강한|게임\s?체인저|차세대\s?(솔루션|플랫폼|기술)'
+message = "근거 없는 과장 수식어"
+suggest = "무엇이 얼마나 나아지는지 숫자나 동작으로 쓰세요 (예: 응답 1 ms 이하)"
+
+[[rule]]
+id = "ko-ai-boilerplate"
+lang = "ko"
+severity = "error"
+pattern = '강력한\s*(AI|인공지능|기능|성능)|AI\s?기반의?\s*(강력|혁신|스마트|지능형)|스마트한\s?(솔루션|경험)|새로운\s?패러다임'
+message = "AI가 자주 쓰는 상투 문구"
+suggest = "제품이 실제로 하는 일을 쓰세요"
+
+[[rule]]
+id = "ko-closing-formula"
+lang = "ko"
+severity = "error"
+pattern = '결론적으로|요약하자면|정리하자면|종합하자면|종합적으로\s?볼\s?때'
+message = "결말 공식"
+suggest = "마지막 사실로 끝내고 요약 접속어는 지우세요"
+
+[[rule]]
+id = "ko-inflation"
+lang = "ko"
+severity = "error"
+pattern = '시사하는\s?바가\s?(크|큽|커)|주목할\s?만하|간과할\s?수\s?없|지평을\s?(열|넓)|새로운\s?장을\s?열|시대가\s?도래|패러다임\s?전환|중요한\s?이정표'
+message = "의미 부풀리기"
+suggest = "지우거나 구체적인 결과(날짜, 수치)로 바꾸세요"
+
+[[rule]]
+id = "ko-now-is-the-time"
+lang = "ko"
+severity = "error"
+pattern = '지금이야말로|할\s?때입니다|할\s?때예요|할\s?시점입니다'
+message = "선동형 결말"
+suggest = "지금 하면 무엇이 달라지는지 쓰세요"
+
+[[rule]]
+id = "ko-double-passive"
+lang = "ko"
+severity = "error"
+pattern = '되어(지|집|진|져)|지게\s?(됩니다|돼요|된다)'
+message = "이중 피동"
+suggest = "돼요 / 누가 하는지 주어를 쓰세요"
+
+[[rule]]
+id = "ko-ni-isseoseo"
+lang = "ko"
+severity = "error"
+pattern = '(?<![안속위밑곳])에\s?있어서?\s'  # "파일 안에 있어서"(=because it is in) is fine
+message = "번역투 '~에 있어(서)'"
+suggest = "~에서, ~할 때"
+
+[[rule]]
+id = "ko-chatbot-residue"
+lang = "ko"
+severity = "error"
+pattern = '도움이\s?되(셨|었)(길|으면)|궁금한\s?점이\s?있으시면\s?언제든|좋은\s?질문|물론입니다!'
+message = "챗봇 말투가 남았어요"
+suggest = "지우세요"
+
+[[rule]]
+id = "ko-must-important"
+lang = "ko"
+severity = "warning"
+pattern = '것이\s?(중요|필수|핵심)(합니다|해요|하다|적)'
+message = "'~하는 것이 중요합니다'"
+suggest = "해야 할 일을 바로 쓰세요 (예: 매일 백업하세요)"
+
+[[rule]]
+id = "ko-tonghae"
+lang = "ko"
+severity = "warning"
+pattern = '(을|를)\s?통(해|하여|한)\s'
+message = "번역투 '~을 통해'"
+suggest = "~로, ~에서"
+max_per_file = 2
+
+[[rule]]
+id = "ko-daehae"
+lang = "ko"
+severity = "warning"
+pattern = '에\s?대(해서?|하여)\s'
+message = "번역투 '~에 대해'"
+suggest = "목적어로 바로 쓰세요 (미래에 대해 분석 → 미래를 분석)"
+max_per_file = 3
+
+[[rule]]
+id = "ko-gajigo-itda"
+lang = "ko"
+severity = "warning"
+pattern = '을\s?가지고\s?있|를\s?가지고\s?있'
+message = "번역투 '~을 가지고 있다'"
+suggest = "성능이 높아요 / ~이 있어요"
+
+[[rule]]
+id = "ko-uihae"
+lang = "ko"
+severity = "warning"
+pattern = '에\s?의(해|하여|한)\s'
+message = "피동 '~에 의해'"
+suggest = "주어를 앞으로 (팀이 개발했습니다)"
+
+[[rule]]
+id = "ko-related-based"
+lang = "ko"
+severity = "warning"
+pattern = '와\s?관련(하여|된)|과\s?관련(하여|된)|에\s?기반(하여|한)|라는\s?점에서'
+message = "번역투 연결어"
+suggest = "~의, ~로, ~에서"
+max_per_file = 2
+
+[[rule]]
+id = "ko-cleft"
+lang = "ko"
+severity = "warning"
+pattern = '(중요한|필요한)\s?것은|핵심은\s|관건은\s'
+message = "'중요한 것은 X이다' 구문"
+suggest = "X를 주어로 바로 쓰세요"
+
+[[rule]]
+id = "ko-vague-praise"
+lang = "ko"
+severity = "warning"
+pattern = '다양한|효과적(인|으로)|원활(한|하게)|최적의|효율적(인|으로)|손쉽게|간편하게|완벽(한|하게)|스마트한'
+message = "모호한 칭찬 어휘"
+suggest = "무엇이 몇 개인지, 어떻게 빠른지 쓰세요"
+max_per_file = 2
+
+[[rule]]
+id = "ko-noun-verb"
+lang = "ko"
+severity = "warning"
+pattern = '(작업|처리|검토|확인|배포|설치)(을|를)\s?(수행|진행|실시)'
+message = "명사 + 수행/진행/실시"
+suggest = "동사로 (삭제 작업을 수행합니다 → 삭제해요)"
+
+[[rule]]
+id = "ko-metadiscourse"
+lang = "ko"
+severity = "warning"
+pattern = '알아보(겠|도록)|살펴보(겠|도록)|아시다시피|앞서\s?(설명|말)(했|한)|이번\s?(글|문서)에서는'
+message = "글에 대한 글"
+suggest = "지우고 바로 내용으로"
+
+[[rule]]
+id = "ko-hedge-stack"
+lang = "ko"
+severity = "warning"
+pattern = '것으로\s?(보입니다|보여요|예상됩니다|판단됩니다)|수\s?있을\s?것으로'
+message = "겹친 추측 표현"
+suggest = "확인한 사실이면 단정하고, 아니면 무엇을 모르는지 쓰세요"
+
+[[rule]]
+id = "ko-not-but"
+lang = "ko"
+severity = "warning"
+pattern = '단순(히|한)\s?\S+(을|를)?\s?넘어|뿐만\s?아니라'
+message = "'단순한 X를 넘어 / ~뿐만 아니라' 대구"
+suggest = "할 수 있는 일을 그대로 나열하세요"
+max_per_file = 1
+
+[[rule]]
+id = "ko-connective-comma"
+lang = "ko"
+severity = "warning"
+pattern = '(하|되|있|없|이|았|었|였|르|많|크|작|빠르|쉽)(고|며|면서|지만|는데|어서|아서),\s'
+message = "연결어미 뒤 쉼표"
+suggest = "쉼표 없이 이어 쓰세요"
+max_per_file = 3
+
+[[rule]]
+id = "ko-emoji-marker"
+lang = "any"
+severity = "error"
+pattern = '(?m)^\s*([-*+]|#{1,6}|\d+\.)\s*[\U0001F300-\U0001FAFF☀-➿⭐]'
+message = "목록·제목 앞 이모지"
+suggest = "이모지를 지우세요 (상태 표시가 꼭 필요하면 표의 열로)"
+
+[[rule]]
+id = "ko-register-mix"
+kind = "register"
+lang = "ko"
+severity = "error"
+pattern = '(니다|니까)[.?!]|[^니]요[.?!]'
+message = "한 문서 안에서 종결 어미(합니다체·해요체·한다체)가 섞였습니다"
+suggest = "문서 하나는 한 가지 문체로 작성합니다 (문서 기본: 합니다체)"
+
+[[rule]]
+id = "ko-haeyo"
+lang = "ko"
+severity = "error"
+pattern = '[가-힣](?<!니)(어요|아요|예요|에요|해요|돼요|죠|세요\?)[.?!]'
+message = "해요체 문장 (문서 기본은 합니다체)"
+suggest = "합니다체로: ~해요 → ~합니다, ~돼요 → ~됩니다. 제품 UI가 해요체를 쓰기로 했다면 레포의 .style/rules.toml에서 이 규칙을 끕니다"
+max_per_file = 2
+
+[[rule]]
+id = "ko-colloquial"
+lang = "ko"
+severity = "error"
+pattern = '거예요|거에요|잖아요|잖습니까|해\s?줘요|해\s?드려요|\s딱\s|\s그냥\s|\s되게\s|엄청'
+message = "구어체 표현"
+suggest = "문서체로 바꾸거나 삭제합니다"
+
+[[rule]]
+id = "ko-personify"
+lang = "ko"
+severity = "error"
+pattern = '흘러가|알아서\s?(챙|처리|해)|일이\s?(돌아|굴러)|척척|술술|뚝딱'
+message = "일·도구를 사람처럼 쓰는 구어 표현"
+suggest = "주체와 동작을 명시합니다 (예: 워크플로가 라벨을 변경합니다)"
+
+[[rule]]
+id = "ko-reader-talk"
+lang = "ko"
+severity = "error"
+pattern = '걱정하지\s?마세요|어렵지\s?않(아요|습니다)|한번\s?볼까요|살펴볼까요|함께\s?(알아|살펴)보|궁금하시죠'
+message = "독자에게 말을 거는 문장"
+suggest = "삭제하고 바로 내용으로 들어갑니다"
+
+# ───────────────────────── English prose ─────────────────────────
+
+[[rule]]
+id = "en-ai-vocabulary"
+lang = "en"
+severity = "error"
+pattern = '\b(delve|tapestry|testament to|intricacies|meticulous(ly)?|showcas(e|es|ing)|underscor(e|es|ing)|pivotal|garner(s|ed)?|bolster(s|ed)?|vibrant|interplay)\b'
+message = "AI vocabulary"
+suggest = "plain verb or the fact itself"
+
+[[rule]]
+id = "en-hype"
+lang = "en"
+severity = "error"
+pattern = '\b(seamless(ly)?|cutting-edge|game-?chang(er|ing)|revolutioniz\w*|unleash\w*|supercharg\w*|best-in-class|world-class|next-gen(eration)?|unlock the (power|potential))\b'
+message = "Sales language"
+suggest = "say what the user can do, with a number if you have one"
+
+[[rule]]
+id = "en-era-opener"
+lang = "en"
+severity = "error"
+pattern = "In today's (fast-paced|digital|ever-evolving)|ever-evolving landscape|in the realm of"
+message = "Era opener"
+suggest = "cut; start with the fact"
+
+[[rule]]
+id = "en-run-up"
+lang = "en"
+severity = "error"
+pattern = "\\bLet's (dive|explore|break it down)|Here's (what you need to know|the thing)|without further ado"
+message = "Staged run-up"
+suggest = "cut; start with the fact"
+
+[[rule]]
+id = "en-closer"
+lang = "en"
+severity = "error"
+pattern = "(?m)^(In conclusion|In summary|Ultimately),|Let that sink in|That's the real (win|point)"
+message = "Stock closer"
+suggest = "end on the last fact"
+
+[[rule]]
+id = "en-chatbot-residue"
+lang = "en"
+severity = "error"
+pattern = "I hope this helps|Great question|Certainly!|let me know if you|Would you like me to"
+message = "Chatbot residue"
+suggest = "delete"
+
+[[rule]]
+id = "en-inflation"
+lang = "en"
+severity = "error"
+pattern = '\bplays an? (key|crucial|pivotal|vital) role|\bstands as an?\b|setting the stage for|the future looks bright'
+message = "Significance inflation"
+suggest = "state what changed, with a date or number"
+
+[[rule]]
+id = "en-stacked-hedge"
+lang = "en"
+severity = "error"
+pattern = '\b(could potentially|may possibly|might arguably)\b'
+message = "Stacked hedge"
+suggest = "one hedge at most"
+
+[[rule]]
+id = "en-is-avoidance"
+lang = "en"
+severity = "warning"
+pattern = '\b(serves|stands|functions) as\b|\bboasts\b'
+message = "Avoiding is/has"
+suggest = "is / has"
+
+[[rule]]
+id = "en-ing-rider"
+lang = "en"
+severity = "warning"
+pattern = ', (highlighting|underscoring|emphasizing|ensuring|reflecting|fostering|showcasing)\b'
+message = "Trailing -ing rider"
+suggest = "cut it, or name the mechanism"
+
+[[rule]]
+id = "en-filler-words"
+lang = "en"
+severity = "warning"
+pattern = '\b(easily|simply|just|very|really)\b'
+message = "Filler word"
+suggest = "delete"
+max_per_file = 3
+
+[[rule]]
+id = "en-vague-authority"
+lang = "en"
+severity = "warning"
+pattern = '\b(experts|studies|research|industry reports?) (say|show|suggest|agree|believe)'
+message = "Vague authority"
+suggest = "cite the source or cut"
+
+[[rule]]
+id = "dash-overuse"
+lang = "any"
+severity = "warning"
+pattern = '(?<!\|) [—–] (?!\|)'  # a dash alone in a table cell means "none" and is fine
+message = "Em/en dash used as punctuation"
+suggest = "쉼표, 콜론, 괄호 / comma, colon, parentheses"
+max_per_file = 4
+
+# ───────────────────────── UI markup (HTML/CSS/JSX/TSX) ─────────────────────────
+
+[[rule]]
+id = "ui-purple-gradient"
+kind = "markup"
+severity = "error"
+pattern = '(from|via|to)-(indigo|violet|purple|fuchsia)-\d{3}|linear-gradient\([^)]*(#6366f1|#8b5cf6|#a855f7|#7c3aed|#4f46e5|indigo|violet|purple)'
+message = "AI default purple/indigo gradient"
+suggest = "use the product's color tokens; solid surfaces"
+
+[[rule]]
+id = "ui-gradient-text"
+kind = "markup"
+severity = "error"
+pattern = 'bg-clip-text[^"\x27]*text-transparent|text-transparent[^"\x27]*bg-clip-text|background-clip:\s*text|-webkit-background-clip:\s*text'
+message = "Gradient-filled text"
+suggest = "one solid color; emphasize with size or weight"
+
+[[rule]]
+id = "ui-emoji-heading"
+kind = "markup"
+severity = "error"
+pattern = '<(h[1-6]|button|a|li)\b[^>]*>\s*[\U0001F300-\U0001FAFF✨⭐]'
+message = "Emoji used as an icon in a heading, button, link or list item"
+suggest = "SVG icon with aria-hidden, or nothing"
+
+[[rule]]
+id = "ui-fake-social-proof"
+kind = "markup"
+severity = "error"
+pattern = '★★★★★|Trusted by\s+[\d,]+\+|\b(John Doe|Jane Doe|Acme Corp)\b|lorem ipsum'
+message = "Placeholder or invented social proof"
+suggest = "real quotes, logos and numbers only"
+
+[[rule]]
+id = "ui-no-zoom"
+kind = "markup"
+severity = "error"
+pattern = 'user-scalable\s*=\s*(no|0)|maximum-scale\s*=\s*1(\.0)?\b'
+message = "Pinch zoom disabled"
+suggest = "remove; zoom is an accessibility need"
+
+[[rule]]
+id = "ui-outline-none"
+kind = "markup"
+severity = "warning"
+pattern = 'outline-none|outline:\s*(none|0)\b'
+message = "Focus outline removed"
+suggest = "keep a visible :focus-visible style (2px ring with 3:1 contrast)"
+
+[[rule]]
+id = "ui-glass"
+kind = "markup"
+severity = "warning"
+pattern = 'backdrop-blur|backdrop-filter:\s*blur'
+message = "Glass blur used as decoration"
+suggest = "only for real overlays (sticky nav, modal)"
+max_per_file = 1
+
+[[rule]]
+id = "ui-glow"
+kind = "markup"
+severity = "warning"
+pattern = 'shadow-\[0_0_\d+px|drop-shadow-\[[^\]]*(purple|indigo|cyan)|box-shadow:\s*0\s+0\s+\d{2,}px'
+message = "Colored glow / halo"
+suggest = "remove; use contrast and spacing"
+
+[[rule]]
+id = "ui-bounce"
+kind = "markup"
+severity = "warning"
+pattern = 'animate-(bounce|ping)|cubic-bezier\([^)]*,\s*1\.[2-9]'
+message = "Bounce / pulsing animation"
+suggest = "ease-out 150–250 ms, and only where it explains a change"
+
+[[rule]]
+id = "ui-transition-all"
+kind = "markup"
+severity = "warning"
+pattern = 'transition-all|transition:\s*all\b'
+message = "transition: all"
+suggest = "list the properties (opacity, transform)"
+
+[[rule]]
+id = "ui-hero-pill"
+kind = "markup"
+severity = "warning"
+pattern = 'rounded-full[^>]*>\s*(New|Beta|Introducing|Now in beta|✨|NEW)'
+message = "'New ✨' pill above a headline"
+suggest = "put news in a changelog or banner"
+
+[[rule]]
+id = "ui-eyebrow-caps"
+kind = "markup"
+severity = "warning"
+pattern = 'uppercase[^"\x27]*tracking-(wide|wider|widest)|text-transform:\s*uppercase'
+message = "All-caps eyebrow labels"
+suggest = "fold the label into the heading or remove it"
+max_per_file = 2
+
+[[rule]]
+id = "ui-card-radius"
+kind = "markup"
+severity = "warning"
+pattern = 'rounded-(2xl|3xl)|border-radius:\s*(1[6-9]|[2-9]\d)px'
+message = "Large radius on everything (card kit)"
+suggest = "a radius scale by size; 0–8 px for docs and dashboards"
+max_per_file = 3
+
+[[rule]]
+id = "ui-arrow-chrome"
+kind = "markup"
+severity = "warning"
+pattern = '→\s*</(a|button)>'
+message = "Arrow appended to every link or button"
+suggest = "a verb label that says what happens (API 키 발급)"
+max_per_file = 2
+
+[[rule]]
+id = "ui-default-font"
+kind = "markup"
+severity = "warning"
+pattern = 'font-family:\s*["\x27]?(Inter|Geist|Poppins)\b|next/font/google[^;]*\b(Inter|Poppins)\b'
+message = "Default AI font choice"
+suggest = "font-family: var(--font-sans) from the design tokens"
+
+[[rule]]
+id = "ui-raw-color"
+kind = "markup"
+severity = "warning"
+pattern = '(?<![\w-])(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline(?:-color)?|fill|stroke|box-shadow|text-decoration-color|caret-color|accent-color)\s*:\s*[^;{}"\n]*?(?:#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\()|\b(?:bg|text|border|fill|stroke|ring|from|via|to)-\[#[0-9a-fA-F]{3,8}\]'
+message = "Raw color outside the design tokens"
+suggest = "var(--token) from the design system (default: polish-ui/design/tokens.css in ai-design); add a token if none fits"
+
+[[rule]]
+id = "ui-raw-font"
+kind = "markup"
+severity = "warning"
+pattern = '(?<![\w-])font-family\s*:\s*(?!\s*(?:var\(|inherit|initial|unset))'
+message = "Font stack outside the design tokens"
+suggest = "font-family: var(--font-sans) or var(--font-mono)"
+

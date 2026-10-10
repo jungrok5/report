@@ -10,7 +10,7 @@
 
 ## 실행 모드와 연결 범위
 
-`scripts/investigate.py`는 Python 3.10+ 표준 라이브러리로 실행한다. HTML 화면과 분리된 CLI다. 운영 데이터는 이 CLI에서 조회하고 HTML은 보존된 결과를 표시한다.
+`scripts/investigate.py`는 Python 3.11+ 표준 라이브러리로 실행한다. HTML 화면과 분리된 CLI다. 운영 데이터는 이 CLI에서 조회하고 HTML은 보존된 결과를 표시한다.
 
 ```bash
 # 네트워크·모델 없이 가상 응답과 작성된 계획을 3회 재생

@@ -11,6 +11,7 @@ import {
 } from "@xyflow/react";
 import dagre from "@dagrejs/dagre";
 import "@xyflow/react/dist/style.css";
+import "../../skills/investigate-game-incident/assets/report-tokens.css";
 import Timeline from "./Timeline.jsx";
 import {
   delivery,
@@ -242,7 +243,7 @@ function CauseGraph({ report, onSelect, selection }) {
         type: "smoothstep",
         label: statuses[e.status],
         style: {
-          stroke: e.status === "verified" ? "#44816a" : "#7e8fa7",
+          stroke: e.status === "verified" ? "var(--green)" : "var(--muted)",
           strokeWidth: 1.7,
           strokeDasharray: e.status === "verified" ? undefined : "5 4",
         },
@@ -292,7 +293,7 @@ function CauseGraph({ report, onSelect, selection }) {
           zoomOnScroll={false}
           panOnDrag={true}
         >
-          <Background gap={24} color="#d8dee8" />
+          <Background gap={24} color="var(--border)" />
           <Controls showInteractive={false} />
         </ReactFlow>
       </div>
@@ -524,7 +525,7 @@ function Report({ report, toolbar }) {
           className="textbutton"
           onClick={() => focusEvidence(report.summary.evidence_ids)}
         >
-          결론의 근거 확인 →
+          결론의 근거 확인
         </button>
       </section>
       <section
