@@ -14,7 +14,7 @@ const {chromium}=require('playwright');
     if(await page.locator('[data-series]').count()!==3)throw Error('shared plot missing series');
     if(await page.locator('[data-event]').count()!==9)throw Error('timeline missing events');
     if(await page.locator('[data-node]').count()!==4)throw Error('candidate graph layout');
-    if(!(await page.locator('#eir-summary-limit').innerText()).includes('사람이 작성한 계획'))throw Error('replay/model distinction');
+    if(!(await page.locator('#eir-summary-limit').textContent()).includes('사람이 작성한 계획'))throw Error('replay/model distinction');
     if(await page.locator('#eir-related a').count()!==2)throw Error('example links');
     await page.locator('#eir-charttime').evaluate(el=>{el.value='480';el.dispatchEvent(new Event('input',{bubbles:true}))});
     if(!(await page.locator('#eir-charttip').innerText()).includes('1,850 QPS'))throw Error('raw DB peak');

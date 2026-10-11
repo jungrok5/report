@@ -11,7 +11,7 @@ description: "게임·서비스 장애의 메트릭, DB 상태, 클라이언트 
 
 보고서를 생성하거나 다듬을 때 [ai-design 글 스킬](vendor/ai-design/plugins/ai-design/skills/polish-writing/INSTRUCTIONS.md)과 [공통 기준](vendor/ai-design/docs/standard.md)을 먼저 읽고 기본으로 적용하라. HTML·React 화면 변경에는 [ai-design UI 스킬](vendor/ai-design/plugins/ai-design/skills/polish-ui/INSTRUCTIONS.md)도 읽어라. 원본은 `vendor/ai-design/UPSTREAM.json`의 커밋에 고정돼 있으므로 별도 설치나 인터넷 조회 없이 사용할 수 있다.
 
-화면을 작성·수정할 때 [보고서 화면 기준](assets/DESIGN.md)을 읽고 큰 이슈 제목, 압축한 문서 정보, 공통 시간축, 짙은 원인 요약, 연속 조사 본문의 위계를 유지하라. 색을 조금 바꾸는 것으로 화면 재구성을 대신하지 말라.
+화면을 작성·수정할 때 [보고서 화면 기준](assets/DESIGN.md)을 읽고 이슈 제목, 압축한 문서 정보, 넓은 공통 시간축, 원인 요약 문단, 연속 조사 기록의 위계를 유지하라. 원인 요약은 강조 상자보다 구분선·글자 크기로 구분하고, 조사 본문에 같은 라벨과 상태 배지를 반복하지 말라. 색을 조금 바꾸는 것으로 화면 재구성을 대신하지 말라.
 
 문장 검사를 통과한 뒤 페이지 전체의 중복 설명·반복 배치·글자 크기 위계를 검토하라. 같은 사실을 다시 표시하기보다 원래 기록으로 연결하되 수치·근거·판정은 보존하라.
 

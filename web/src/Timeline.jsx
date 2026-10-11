@@ -107,7 +107,7 @@ export default function Timeline({ report, onEvidence }) {
       </header>
       <div className="section-content">
         <p className="phenomenon">{report.summary.impact}</p>
-        <p className="small">회복 기록: {report.summary.recovery}</p>
+        <p className="recovery-note">{report.summary.recovery}</p>
         <div className="legend" aria-label="지표와 관측 범위">
           {metrics.map((m, i) => (
             <span key={m.id} className="metric-legend">
@@ -257,6 +257,13 @@ export default function Timeline({ report, onEvidence }) {
                 {time(hover, report.meta.timezone)} ·{" "}
                 {pinned ? "고정 · Esc로 닫기" : "가까운 원본 표본"}
               </strong>
+              {report.events.map((entry, index) =>
+                Math.abs(Date.parse(entry.at) - hover) <= 30000 ? (
+                  <div className="chart-event-note" key={entry.id}>
+                    사건 {index + 1} · {time(entry.at, report.meta.timezone)} · {entry.label}
+                  </div>
+                ) : null,
+              )}
               {metrics.map((m) => {
                 const p = sampleAt(m, hover);
                 return (
@@ -275,52 +282,57 @@ export default function Timeline({ report, onEvidence }) {
           )}
         </div>
         <p className="chart-note small">
-          지표별 상대 높이 (%) · 실제 값과 표본 시각은 그래프를 선택해
-          확인합니다.
+          지표별 상대 높이(0 포함) · 상단 숫자: 사건 번호
         </p>
-        <details className="timeline-tools no-print">
-          <summary>키보드 시각 탐색 · 조작 방법</summary>
-          <p className="small">
-            높이는 지표별 관측 범위(0 포함)를 0–100%로 표시합니다. 서로 다른
-            지표의 크기 비교가 아닙니다. 실제 값·단위·설명은
-            마우스·터치·슬라이더로 확인합니다.
-          </p>
-          <label className="timecontrol">
-            시각 탐색{" "}
-            <input
-              aria-label="모든 지표의 시각 탐색"
-              type="range"
-              min="0"
-              max="1000"
-              value={Math.round(((active - start) / (end - start)) * 1000)}
-              onChange={(e) => {
-                const t =
-                  start + ((end - start) * Number(e.target.value)) / 1000;
-                setHover(t);
-                setPinned(true);
-                setAt(t);
-              }}
-            />
-            <span className="small">{time(active, report.meta.timezone)}</span>
-          </label>
-          <p className="small">
-            마우스 이동: 수치 확인 · 클릭/터치: 고정 · Esc: 닫기. 원본 표본
-            시각을 표시하며 보간하지 않습니다. 공백은 관측 누락입니다.
-          </p>
-        </details>
-        <div className="events">
-          {report.events.map((e, i) => (
-            <button
-              key={e.id}
-              data-event={e.id}
-              aria-pressed={selected === e.id}
-              onClick={() => choose(e)}
-            >
-              <span className="event-index">{i + 1}</span>
-              <time>{time(e.at, report.meta.timezone).slice(0, 5)}</time>
-              <span>{e.label}</span>
-            </button>
-          ))}
+        <div className="timeline-controls">
+          <details className="timeline-tools no-print">
+            <summary>키보드 시각 탐색 · 조작 방법</summary>
+            <p className="small">
+              높이는 지표별 관측 범위(0 포함)를 0–100%로 표시합니다. 서로 다른
+              지표의 크기 비교가 아닙니다. 실제 값·단위·설명은
+              마우스·터치·슬라이더로 확인합니다.
+            </p>
+            <label className="timecontrol">
+              시각 탐색{" "}
+              <input
+                aria-label="모든 지표의 시각 탐색"
+                type="range"
+                min="0"
+                max="1000"
+                value={Math.round(((active - start) / (end - start)) * 1000)}
+                onChange={(e) => {
+                  const t =
+                    start + ((end - start) * Number(e.target.value)) / 1000;
+                  setHover(t);
+                  setPinned(true);
+                  setAt(t);
+                }}
+              />
+              <span className="small">{time(active, report.meta.timezone)}</span>
+            </label>
+            <p className="small">
+              마우스 이동: 수치 확인 · 클릭/터치: 고정 · Esc: 닫기. 원본 표본
+              시각을 표시하며 보간하지 않습니다. 공백은 관측 누락입니다.
+              사건의 선후 관계만으로 인과관계를 확정하지 않습니다.
+            </p>
+          </details>
+          <details className="event-log no-print">
+          <summary>사건 기록 {report.events.length}건</summary>
+          <div className="events">
+            {report.events.map((e, i) => (
+              <button
+                key={e.id}
+                data-event={e.id}
+                aria-pressed={selected === e.id}
+                onClick={() => choose(e)}
+              >
+                <span className="event-index">{i + 1}</span>
+                <time>{time(e.at, report.meta.timezone).slice(0, 5)}</time>
+                <span>{e.label}</span>
+              </button>
+            ))}
+          </div>
+          </details>
         </div>
         {event ? (
           <div className="selected">
@@ -358,10 +370,6 @@ export default function Timeline({ report, onEvidence }) {
             </article>
           ))}
         </div>
-        <p className="small">
-          시간 정렬은 인과관계의 증명이 아닙니다. 아래에서 연결 근거와 미확인
-          내용을 확인합니다.
-        </p>
       </div>
     </section>
   );

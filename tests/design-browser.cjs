@@ -5,7 +5,9 @@ function luminance(rgb) { return rgb.match(/[\d.]+/g).slice(0, 3).map(Number).ma
 function contrast(a,b) { const x=[luminance(a),luminance(b)].sort((a,b)=>a-b); return (x[1]+.05)/(x[0]+.05); }
 (async()=>{
   fs.mkdirSync(out,{recursive:true});
-  const browser=await chromium.launch({headless:true}), page=await browser.newPage(), errors=[];
+  const opts={headless:true};
+  if(process.env.INCIDENT_CHROMIUM_PATH){opts.executablePath=process.env.INCIDENT_CHROMIUM_PATH;opts.args=["--no-sandbox","--no-zygote","--single-process","--disable-dev-shm-usage"];}
+  const browser=await chromium.launch(opts), page=await browser.newPage(), errors=[];
   page.on("pageerror",e=>errors.push(e.message));
   await page.route("https://jungrok5.github.io/report/**",async route=>{
     const relative=decodeURIComponent(new URL(route.request().url()).pathname.slice("/report/".length))||"index.html", file=path.resolve(root,relative);
@@ -14,11 +16,12 @@ function contrast(a,b) { const x=[luminance(a),luminance(b)].sort((a,b)=>a-b); r
     await route.fulfill({body:fs.readFileSync(file),contentType:type});
   });
   await page.goto("https://jungrok5.github.io/report/"); await page.locator("h1").waitFor(); await page.evaluate(()=>document.fonts.ready);
+  if(process.env.INCIDENT_TEST_FONT){const font=fs.readFileSync(process.env.INCIDENT_TEST_FONT).toString("base64");await page.addStyleTag({content:"@font-face{font-family:TestKR;src:url(data:font/woff2;base64,"+font+")}body,button,input,select,textarea,pre,code,.timeline text{font-family:TestKR,system-ui!important}"});await page.evaluate(()=>document.fonts.ready);}
   for(const scheme of ["light","dark"]) for(const width of [375,768,1024,1440]) {
     await page.emulateMedia({colorScheme:scheme}); await page.setViewportSize({width,height:1500});
     const state=await page.evaluate(()=>{
       const band=document.querySelector(".conclusion"), computed=getComputedStyle(band);
-      return {overflow:document.documentElement.scrollWidth>innerWidth+1, bg:computed.backgroundColor,
+      return {overflow:document.documentElement.scrollWidth>innerWidth+1, bg:getComputedStyle(document.querySelector(".report")).backgroundColor,
         text:[band,...band.querySelectorAll("p,a,button,.badge")].map(e=>getComputedStyle(e).color)};
     });
     if(state.overflow) throw Error("Horizontal overflow "+scheme+" "+width);

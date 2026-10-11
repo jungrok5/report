@@ -117,7 +117,20 @@ const { chromium } = require("playwright");
       }
       const observationsText = await page.locator(".observations").innerText();
       if (!observationsText.includes(fixture.summary.impact) || !observationsText.includes(fixture.summary.recovery) || (await page.locator(".conclusiontext").innerText()) !== fixture.summary.text) throw Error("summary information lost during deduplication");
+      // Collapsed event records must stay selectable and aligned with the chart.
+      if (fixture.events.length) {
+        await page.locator(".event-log summary").click();
+        await page.locator("[data-event]").first().click();
+        if (!(await page.locator(".selected").innerText()).includes(fixture.events[0].detail)) throw Error("event detail lost");
+        if (!(await page.locator(".chart-event-note").first().innerText()).includes(fixture.events[0].label)) throw Error("event tooltip lost");
+        await page.keyboard.press("Escape");
+        await page.locator(".event-log summary").click();
+      }
+      await page.locator(".assessment-scope summary").click();
+      if (!(await page.locator(".assessment-scope").innerText()).includes(fixture.summary.limitations)) throw Error("assessment limitations lost");
+      await page.locator(".assessment-scope summary").click();
       await page.emulateMedia({ media: "print" });
+      if (!(await page.locator(".print-assessment").isVisible())) throw Error("print omitted collapsed limitations");
       if (!(await page.locator(".print-document-info").isVisible()) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.id) || !(await page.locator(".print-document-info").innerText()).includes(fixture.meta.timezone)) throw Error("print document metadata missing");
       if (
         (await page.locator("[data-print-event]").count()) !==

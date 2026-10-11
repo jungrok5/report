@@ -40,6 +40,7 @@ const {chromium}=require('playwright');
     if((await page.locator('#eir-charttime').inputValue())!=='481')throw Error('keyboard time exploration');
     await page.keyboard.press('Escape');
     await page.locator('[data-view="cause"]').click();
+    if(!(await page.locator('.eir-event-log').evaluate(el=>el.open))) await page.locator('.eir-event-log summary').click();
     await page.locator('[data-event="V4"]').click();
     if(!(await page.locator('#eir-eventdetail').innerText()).includes('재부팅'))throw Error('event selection');
     const line=await page.locator('[data-selected-time]').getAttribute('data-selected-time');

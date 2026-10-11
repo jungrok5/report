@@ -550,23 +550,24 @@ function Report({ report, toolbar }) {
       >
         <header className="section-title">
           <h2>원인</h2>
-          <Badge status={report.summary.status} />
+          <span className="status-note">현재 판정 <Badge status={report.summary.status} /></span>
         </header>
         <div className="section-content">
           <p className="conclusiontext">{report.summary.text}</p>
-          <div className="summaryfooter">
-            <a href="#phenomenon">영향·회복 기록 확인</a>
+          <div className="conclusion-notes">
+            <button className="textbutton" onClick={() => focusEvidence(report.summary.evidence_ids)}>
+              결론의 근거 확인 · {report.summary.evidence_ids.length}건
+            </button>
+            <details className="assessment-scope">
+              <summary>판정 범위</summary>
+              <p className="small">{report.summary.limitations}</p>
+              <p className="small">근거: {report.summary.evidence_ids.join(", ")}</p>
+            </details>
           </div>
-          <p className="small">
-            근거: {report.summary.evidence_ids.join(", ")} · 한계:{" "}
-            {report.summary.limitations}
-          </p>
-          <button
-            className="textbutton"
-            onClick={() => focusEvidence(report.summary.evidence_ids)}
-          >
-            결론의 근거 확인
-          </button>
+          <div className="print-assessment">
+            <p>{report.summary.limitations}</p>
+            <p>근거: {report.summary.evidence_ids.join(", ")}</p>
+          </div>
         </div>
       </section>
       <section
@@ -575,11 +576,7 @@ function Report({ report, toolbar }) {
         aria-label="원인에 도달한 조사 흐름"
       >
         <header className="section-title">
-          <h2>원인 판단에 어떻게 도달했나</h2>
-          <p className="small">
-            질문과 판정을 순서대로 읽고, 단계별 확인 내용과 근거를 펼쳐
-            검증합니다.
-          </p>
+          <h2>조사 기록</h2>
         </header>
         <div className="section-content">
           {report.investigation.length ? (
@@ -589,20 +586,18 @@ function Report({ report, toolbar }) {
                 data-narrative-step={i.id}
                 className="narrative-step"
               >
-                <h3>
-                  {index + 1}. {i.question} <Badge status={i.status} />
-                </h3>
-                <p>
-                  <strong>확인한 사실:</strong> {i.observed}
-                </p>
-                <p>
-                  <strong>판정:</strong> {i.decision}
-                </p>
+                <header className="narrative-question">
+                  <h3>{index + 1}. {i.question}</h3>
+                  <Badge status={i.status} />
+                </header>
+                <div className="narrative-record">
+                <p className="narrative-observation">{i.observed}</p>
+                <p className="narrative-decision" aria-label="판정">{i.decision}</p>
                 <button
                   className="textbutton no-print"
                   onClick={() => focusEvidence(i.evidence_ids)}
                 >
-                  이 단계의 근거 확인 · {i.evidence_ids.join(", ")}
+                  근거 {i.evidence_ids.length}건 · {i.evidence_ids.join(", ")}
                 </button>
                 <details>
                   <summary>가설 · 예측 · 다음 확인</summary>
@@ -617,6 +612,7 @@ function Report({ report, toolbar }) {
                     </p>
                   ))}
                 </details>
+                </div>
               </article>
             ))
           ) : (
@@ -1052,8 +1048,7 @@ function App() {
           </>
         )}
         <footer className="small">
-          이슈 제목 → 무슨 일이 있었나 → 원인 → 조사 → 근거 · 공개 페이지는
-          예시를 보여주며 운영 시스템을 자동 조회하지 않습니다.{" "}
+          이 페이지는 운영 시스템을 조회하지 않습니다.{" "}
           <a href="https://github.com/jungrok5/report">사용 방법·소스</a>
         </footer>
       </div>
