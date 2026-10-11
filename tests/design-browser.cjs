@@ -21,7 +21,7 @@ function contrast(a,b) { const x=[luminance(a),luminance(b)].sort((a,b)=>a-b); r
     await page.emulateMedia({colorScheme:scheme}); await page.setViewportSize({width,height:1500});
     const state=await page.evaluate(()=>{
       const band=document.querySelector(".conclusion"), computed=getComputedStyle(band);
-      return {overflow:document.documentElement.scrollWidth>innerWidth+1, bg:getComputedStyle(document.querySelector(".report")).backgroundColor,
+      return {overflow:document.documentElement.scrollWidth>innerWidth+1, bg:computed.backgroundColor,
         text:[band,...band.querySelectorAll("p,a,button,.badge")].map(e=>getComputedStyle(e).color)};
     });
     if(state.overflow) throw Error("Horizontal overflow "+scheme+" "+width);

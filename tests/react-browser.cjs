@@ -117,6 +117,12 @@ const { chromium } = require("playwright");
       }
       const observationsText = await page.locator(".observations").innerText();
       if (!observationsText.includes(fixture.summary.impact) || !observationsText.includes(fixture.summary.recovery) || (await page.locator(".conclusiontext").innerText()) !== fixture.summary.text) throw Error("summary information lost during deduplication");
+      // The contents link must reveal a hidden actions panel, including a repeated visit.
+      for (let visit = 0; visit < 2; visit++) {
+        await page.getByRole("link", { name: "조치", exact: true }).click();
+        await page.locator("#panel-actions").waitFor({ state: "visible" });
+        await page.getByRole("tab", { name: "인과관계", exact: true }).click();
+      }
       // Collapsed event records must stay selectable and aligned with the chart.
       if (fixture.events.length) {
         await page.locator(".event-log summary").click();

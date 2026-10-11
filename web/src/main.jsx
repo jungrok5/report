@@ -23,6 +23,7 @@ import {
   verifyGovernance,
 } from "./model.mjs";
 import "./style.css";
+import "../../skills/investigate-game-incident/assets/report-hierarchy.css";
 const base = import.meta.env.BASE_URL;
 function Badge({ status }) {
   return (
@@ -464,6 +465,27 @@ function Report({ report, toolbar }) {
     [stepId, setStepId] = useState(report.investigation[0]?.id),
     [extraIds, setExtraIds] = useState(null);
   const detailRef = useRef(null);
+  useEffect(() => {
+    function navigate() {
+      const target = location.hash.slice(1);
+      if (target !== "panel-actions") return;
+      setTab("actions");
+      requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView());
+    }
+    function clickSection(event) {
+      if (!event.target.closest("a[href='#panel-actions']")) return;
+      event.preventDefault();
+      history.replaceState(null, "", "#panel-actions");
+      navigate();
+    }
+    navigate();
+    window.addEventListener("hashchange", navigate);
+    document.addEventListener("click", clickSection);
+    return () => {
+      window.removeEventListener("hashchange", navigate);
+      document.removeEventListener("click", clickSection);
+    };
+  }, []);
   const item =
     selection?.type === "edge"
       ? report.edges.find((e) => e.id === selection.id)
@@ -824,10 +846,12 @@ function Report({ report, toolbar }) {
           <h2>복구와 재발 방지</h2>
           {report.actions.map((a) => (
             <div className="action" key={a.id}>
+              <div className="action-heading">
               <strong>{a.action}</strong>
               <p className="small">
                 {a.owner} · {a.due || "기한 미정"} · {a.status}
               </p>
+              </div>
               <p>{a.verification}</p>
               <button
                 className="textbutton no-print"
@@ -1018,6 +1042,7 @@ function App() {
           <a href="#cause-summary">원인</a>
           <a href="#investigation-story">조사</a>
           <a href="#analysis">근거</a>
+          <a href="#panel-actions">조치</a>
         </nav>
       </header>
       <div className="body">

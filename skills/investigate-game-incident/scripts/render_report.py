@@ -16,6 +16,7 @@ def fragment(data):
     template=(ROOT/"assets/report-template.html").read_text(encoding="utf-8")
     template=template.replace('__REPORT_TOKENS__',(ROOT/'assets/report-tokens.css').read_text(encoding='utf-8'))
     template=template.replace('__REPORT_LAYOUT__',(ROOT/'assets/report-layout.css').read_text(encoding='utf-8'))
+    template=template.replace('__REPORT_HIERARCHY__',(ROOT/'assets/report-hierarchy.css').read_text(encoding='utf-8'))
     if template.count("__REPORT_DATA__")!=1: raise ValueError("Invalid template data slot")
     return template.replace("__REPORT_DATA__",payload)
 
@@ -57,7 +58,7 @@ def main():
     data=load_report(args.data);body=fragment(data)
     title=html.escape(data['meta']['title'])
     document=f'<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>:root{{color-scheme:light dark}}body{{margin:0;padding:24px;background:var(--page)}}@media(max-width:600px){{body{{padding:0}}}}</style></head><body>{body}</body></html>\n'
-    inputs={Path(args.data).resolve(),(ROOT/'assets/report-template.html').resolve(),(ROOT/'assets/report-tokens.css').resolve(),(ROOT/'assets/report-layout.css').resolve()}
+    inputs={Path(args.data).resolve(),*(p.resolve() for p in (ROOT/'assets').glob('report-*.*'))}
     outputs=[args.out,args.markdown_out,args.fragment_out];resolved=[Path(x).resolve() for x in outputs if x]
     if len(set(resolved))!=len(resolved) or any(x in inputs for x in resolved): raise ValueError("Output paths must be distinct and cannot overwrite input/template")
     write(args.out,document)

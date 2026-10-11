@@ -18,14 +18,15 @@ __REPORT_TOKENS__
 #eir-report .eir-small,#eir-report .eir-legend{font-variant-numeric:tabular-nums}
 @media(prefers-reduced-motion:reduce){#eir-report *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 __REPORT_LAYOUT__
+__REPORT_HIERARCHY__
 </style>
-<header class="eir-chrome"><strong>장애 보고서</strong><nav aria-label="보고서 목차"><a href="#eir-observations">현상</a><a href="#eir-summary">원인</a><a href="#eir-narrative">조사</a><a href="#eir-cause">근거</a></nav></header>
+<header class="eir-chrome"><strong>장애 보고서</strong><nav aria-label="보고서 목차"><a href="#eir-observations">현상</a><a href="#eir-summary">원인</a><a href="#eir-narrative">조사</a><a href="#eir-cause">근거</a><a href="#eir-actions" id="eir-action-link">조치</a></nav></header>
 <main class="eir-body">
   <div class="eir-report-heading"><h1 id="eir-title"></h1><div class="eir-report-context"><span id="eir-context"></span><span class="eir-synthetic-label" id="eir-mode"></span></div><details class="eir-report-meta"><summary>보고서 정보</summary><div class="eir-meta" id="eir-meta"></div><p class="eir-small" id="eir-mode-detail"></p></details><div class="eir-print-document-info" id="eir-print-document-info"></div>
   <nav class="eir-source" id="eir-related" aria-label="관련 예시와 사용 방법" hidden></nav></div>
   <section class="eir-section" id="eir-observations" aria-label="무슨 일이 있었나">
     <header class="eir-section-title"><h2>무슨 일이 있었나</h2><span class="eir-small" id="eir-window"></span></header><div class="eir-section-content">
-    <p class="eir-phenomenon" id="eir-phenomenon"></p><p class="eir-recovery-note" id="eir-recovery-observation"></p><div class="eir-small" id="eir-phases"></div>
+    <dl class="impact-record"><div><dt>영향</dt><dd class="eir-phenomenon" id="eir-phenomenon"></dd></div><div><dt>회복</dt><dd class="eir-recovery-note" id="eir-recovery-observation"></dd></div></dl><div class="eir-small" id="eir-phases"></div>
     <div class="eir-legend" id="eir-legend" aria-label="지표와 색상"></div>
     <div class="eir-chartwrap" id="eir-chartwrap">
       <svg class="eir-timeline" id="eir-timeline" role="img" aria-label="하나의 시간축에 색과 선 모양으로 구분해 겹친 동접·DB 부하·지연. 시각 탐색 슬라이더로도 수치와 설명을 확인할 수 있습니다."></svg>
@@ -168,7 +169,7 @@ if(data.nodes.length){const first=data.nodes.find(n=>['원인 후보','직접 �
 function stepDetail(step){const target=$('#eir-step-detail');target.replaceChildren(badge(step.status),el('h2','',step.question));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>target.append(el('h3','',label),el('p','',value)));attachEvidence(target,step.evidence_ids)}
 data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
 if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step-detail').append(el('p','','조사 기록이 없습니다.'));
-data.actions.forEach(a=>{const item=el('div','eir-action');item.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')),el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
+data.actions.forEach(a=>{const item=el('div','eir-action');const heading=el('div','action-heading');heading.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')));item.append(heading,el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
 data.unknowns.forEach(u=>{const item=el('div','eir-action');item.append(el('strong','',u.question),el('p','eir-small',u.owner+' · 다음 확인: '+u.next_test));$('#eir-unknownlist').append(item)});
 if(!data.unknowns.length)$('#eir-unknownlist').append(el('p','eir-small','기록된 미확인 질문 없음. 검증이 완전하다는 의미는 아닙니다.'));
 
@@ -183,6 +184,7 @@ data.investigation.forEach(step=>{const item=el('article','');item.dataset.print
 
 data.evidence.forEach(e=>$('#eir-print-evidence').append(evidenceView(e.id)));
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
+$('#eir-action-link').addEventListener('click',()=>$('#eir-tab-actions').click());
 if(selectedEvent)selectEvent(selectedEvent);else if(!data.events.length)$('#eir-eventdetail').append(el('p','','사건 기록이 없습니다.'));else $('#eir-eventdetail').hidden=true;
 let observedWidth=null;new ResizeObserver(()=>{const width=root.getBoundingClientRect().width;if(width!==observedWidth){observedWidth=width;drawTimeline()}drawGraph()}).observe(root);drawTimeline();drawGraph();
 root.addEventListener('keydown',event=>{if(event.target.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){const tabs=$$('[data-view]'),index=tabs.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();event.preventDefault()}});

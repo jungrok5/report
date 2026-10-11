@@ -42,10 +42,13 @@
   --text-caption: 0.75rem;
   --text-body: 0.875rem;
   --text-reading: 1rem;
-  --text-heading: 1.25rem;
+  --text-subheading: 1.25rem;
+  --text-heading: 1.5rem;
   --text-answer: 1.5rem;
-  --title-size: clamp(1.5rem, 3.2vw, 2.125rem);
-  --answer-size: 1.25rem;
+  --title-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  --answer-size: 1.5rem;
+  --reading-width: 72ch;
+  --report-gutter: 48px;
 }
 @media (prefers-color-scheme: dark) {
   :root, #eir-report {
@@ -279,14 +282,101 @@
  #eir-report .eir-summary #eir-conclusion { font-size: var(--text-heading); }
 }
 
+/* One hierarchy for the interactive site and its portable report. */
+:is(.report, #eir-report) { --report-gutter: 48px; }
+:is(.report, #eir-report) :is(.chrome, .eir-chrome) { border-bottom: 1px solid var(--control-border); }
+:is(.report, #eir-report) :is(.chrome, .eir-chrome) strong { color: var(--ink); }
+:is(.report, #eir-report) :is(.chrome, .eir-chrome) nav { flex-wrap: wrap; gap: 0 20px; }
+:is(.report, #eir-report) :is(.body, .eir-body) { padding-top: 48px; }
+:is(.report, #eir-report) :is(.report-heading, .eir-report-heading) { margin-bottom: 36px; }
+:is(.report, #eir-report) h1 { line-height: 1.25; font-weight: 650; max-width: 22ch; margin-bottom: 24px; }
+:is(.report, #eir-report) :is(.report-context, .eir-report-context) { color: var(--ink); }
+:is(.report, #eir-report) :is(.synthetic-label, .eir-synthetic-label) { color: var(--muted); padding: 2px 8px; border: 1px solid var(--control-border); }
+:is(.report, #eir-report) :is(.heading-tools, .eir-heading-tools) { margin-top: 16px; }
+:is(.report, #eir-report) :is(.section, .eir-section) { padding: 32px 0; }
+:is(.report, #eir-report) :is(.section-title, .eir-section-title) { margin-bottom: 24px; }
+:is(.report, #eir-report) :is(.section-title, .eir-section-title) h2 { font-weight: 550; }
+:is(.report, #eir-report) .impact-record { margin: 0 0 24px; max-width: var(--reading-width); }
+:is(.report, #eir-report) .impact-record > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; margin-bottom: 12px; }
+:is(.report, #eir-report) .impact-record dt { font-size: var(--text-body); color: var(--muted); padding-top: 2px; }
+:is(.report, #eir-report) .impact-record dd { margin: 0; font-size: var(--text-reading); line-height: 1.8; }
+:is(.report, #eir-report) .impact-record :is(.recovery-note, .eir-recovery-note) { color: var(--ink); }
+:is(.report, #eir-report) :is(.legend, .eir-legend) { margin: 0 0 12px; }
+:is(.report, #eir-report) :is(.chartwrap, .eir-chartwrap) { padding: 16px 12px 4px; background: var(--canvas); border: 1px solid var(--border); }
+:is(.report, #eir-report) :is(.chart-note, .eir-chart-note) { margin-top: 8px; }
+:is(.report, #eir-report) :is(.selected, .eir-selected) { padding: 16px 20px; border: 1px solid var(--border); background: var(--paper); }
+:is(.report, #eir-report) :is(.section.conclusion, #eir-report .eir-summary) {
+  margin: 8px calc(-1 * var(--report-gutter)) 0;
+  padding: 32px var(--report-gutter) 36px;
+  background: var(--canvas);
+  border-top: 1px solid var(--control-border);
+  border-bottom: 1px solid var(--border);
+}
+:is(.report, #eir-report) :is(.conclusion, .eir-summary) :is(.section-title, .eir-section-title) { margin-bottom: 16px; }
+:is(.report, #eir-report) :is(.status-note, .eir-status-note) { color: var(--ink); font-size: var(--text-body); }
+:is(.report, #eir-report) :is(.status-note, .eir-status-note) :is(.badge, .eir-badge) { font-size: inherit; margin-left: 8px; }
+:is(.report, #eir-report) :is(.conclusion, .eir-summary) :is(.section-content, .eir-section-content) { max-width: var(--reading-width); }
+:is(.report, #eir-report) :is(.conclusiontext, .eir-conclusiontext) { font-size: var(--answer-size); font-weight: 400; line-height: 1.7; }
+:is(.report, #eir-report) :is(.conclusion-notes, .eir-conclusion-notes) { margin-top: 20px; }
+:is(.report, #eir-report) :is(.narrative, .eir-narrative) { border-top: 0; padding-top: 40px; }
+:is(.report, #eir-report) :is(.narrative-step, .eir-narrative-step) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 40px; padding: 28px 0; }
+:is(.report, #eir-report) :is(.narrative-question, .eir-narrative-question) h3 { font-size: var(--text-subheading); line-height: 1.55; font-weight: 500; }
+:is(.report, #eir-report) :is(.narrative-question, .eir-narrative-question) :is(.badge, .eir-badge) { display: inline-block; margin-top: 8px; font-size: var(--text-body); color: var(--ink); }
+:is(.report, #eir-report) :is(.narrative-decision, .eir-narrative-decision) { color: var(--ink); border-top: 1px solid var(--border); padding-top: 12px; }
+:is(.report, #eir-report) :is(.tabs, .eir-tabs) { gap: 0 24px; border-bottom: 1px solid var(--control-border); margin: 8px 0 28px; }
+:is(.report, #eir-report) :is(.tabs, .eir-tabs) button { background: none; color: var(--muted); border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 10px 0; font-size: var(--text-body); }
+:is(.report, #eir-report) :is(.tabs, .eir-tabs) button[aria-selected="true"] { background: none; color: var(--ink); border-bottom-color: var(--accent); }
+:is(.report, #eir-report) :is(.detail, .eir-detail) { border: 1px solid var(--border); background: var(--canvas); padding: 24px; }
+:is(.report, #eir-report) :is(.action, .eir-action) { border-top: 1px solid var(--border); padding: 24px 0; }
+:is(.report, #eir-report) .action-heading { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); align-items: start; gap: 24px; }
+:is(.report, #eir-report) .action-heading strong { font-size: var(--text-subheading); font-weight: 500; line-height: 1.6; }
+:is(.report, #eir-report) .action-heading p { margin: 0; color: var(--muted); font-size: var(--text-body); }
+:is(.report, #eir-report) :is(.action, .eir-action) > p { max-width: var(--reading-width); }
+@media (max-width: 800px) {
+  :is(.report, #eir-report) { --report-gutter: 24px; }
+  :is(.report, #eir-report) :is(.body, .eir-body) { padding-top: 32px; }
+  :is(.report, #eir-report) :is(.narrative-step, .eir-narrative-step) { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  :is(.report, #eir-report) :is(.narrative-question, .eir-narrative-question) { display: block; }
+  :is(.report, #eir-report) :is(.narrative-question, .eir-narrative-question) :is(.badge, .eir-badge) { margin-top: 8px; }
+}
+@media (max-width: 500px) {
+  :is(.report, #eir-report) { --report-gutter: 20px; }
+  :is(.report, #eir-report) :is(.chrome, .eir-chrome) { display: block; padding-top: 8px; }
+  :is(.report, #eir-report) :is(.chrome, .eir-chrome) nav { gap: 0 20px; }
+  :is(.report, #eir-report) :is(.report-heading, .eir-report-heading) { margin-bottom: 24px; }
+  :is(.report, #eir-report) .impact-record > div { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; }
+  :is(.report, #eir-report) :is(.chartwrap, .eir-chartwrap) { padding: 8px 4px 0; }
+  :is(.report, #eir-report) :is(.section-title, .eir-section-title) { gap: 8px; }
+  :is(.report, #eir-report) :is(.section.conclusion, #eir-report .eir-summary) { padding-top: 24px; padding-bottom: 28px; }
+  :is(.report, #eir-report) :is(.conclusiontext, .eir-conclusiontext) { font-size: var(--text-subheading); }
+  :is(.report, #eir-report) :is(.tabs, .eir-tabs) { gap: 0 16px; }
+  :is(.report, #eir-report) :is(.tabs, .eir-tabs) button { font-size: var(--text-body); }
+  :is(.report, #eir-report) .action-heading { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+@media (max-width: 350px) {
+  :is(.report, #eir-report) { --report-gutter: 16px; }
+  :is(.report, #eir-report) :is(.eir-body) { padding-left: 16px; padding-right: 16px; }
+}
+@media print {
+  :is(.report, #eir-report) { --report-gutter: 0px; }
+  :is(.report, #eir-report) :is(.body, .eir-body) { padding-top: 0; }
+  :is(.report, #eir-report) h1 { font-size: var(--text-answer); max-width: none; }
+  :is(.report, #eir-report) :is(.section.conclusion, #eir-report .eir-summary) { background: var(--paper); padding: 16px 0; }
+  :is(.report, #eir-report) :is(.conclusiontext, .eir-conclusiontext) { font-size: var(--text-subheading); }
+  :is(.report, #eir-report) :is(.chartwrap, .eir-chartwrap) { padding: 0; border: 0; background: var(--paper); }
+  :is(.report, #eir-report) :is(.narrative, .eir-narrative) { padding-top: 16px; }
+  :is(.report, #eir-report) :is(.chrome, .eir-chrome), :is(.tabs, .eir-tabs) { display: none; }
+  :is(.report, #eir-report) .action-heading { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+
 </style>
-<header class="eir-chrome"><strong>장애 보고서</strong><nav aria-label="보고서 목차"><a href="#eir-observations">현상</a><a href="#eir-summary">원인</a><a href="#eir-narrative">조사</a><a href="#eir-cause">근거</a></nav></header>
+<header class="eir-chrome"><strong>장애 보고서</strong><nav aria-label="보고서 목차"><a href="#eir-observations">현상</a><a href="#eir-summary">원인</a><a href="#eir-narrative">조사</a><a href="#eir-cause">근거</a><a href="#eir-actions" id="eir-action-link">조치</a></nav></header>
 <main class="eir-body">
   <div class="eir-report-heading"><h1 id="eir-title"></h1><div class="eir-report-context"><span id="eir-context"></span><span class="eir-synthetic-label" id="eir-mode"></span></div><details class="eir-report-meta"><summary>보고서 정보</summary><div class="eir-meta" id="eir-meta"></div><p class="eir-small" id="eir-mode-detail"></p></details><div class="eir-print-document-info" id="eir-print-document-info"></div>
   <nav class="eir-source" id="eir-related" aria-label="관련 예시와 사용 방법" hidden></nav></div>
   <section class="eir-section" id="eir-observations" aria-label="무슨 일이 있었나">
     <header class="eir-section-title"><h2>무슨 일이 있었나</h2><span class="eir-small" id="eir-window"></span></header><div class="eir-section-content">
-    <p class="eir-phenomenon" id="eir-phenomenon"></p><p class="eir-recovery-note" id="eir-recovery-observation"></p><div class="eir-small" id="eir-phases"></div>
+    <dl class="impact-record"><div><dt>영향</dt><dd class="eir-phenomenon" id="eir-phenomenon"></dd></div><div><dt>회복</dt><dd class="eir-recovery-note" id="eir-recovery-observation"></dd></div></dl><div class="eir-small" id="eir-phases"></div>
     <div class="eir-legend" id="eir-legend" aria-label="지표와 색상"></div>
     <div class="eir-chartwrap" id="eir-chartwrap">
       <svg class="eir-timeline" id="eir-timeline" role="img" aria-label="하나의 시간축에 색과 선 모양으로 구분해 겹친 동접·DB 부하·지연. 시각 탐색 슬라이더로도 수치와 설명을 확인할 수 있습니다."></svg>
@@ -429,7 +519,7 @@ if(data.nodes.length){const first=data.nodes.find(n=>['원인 후보','직접 �
 function stepDetail(step){const target=$('#eir-step-detail');target.replaceChildren(badge(step.status),el('h2','',step.question));[['가설',step.hypothesis],['예측',step.prediction],['관측',step.observed],['판정',step.decision],['다음 확인',step.next_test]].forEach(([label,value])=>target.append(el('h3','',label),el('p','',value)));attachEvidence(target,step.evidence_ids)}
 data.investigation.forEach((step,i)=>{const b=el('button','eir-step');b.type='button';b.dataset.step=step.id;b.setAttribute('aria-pressed',String(i===0));b.append(el('span','eir-small',time(step.investigated_at)+' 조사'),badge(step.status),el('strong','',step.question),el('span','eir-small',step.decision));b.addEventListener('click',()=>{$$('[data-step]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));stepDetail(step)});$('#eir-steps').append(b)});
 if(data.investigation.length)stepDetail(data.investigation[0]);else $('#eir-step-detail').append(el('p','','조사 기록이 없습니다.'));
-data.actions.forEach(a=>{const item=el('div','eir-action');item.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')),el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
+data.actions.forEach(a=>{const item=el('div','eir-action');const heading=el('div','action-heading');heading.append(el('strong','',a.action),el('p','eir-small',a.status+' · '+a.owner+' · '+(a.due||'기한 미정')));item.append(heading,el('p','',a.verification),el('p','eir-small','근거: '+(a.evidence_ids.join(', ')||'미제공')));$('#eir-actionlist').append(item)});
 data.unknowns.forEach(u=>{const item=el('div','eir-action');item.append(el('strong','',u.question),el('p','eir-small',u.owner+' · 다음 확인: '+u.next_test));$('#eir-unknownlist').append(item)});
 if(!data.unknowns.length)$('#eir-unknownlist').append(el('p','eir-small','기록된 미확인 질문 없음. 검증이 완전하다는 의미는 아닙니다.'));
 
@@ -444,6 +534,7 @@ data.investigation.forEach(step=>{const item=el('article','');item.dataset.print
 
 data.evidence.forEach(e=>$('#eir-print-evidence').append(evidenceView(e.id)));
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>{$$('[data-view]').forEach(x=>{const active=x===b;x.setAttribute('aria-selected',String(active));$('#eir-'+x.dataset.view).hidden=!active});drawGraph()}));
+$('#eir-action-link').addEventListener('click',()=>$('#eir-tab-actions').click());
 if(selectedEvent)selectEvent(selectedEvent);else if(!data.events.length)$('#eir-eventdetail').append(el('p','','사건 기록이 없습니다.'));else $('#eir-eventdetail').hidden=true;
 let observedWidth=null;new ResizeObserver(()=>{const width=root.getBoundingClientRect().width;if(width!==observedWidth){observedWidth=width;drawTimeline()}drawGraph()}).observe(root);drawTimeline();drawGraph();
 root.addEventListener('keydown',event=>{if(event.target.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){const tabs=$$('[data-view]'),index=tabs.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();event.preventDefault()}});
