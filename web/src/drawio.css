@@ -1,0 +1,37 @@
+.drawio-toolbar, .drawio-controls, .drawio-steps, .drawio-dialog-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.drawio-toolbar { justify-content: space-between; margin-bottom: 12px; }
+.drawio-toolbar button, .drawio-steps button { min-height: 44px; font-size: var(--text-body); }
+.drawio-scale { min-width: 4ch; font-size: var(--text-caption); color: var(--muted); }
+.drawio-stage {
+  display: flex; width: 100%; min-width: 0; min-height: 120px; max-height: 490px; overflow: auto;
+  padding: 12px; border: 1px solid var(--border); background: var(--paper); cursor: grab;
+}
+.drawio-stage svg { display: block; flex-shrink: 0; max-width: none; font-family: var(--font-sans); }
+.drawio-node, .drawio-edge { cursor: pointer; }
+.drawio-node rect { fill: var(--paper); stroke: var(--control-border); stroke-width: 1.5; }
+.drawio-node.active rect, .drawio-node:focus-visible rect {
+  fill: var(--wash); stroke: var(--accent); stroke-width: 3;
+}
+.drawio-node-status { fill: var(--muted); font-size: 12px; }
+.drawio-node-label { fill: var(--ink); font-size: 16px; font-weight: 650; }
+.drawio-edge-hit { fill: none; stroke: transparent; stroke-width: 28; }
+.drawio-edge-line { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 6 4; }
+.drawio-edge.verified .drawio-edge-line { stroke: var(--green); stroke-dasharray: none; }
+.drawio-edge.active .drawio-edge-line, .drawio-edge:focus-visible .drawio-edge-line { stroke: var(--accent); stroke-width: 3; }
+.drawio-arrow { fill: var(--muted); }
+.drawio-edge-label { fill: var(--ink); font-size: 12px; paint-order: stroke; stroke: var(--paper); stroke-width: 5; }
+.drawio-steps { margin: 16px 0; font-size: var(--text-body); }
+.drawio-steps span { margin-right: auto; }
+.drawio-lists, .drawio-source { margin-top: 12px; }
+.drawio-dialog {
+  width: 96vw; height: 92vh; max-width: 1500px; max-height: none; padding: 0;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--control-border);
+}
+.drawio-dialog::backdrop { background: var(--overlay-shadow); }
+.drawio-dialog-bar { padding: 12px; border-bottom: 1px solid var(--border); }
+.drawio-dialog-bar span { flex: 1; min-width: 180px; font-size: var(--text-body); }
+.drawio-dialog iframe { display: block; width: 100%; height: calc(100% - 100px); border: 0; }
+@media (max-width: 500px) { .drawio-stage { max-height: 420px; } }
+@media print { .drawio-stage { display: none; } }

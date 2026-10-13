@@ -317,59 +317,6 @@ textarea {
   min-width: 0;
   scroll-margin-top: 16px;
 }
-.graph {
-  height: 450px;
-  min-width: 0;
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-medium);
-  background: var(--paper);
-}
-.causenode {
-  width: 215px;
-  height: 110px;
-  padding: 14px;
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius-medium);
-  background: var(--paper);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-  overflow-wrap: anywhere;
-}
-.causenode.active {
-  border-color: var(--accent);
-  background: var(--wash);
-}
-.causenode strong {
-  font-size: var(--text-body);
-  line-height: 1.5;
-}
-.react-flow__handle {
-  width: 5px;
-  height: 5px;
-  background: var(--muted);
-  border: none;
-}
-.react-flow__attribution {
-  font-size: var(--text-caption);
-  background: var(--paper);
-}
-.react-flow__controls button {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 5px;
-  background: var(--paper);
-  color: inherit;
-}
-.react-flow__edge-text {
-  font-size: var(--text-caption);
-  fill: var(--ink);
-}
-.react-flow__edge-textbg {
-  fill: var(--paper);
-}
 pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -477,9 +424,6 @@ footer {
     max-width: 100%;
     margin: 10px 0;
   }
-  .graph {
-    height: 430px;
-  }
   .events button {
     font-size: var(--text-caption);
   }
@@ -487,16 +431,6 @@ footer {
     padding: 8px;
     font-size: var(--text-caption);
   }
-}
-.react-flow {
-  --xy-background-color: var(--paper);
-  --xy-edge-label-color: var(--ink);
-  --xy-edge-label-background-color: var(--paper);
-  --xy-controls-button-color: var(--ink);
-  --xy-controls-button-color-hover: var(--ink);
-  --xy-controls-button-background-color: var(--paper);
-  --xy-controls-button-background-color-hover: var(--wash);
-  --xy-controls-button-border-color: var(--control-border);
 }
 @media print {
   body {
@@ -514,9 +448,7 @@ footer {
   .no-print,
   .charttip,
   .timecontrol,
-  .events,
-  .graphlists,
-  .react-flow__controls {
+  .events{
     display: none !important;
   }
   .panel[hidden] {
@@ -539,9 +471,6 @@ footer {
   pre {
     max-height: none;
     overflow: visible;
-  }
-  .graph {
-    height: 430px;
   }
   .print-evidence a:after {
     content: " (" attr(href) ")";
@@ -600,7 +529,6 @@ footer {
 }
 @media print {
   #panel-cause aside,
-  .graph,
   .narrative,
   #panel-investigation {
     display: none !important;
@@ -625,10 +553,6 @@ footer {
   }
 }
 @media (max-width: 700px) {
-  .react-flow__controls button {
-    min-height: 44px;
-    min-width: 44px;
-  }
 }
 
 @media print {
@@ -782,7 +706,6 @@ h2 { font-size: var(--text-heading); font-weight: 600; line-height: 1.5; letter-
 .detail { border: 0; border-radius: 0; padding: 20px; background: var(--canvas); }
 .detail h2 { font-size: var(--text-heading); margin: 12px 0; }
 .detail h3 { font-size: var(--text-body); }
-.graph { height: 490px; border: 1px solid var(--border); border-radius: 0; background: var(--paper); }
 .reason { padding: 12px 0; border-top: 1px solid var(--border); background: none; }
 .pickers button { border-radius: 0; background: none; border-color: var(--border); }
 .sources a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 4px; }

@@ -171,13 +171,31 @@ const { chromium } = require("playwright");
           Math.round(ordering.causeY),
       );
       await page.waitForFunction(
-        () => document.querySelectorAll(".react-flow__node").length >= 4,
+        () => document.querySelectorAll(".drawio-node").length >= 4,
       );
       if ((await page.locator("[data-series]").count()) !== 3)
         throw Error("shared chart series");
       const tab = page.getByRole("tab", { name: "인과관계", exact: true });
       await tab.click();
-      await page.locator(".react-flow__node").first().click();
+      await page.locator(".drawio-node").first().click();
+      const stage = page.locator('.drawio-stage'), svg = stage.locator('svg');
+      const before = await svg.evaluate(e => e.getBoundingClientRect().width);
+      await page.getByRole('button', {name:'원인 흐름도 확대', exact:true}).click();
+      const bigger = await svg.evaluate(e => e.getBoundingClientRect().width);
+      if (bigger <= before) throw Error('Draw.io first zoom-in does not change width');
+      await page.getByRole('button', {name:'원인 흐름도 축소', exact:true}).click();
+      if ((await svg.evaluate(e => e.getBoundingClientRect().width)) >= bigger) throw Error('Draw.io zoom-out does not change width');
+      await stage.evaluate(e => { e.scrollLeft=80; e.scrollTop=25; });
+      await page.getByRole('button', {name:'전체보기', exact:true}).click();
+      const fit = await stage.evaluate(e => ({left:e.scrollLeft,top:e.scrollTop,width:e.clientWidth,svg:e.querySelector('svg').getBoundingClientRect().width}));
+      if (fit.left || fit.top || fit.svg > fit.width) throw Error('Draw.io fit/scroll reset');
+      await page.getByRole('button', {name:'전체보기', exact:true}).click();
+      if (Math.abs((await svg.evaluate(e => e.getBoundingClientRect().width)) - fit.svg) > 1) throw Error('Repeated Draw.io fit shrinks the diagram');
+      const next = page.getByRole('button',{name:'다음 노드',exact:true});
+      if (await next.isEnabled()) {
+        await next.click();
+        if (!(await page.locator('#panel-cause aside').innerText()).includes('근거를 직접 확인')) throw Error('Draw.io guided node explanation');
+      }
       const edgeButton = page.locator("[data-edge]").first();
       await edgeButton.click();
       if (
@@ -186,8 +204,8 @@ const { chromium } = require("playwright");
         )
       )
         throw Error("edge evidence");
-      const hits = await page.locator(".react-flow__node").count();
-      if (hits < 4) throw Error("React Flow nodes missing");
+      const hits = await page.locator(".drawio-node").count();
+      if (hits !== fixture.nodes.length) throw Error("Draw.io nodes missing");
       await page.getByRole("tab", { name: "조사 과정", exact: true }).click();
       await page.locator("[data-step]").last().click();
       if (
@@ -379,7 +397,7 @@ const { chromium } = require("playwright");
   if (errors.length) throw Error(errors.join(";"));
   await browser.close();
   console.log(
-    "PASS React Flow, three cases, timeline, archived hashes, review/version, local import and print",
+    "PASS Draw.io, three cases, timeline, archived hashes, review/version, local import and print",
   );
 })().catch((e) => {
   console.error(e);

@@ -5,9 +5,10 @@
     "style": "python3 tools/check_style.py",
     "test:browser": "node tests/browser.cjs && node tests/engine-browser.cjs",
     "dev": "vite --host 127.0.0.1",
-    "build": "npm run style && vite build && python3 tools/package_site.py",
+    "build": "npm run style && vite build && python3 tools/package_site.py && node tools/build_drawio.mjs",
     "test:model": "node --test tests/model.test.mjs",
-    "test:app": "node tests/react-browser.cjs"
+    "test:app": "node tests/react-browser.cjs",
+    "test:drawio": "node tests/drawio-browser.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1",
@@ -15,7 +16,6 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "1.1.8",
-    "@xyflow/react": "12.12.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   }
