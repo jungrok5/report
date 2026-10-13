@@ -123,6 +123,8 @@ const { chromium } = require("playwright");
         await page.locator("#panel-actions").waitFor({ state: "visible" });
         await page.getByRole("tab", { name: "인과관계", exact: true }).click();
       }
+      await page.getByRole("link", {name:"그림 · 근거",exact:true}).click();
+      await page.locator("#panel-cause").waitFor({state:"visible"});
       // Collapsed event records must stay selectable and aligned with the chart.
       if (fixture.events.length) {
         await page.locator(".event-log summary").click();

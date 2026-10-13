@@ -2,19 +2,19 @@
 <style>
 /* Editorial incident report. See DESIGN.md; ai-design polish-ui and polish-writing. */
 :root, #eir-report {
-  color-scheme: light dark;
+  color-scheme: light;
   --font-sans: system-ui, -apple-system, "Noto Sans KR", "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
-  --ink: #19242f;
-  --page: #eaedf0;
+  --ink: #172333;
+  --page: #f6f8fb;
   --paper: #fff;
-  --canvas: #f2f5f8;
-  --muted: #52627a;
-  --border: #d8e0eb;
+  --canvas: #f0f3f7;
+  --muted: #4c5b6d;
+  --border: #d6dde6;
   --control-border: #738092;
-  --accent: #2658a6;
-  --wash: #ecf3ff;
-  --green: #216247;
+  --accent: #2451cb;
+  --wash: #e8f0ff;
+  --green: #24664c;
   --warm: #855215;
   --danger: #924822;
   --danger-border: #c28c68;
@@ -36,21 +36,24 @@
   --answer-green: #a2dbb9;
   --answer-warm: #f1c68b;
   --answer-border: #6f8599;
-  --report-width: 1144px;
+  --report-width: 1320px;
   --section-rail: 170px;
-  --text-caption: 0.75rem;
-  --text-body: 0.875rem;
+  --text-caption: 0.8125rem;
+  --text-body: 0.9375rem;
   --text-reading: 1rem;
   --text-subheading: 1.25rem;
   --text-heading: 1.5rem;
   --text-answer: 1.5rem;
-  --title-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  --title-size: clamp(1.875rem, 4vw, 3.25rem);
   --answer-size: 1.5rem;
   --reading-width: 72ch;
-  --report-gutter: 48px;
+  --report-gutter: 28px;
+  --on-accent: #fff;
+  --dot: #d6dde6;
+  --step-surface: #f8faff;
 }
-@media (prefers-color-scheme: dark) {
-  :root, #eir-report {
+:root[data-theme="dark"], #eir-report[data-theme="dark"] {
+    color-scheme: dark;
     --ink: #e4e6e8;
     --page: #101316;
     --paper: #171b20;
@@ -72,10 +75,12 @@
     --series-5: #f59bad;
     --series-6: #c6d584;
     --answer-surface: #243747;
-  }
+    --on-accent: #172333;
+    --dot: #46515f;
+    --step-surface: #1c2531;
 }
 @media print {
-  :root, #eir-report {
+  :root, #eir-report, :root[data-theme="dark"], #eir-report[data-theme="dark"] {
     color-scheme: light;
     --ink: #202d3d;
     --page: #fff;

@@ -1,19 +1,12 @@
-.drawio-toolbar, .drawio-controls, .drawio-steps, .drawio-dialog-bar {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-}
-.drawio-toolbar { justify-content: space-between; margin-bottom: 12px; }
+.drawio-toolbar, .drawio-controls, .drawio-steps, .drawio-dialog-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.drawio-toolbar { justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .drawio-toolbar button, .drawio-steps button { min-height: 44px; font-size: var(--text-body); }
 .drawio-scale { min-width: 4ch; font-size: var(--text-caption); color: var(--muted); }
-.drawio-stage {
-  display: flex; width: 100%; min-width: 0; min-height: 120px; max-height: 490px; overflow: auto;
-  padding: 12px; border: 1px solid var(--border); background: var(--paper); cursor: grab;
-}
+.drawio-stage { display: flex; width: 100%; min-width: 0; min-height: 320px; max-height: 560px; overflow: auto; padding: 24px; background: var(--paper); background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 24px 24px; cursor: grab; }
 .drawio-stage svg { display: block; flex-shrink: 0; max-width: none; font-family: var(--font-sans); }
 .drawio-node, .drawio-edge { cursor: pointer; }
 .drawio-node rect { fill: var(--paper); stroke: var(--control-border); stroke-width: 1.5; }
-.drawio-node.active rect, .drawio-node:focus-visible rect {
-  fill: var(--wash); stroke: var(--accent); stroke-width: 3;
-}
+.drawio-node.active rect, .drawio-node:focus-visible rect { fill: var(--wash); stroke: var(--accent); stroke-width: 3; }
 .drawio-node-status { fill: var(--muted); font-size: 12px; }
 .drawio-node-label { fill: var(--ink); font-size: 16px; font-weight: 650; }
 .drawio-edge-hit { fill: none; stroke: transparent; stroke-width: 28; }
@@ -22,16 +15,17 @@
 .drawio-edge.active .drawio-edge-line, .drawio-edge:focus-visible .drawio-edge-line { stroke: var(--accent); stroke-width: 3; }
 .drawio-arrow { fill: var(--muted); }
 .drawio-edge-label { fill: var(--ink); font-size: 12px; paint-order: stroke; stroke: var(--paper); stroke-width: 5; }
-.drawio-steps { margin: 16px 0; font-size: var(--text-body); }
-.drawio-steps span { margin-right: auto; }
-.drawio-lists, .drawio-source { margin-top: 12px; }
-.drawio-dialog {
-  width: 96vw; height: 92vh; max-width: 1500px; max-height: none; padding: 0;
-  color: var(--ink); background: var(--paper); border: 1px solid var(--control-border);
-}
+.diagram-panel > p, .diagram-panel > details { margin: 12px 20px; }
+.drawio-step-guide { display: flex; flex-direction: column; }
+.step-count { color: var(--muted); font-size: var(--text-body); font-variant-numeric: tabular-nums; }
+.drawio-steps { order: 3; margin: 16px 0; }
+.drawio-steps button { flex: 1; }
+.step-dots { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.step-dots button { width: 44px; padding: 6px; font-size: var(--text-caption); }
+.drawio-dialog { width: 96vw; height: 92vh; max-width: 1500px; max-height: none; padding: 0; color: var(--ink); background: var(--paper); border: 1px solid var(--control-border); }
 .drawio-dialog::backdrop { background: var(--overlay-shadow); }
 .drawio-dialog-bar { padding: 12px; border-bottom: 1px solid var(--border); }
 .drawio-dialog-bar span { flex: 1; min-width: 180px; font-size: var(--text-body); }
 .drawio-dialog iframe { display: block; width: 100%; height: calc(100% - 100px); border: 0; }
-@media (max-width: 500px) { .drawio-stage { max-height: 420px; } }
+@media (max-width: 740px) { .drawio-stage { max-height: 420px; min-height: 260px; padding: 12px; } .drawio-toolbar { padding: 10px 12px; } .drawio-toolbar button { font-size: var(--text-caption); padding: 8px 10px; } }
 @media print { .drawio-stage { display: none; } }
