@@ -14,6 +14,7 @@ export default function CauseGraph({ report, onSelect, selection }) {
   const index = selection?.type === "node" ? layout.order.indexOf(selection.id) : -1;
   useEffect(() => {
     controls.current = viewport(stage.current, svg.current, setScale, layout.width);
+    controls.current.fit();
     return () => controls.current?.destroy();
   }, [report]);
   useEffect(() => {
@@ -111,11 +112,6 @@ export default function CauseGraph({ report, onSelect, selection }) {
         })}
       </svg>
     </div>
-    <div className="drawio-steps no-print">
-      <span>{index >= 0 ? `노드 ${index + 1} / ${layout.order.length}` : "연결의 근거 선택"}</span>
-      <button disabled={index <= 0} onClick={() => choose("node", layout.order[index - 1])}>이전 노드</button>
-      <button disabled={index >= layout.order.length - 1} onClick={() => choose("node", layout.order[index + 1])}>다음 노드</button>
-    </div>
     <p className="small">노드와 연결선을 선택하면 설명과 근거가 표시됩니다. 실선은 검증됨, 점선은 유력·미확인입니다.</p>
     <details className="drawio-lists no-print"><summary>모든 노드와 연결 선택</summary>
       <div className="pickers">{layout.order.map(id => {
@@ -140,4 +136,23 @@ export default function CauseGraph({ report, onSelect, selection }) {
         sandbox="allow-scripts allow-same-origin allow-downloads" />
     </dialog>}
   </>;
+}
+
+export function DiagramSteps({ report, selection, onSelect, summaryOnly = false, controlsOnly = false }) {
+  const order = useMemo(() => diagramLayout(report).order, [report]);
+  const index = selection?.type === "node" ? order.indexOf(selection.id) : -1;
+  return <div className="drawio-step-guide no-print">
+    {!controlsOnly && <span className="step-count">{index >= 0 ? `${String(index + 1).padStart(2, "0")} / ${String(order.length).padStart(2, "0")}` : "연결의 근거"}</span>}
+    {!summaryOnly && <>
+    <div className="drawio-steps">
+      <button disabled={index <= 0} onClick={() => onSelect({ type: "node", id: order[index - 1] })}>이전 노드</button>
+      <button disabled={index >= order.length - 1} onClick={() => onSelect({ type: "node", id: order[index + 1] })}>다음 노드</button>
+    </div>
+    <div className="step-dots" aria-label="원인 후보 선택">{order.map((id, i) => {
+      const node = report.nodes.find(n => n.id === id);
+      return <button key={id} aria-label={`${i + 1}. ${node.label}`} aria-pressed={selection?.type === "node" && selection.id === id}
+        onClick={() => onSelect({ type: "node", id })}>{i + 1}</button>;
+    })}</div>
+    </>}
+  </div>;
 }

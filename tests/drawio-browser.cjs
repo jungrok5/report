@@ -47,6 +47,8 @@ const root = path.resolve(__dirname, "../site-dist"), out = path.resolve(__dirna
     assert.equal(await page.locator(".drawio-edge").count(), fixture.edges.length);
     for (const scheme of ["light", "dark"]) for (const width of [375, 1440]) {
       await page.emulateMedia({ colorScheme: scheme });
+      const toggle = page.getByRole("button", {name:"어두운 화면",exact:true});
+      if (await toggle.getAttribute("aria-pressed") !== String(scheme === "dark")) await toggle.click();
       await page.setViewportSize({ width, height: 1100 });
       await page.getByRole("button", { name: "전체보기", exact: true }).click();
       await page.locator("#panel-cause").screenshot({ path: path.join(out, `${slug}-${scheme}-${width}.png`) });

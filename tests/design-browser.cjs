@@ -15,10 +15,14 @@ function contrast(a,b) { const x=[luminance(a),luminance(b)].sort((a,b)=>a-b); r
     const type={".html":"text/html",".css":"text/css",".js":"text/javascript",".json":"application/json"}[path.extname(file)]||"application/octet-stream";
     await route.fulfill({body:fs.readFileSync(file),contentType:type});
   });
+  await page.emulateMedia({colorScheme:"dark"});
   await page.goto("https://jungrok5.github.io/report/"); await page.locator("h1").waitFor(); await page.evaluate(()=>document.fonts.ready);
   if(process.env.INCIDENT_TEST_FONT){const font=fs.readFileSync(process.env.INCIDENT_TEST_FONT).toString("base64");await page.addStyleTag({content:"@font-face{font-family:TestKR;src:url(data:font/woff2;base64,"+font+")}body,button,input,select,textarea,pre,code,.timeline text{font-family:TestKR,system-ui!important}"});await page.evaluate(()=>document.fonts.ready);}
+  if (await page.locator("html").getAttribute("data-theme") !== "light") throw Error("The visual report must start with the collaboration page's light palette");
+  const placement = await page.evaluate(() => document.querySelector("#panel-cause").compareDocumentPosition(document.querySelector("#investigation-story")) & Node.DOCUMENT_POSITION_FOLLOWING);
+  if (!placement) throw Error("Diagram must precede long investigation records");
   for(const scheme of ["light","dark"]) for(const width of [375,768,1024,1440]) {
-    await page.emulateMedia({colorScheme:scheme}); await page.setViewportSize({width,height:1500});
+    await page.emulateMedia({colorScheme:scheme}); if (await page.getByRole("button", {name:"어두운 화면",exact:true}).getAttribute("aria-pressed") !== String(scheme === "dark")) await page.getByRole("button", {name:"어두운 화면",exact:true}).click(); await page.setViewportSize({width,height:1500});
     const state=await page.evaluate(()=>{
       const band=document.querySelector(".conclusion"), computed=getComputedStyle(band);
       return {overflow:document.documentElement.scrollWidth>innerWidth+1, bg:computed.backgroundColor,
@@ -31,6 +35,7 @@ function contrast(a,b) { const x=[luminance(a),luminance(b)].sort((a,b)=>a-b); r
   }
   await page.emulateMedia({media:"print",colorScheme:"dark"});
   const print=await page.locator(".conclusion").evaluate(e=>({bg:getComputedStyle(e).backgroundColor,fg:getComputedStyle(e).color}));
+  if(print.bg !== "rgb(255, 255, 255)") throw Error("Print must use white paper even after selecting dark mode");
   if(contrast(print.bg,print.fg)<4.5) throw Error("Print cause contrast");
   if(errors.length) throw Error(errors.join("; "));
   await browser.close();

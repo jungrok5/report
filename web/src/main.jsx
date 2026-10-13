@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import CauseGraph from "./DrawioGraph.jsx";
+import CauseGraph, { DiagramSteps } from "./DrawioGraph.jsx";
 import "../../skills/investigate-game-incident/assets/report-tokens.css";
 import Timeline from "./Timeline.jsx";
 import {
@@ -13,7 +13,7 @@ import {
   verifyGovernance,
 } from "./model.mjs";
 import "./style.css";
-import "../../skills/investigate-game-incident/assets/report-hierarchy.css";
+
 const base = import.meta.env.BASE_URL;
 function Badge({ status }) {
   return (
@@ -319,14 +319,16 @@ function Report({ report, toolbar }) {
   useEffect(() => {
     function navigate() {
       const target = location.hash.slice(1);
-      if (target !== "panel-actions") return;
-      setTab("actions");
+      const destination = { "panel-actions": "actions", analysis: "cause" }[target];
+      if (!destination) return;
+      setTab(destination);
       requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView());
     }
     function clickSection(event) {
-      if (!event.target.closest("a[href='#panel-actions']")) return;
+      const link = event.target.closest("a[href='#panel-actions'], a[href='#analysis']");
+      if (!link) return;
       event.preventDefault();
-      history.replaceState(null, "", "#panel-actions");
+      history.replaceState(null, "", link.getAttribute("href"));
       navigate();
     }
     navigate();
@@ -364,8 +366,11 @@ function Report({ report, toolbar }) {
   return (
     <>
       <div className="report-heading">
-        <h1>{report.meta.title}</h1>
-        <div className="report-context">
+        <div className="heading-main">
+          <h1>{report.meta.title}</h1>
+          <p className="report-lead">발생 시각과 지표를 확인하고, 그림의 원인 후보를 선택해 조사 내용과 근거를 읽습니다.</p>
+        </div>
+        <aside className="report-context">
           <span>
             {new Intl.DateTimeFormat("ko-KR", {
               timeZone: report.meta.timezone,
@@ -378,7 +383,8 @@ function Report({ report, toolbar }) {
           {report.meta.synthetic && (
             <span className="synthetic-label">가상 예시</span>
           )}
-        </div>
+          <a href="https://github.com/jungrok5/report">jungrok5 / report</a>
+        </aside>
         <div className="heading-tools">
           <details className="report-meta">
             <summary>보고서 정보</summary>
@@ -443,59 +449,6 @@ function Report({ report, toolbar }) {
           </div>
         </div>
       </section>
-      <section
-        className="section narrative"
-        id="investigation-story"
-        aria-label="원인에 도달한 조사 흐름"
-      >
-        <header className="section-title">
-          <h2>조사 기록</h2>
-        </header>
-        <div className="section-content">
-          {report.investigation.length ? (
-            report.investigation.map((i, index) => (
-              <article
-                key={i.id}
-                data-narrative-step={i.id}
-                className="narrative-step"
-              >
-                <header className="narrative-question">
-                  <h3>{index + 1}. {i.question}</h3>
-                  <Badge status={i.status} />
-                </header>
-                <div className="narrative-record">
-                <p className="narrative-observation">{i.observed}</p>
-                <p className="narrative-decision" aria-label="판정">{i.decision}</p>
-                <button
-                  className="textbutton no-print"
-                  onClick={() => focusEvidence(i.evidence_ids)}
-                >
-                  근거 {i.evidence_ids.length}건 · {i.evidence_ids.join(", ")}
-                </button>
-                <details>
-                  <summary>가설 · 예측 · 다음 확인</summary>
-                  <p className="small">조사 {i.investigated_at}</p>
-                  {[
-                    ["가설", i.hypothesis],
-                    ["예측", i.prediction],
-                    ["다음 확인", i.next_test],
-                  ].map(([key, value]) => (
-                    <p key={key}>
-                      <strong>{key}:</strong> {value}
-                    </p>
-                  ))}
-                </details>
-                </div>
-              </article>
-            ))
-          ) : (
-            <p>
-              조사 기록이 없습니다. 원인을 추정하지 않고 추가 자료를 확인해야
-              합니다.
-            </p>
-          )}
-        </div>
-      </section>
       <nav className="tabs" id="analysis" role="tablist" aria-label="분석 보기">
         {tabs.map(([id, label]) => (
           <button
@@ -529,18 +482,19 @@ function Report({ report, toolbar }) {
         aria-labelledby="tab-cause"
         hidden={tab !== "cause"}
       >
-        <div className="layout">
-          <div>
-            <h2>원인과 영향의 연결</h2>
+        <div className="layout cause-workbench">
+          <div className="diagram-panel">
+            <h2 className="diagram-heading">원인과 영향의 연결</h2>
             <CauseGraph
               report={report}
               selection={selection}
               onSelect={setSelection}
             />
           </div>
-          <aside className="detail" aria-live="polite">
+          <aside className="detail cause-detail" aria-live="polite">
             {item ? (
               <>
+                <DiagramSteps report={report} selection={selection} onSelect={setSelection} summaryOnly />
                 <Badge status={item.status} />
                 <h2>
                   {selection.type === "edge"
@@ -551,8 +505,12 @@ function Report({ report, toolbar }) {
                 {item.rationale && (
                   <p className="reason">판단 근거: {item.rationale}</p>
                 )}
-                <Evidence report={report} ids={item.evidence_ids} />
                 <p className="small">한계: {item.limitations}</p>
+                <DiagramSteps report={report} selection={selection} onSelect={setSelection} controlsOnly />
+                <details className="node-evidence">
+                  <summary>근거를 직접 확인 · {item.evidence_ids.length}건</summary>
+                  <Evidence report={report} ids={item.evidence_ids} />
+                </details>
               </>
             ) : (
               <p>원인 후보가 없습니다. 수집 자료와 조사 기록을 확인하세요.</p>
@@ -732,6 +690,59 @@ function Report({ report, toolbar }) {
       >
         <Governance report={report} />
       </section>
+      <section
+        className="section narrative"
+        id="investigation-story"
+        aria-label="원인에 도달한 조사 흐름"
+      >
+        <header className="section-title">
+          <h2>조사 기록</h2>
+        </header>
+        <div className="section-content">
+          {report.investigation.length ? (
+            report.investigation.map((i, index) => (
+              <article
+                key={i.id}
+                data-narrative-step={i.id}
+                className="narrative-step"
+              >
+                <header className="narrative-question">
+                  <h3>{index + 1}. {i.question}</h3>
+                  <Badge status={i.status} />
+                </header>
+                <div className="narrative-record">
+                <p className="narrative-observation">{i.observed}</p>
+                <p className="narrative-decision" aria-label="판정">{i.decision}</p>
+                <button
+                  className="textbutton no-print"
+                  onClick={() => focusEvidence(i.evidence_ids)}
+                >
+                  근거 {i.evidence_ids.length}건 · {i.evidence_ids.join(", ")}
+                </button>
+                <details>
+                  <summary>가설 · 예측 · 다음 확인</summary>
+                  <p className="small">조사 {i.investigated_at}</p>
+                  {[
+                    ["가설", i.hypothesis],
+                    ["예측", i.prediction],
+                    ["다음 확인", i.next_test],
+                  ].map(([key, value]) => (
+                    <p key={key}>
+                      <strong>{key}:</strong> {value}
+                    </p>
+                  ))}
+                </details>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p>
+              조사 기록이 없습니다. 원인을 추정하지 않고 추가 자료를 확인해야
+              합니다.
+            </p>
+          )}
+        </div>
+      </section>
       <div className="print-evidence">
         <h2>증거 부록</h2>
         {report.evidence.map((e) => (
@@ -763,6 +774,8 @@ function Report({ report, toolbar }) {
   );
 }
 function App() {
+  const [theme, setTheme] = useState("light");
+  useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   const [catalog, setCatalog] = useState([]),
     [slug, setSlug] = useState(
       new URLSearchParams(location.search).get("case") || "restart",
@@ -887,14 +900,16 @@ function App() {
   return (
     <div className="report">
       <header className="chrome">
-        <strong>장애 보고서</strong>
+        <a className="brand" href={base}>장애를 그림과 근거로 읽기</a>
         <nav aria-label="보고서 목차">
           <a href="#phenomenon">현상</a>
           <a href="#cause-summary">원인</a>
           <a href="#investigation-story">조사</a>
-          <a href="#analysis">근거</a>
+          <a href="#analysis">그림 · 근거</a>
           <a href="#panel-actions">조치</a>
         </nav>
+        <button className="theme-toggle no-print" aria-pressed={theme === "dark"}
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}>어두운 화면</button>
       </header>
       <div className="body">
         {error && (

@@ -106,10 +106,12 @@ export default function Timeline({ report, onEvidence }) {
         </span>
       </header>
       <div className="section-content">
+        <div className="timeline-reading">
         <dl className="impact-record">
           <div><dt>영향</dt><dd className="phenomenon">{report.summary.impact}</dd></div>
           <div><dt>회복</dt><dd className="recovery-note">{report.summary.recovery}</dd></div>
         </dl>
+        <div className="timeline-plot">
         <div className="legend" aria-label="지표와 관측 범위">
           {metrics.map((m, i) => (
             <span key={m.id} className="metric-legend">
@@ -335,6 +337,8 @@ export default function Timeline({ report, onEvidence }) {
             ))}
           </div>
           </details>
+        </div>
+        </div>
         </div>
         {event ? (
           <div className="selected">
